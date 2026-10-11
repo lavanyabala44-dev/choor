@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Chooron Ka Cabinet 2026 — Asli Choor List, Pakdo aur Chappal se, Laat se Maaro!</title>
+<style>
+  html{min-height:100%}
+  body{
+    position:relative;
+    background-color:#4a0d0d;
+    background-image:
+      radial-gradient(ellipse at 50% -5%, rgba(255,190,70,.28), transparent 55%),
+      radial-gradient(ellipse at 50% 115%, rgba(0,0,0,.65), transparent 60%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'><path d='M22 0L44 22L22 44L0 22Z' fill='none' stroke='rgba(255,210,63,0.09)' stroke-width='1'/></svg>");
+    background-attachment:fixed;
+    font-family:Georgia,serif;margin:0;padding:24px;color:#fff;
+    box-shadow:inset 0 0 0 10px rgba(255,210,63,.25);
+    min-height:100vh;
+  }
+  #topbar{position:absolute;top:14px;right:18px;z-index:30;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;max-width:72vw}
+  #topbar button{cursor:pointer;font-family:Georgia,serif;font-size:14px;font-weight:bold;
+    color:#ffd23f;background:#c1121f;border:2px solid #ffd23f;border-radius:20px;padding:6px 14px;letter-spacing:.5px}
+  #topbar button:hover{background:#8f0d17}
+  #totalbox{font-size:clamp(25px,3vw,36px);font-weight:bold;color:#ffd23f;background:#111;border:6px solid #ffd23f;
+    border-radius:48px;padding:20px 28px;line-height:1.45;min-width:390px;text-align:center;box-shadow:0 8px 22px rgba(0,0,0,.55)}
+  #totalbox .grand{font-size:1.08em;white-space:nowrap}
+  #totalbox .list-title{font-size:.56em;color:#ffe9a8;letter-spacing:.08em;margin:8px 0 6px}
+  #totalbox .weapons{display:flex;flex-direction:column;gap:5px;text-align:left;max-width:340px;margin:0 auto}
+  #totalbox .weapon-row{display:flex;align-items:center;gap:10px;font-size:.68em;white-space:nowrap}
+  #totalbox .weapon-icon{width:1.4em;text-align:center}
+  #totalbox .weapon-count{margin-left:auto;min-width:2em;text-align:right;color:#fff}
+  #cloudpill{font-size:12px;font-weight:bold;border-radius:20px;padding:6px 12px;border:2px solid #ffd23f;
+    background:#111;color:#ffd23f;cursor:default;white-space:nowrap}
+  #cloudpill.ok{background:#0a6b2f;color:#c9ffd8;border-color:#c9ffd8}
+  #cloudpill.busy{background:#7a5a00;color:#ffe9a8}
+  #cloudpill.err{background:#7a0000;color:#ffd0d0;border-color:#ff9a9a}
+  #hint{position:absolute;top:14px;left:18px;z-index:20;font-size:13px;color:#ffe9a8;
+    background:rgba(0,0,0,.35);border-radius:20px;padding:6px 12px;max-width:320px}
+
+  h1{text-align:center;font-size:44px;color:#ffd23f;text-shadow:3px 3px 0 #000;margin:34px 0 6px}
+  .sub{text-align:center;font-size:18px;color:#ffe9a8;margin-bottom:22px}
+  .hero{display:flex;align-items:center;justify-content:center;gap:28px;margin:0 auto 26px;max-width:1050px}
+  .hero-card{background:#fff;border-radius:16px;overflow:hidden;text-align:center;
+             box-shadow:0 10px 26px rgba(0,0,0,.6);width:340px;border:6px solid #ffd23f}
+  .hero-card img{width:100%;height:360px;object-fit:cover;object-position:top}
+  @media(max-width:760px){.hero{flex-direction:column;gap:16px}#totalbox{box-sizing:border-box;min-width:0;width:min(100%,440px);font-size:clamp(22px,6vw,32px);padding:16px 12px}}
+  .hero-name{font-size:24px;font-weight:bold;color:#111;padding:12px 6px 4px}
+  .hero-choor{background:#c1121f;color:#ffd23f;font-size:22px;font-weight:bold;padding:12px;letter-spacing:1.5px}
+  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;max-width:1200px;margin:auto}
+  .card{background:#fff;border-radius:10px;overflow:hidden;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,.4)}
+  .card img{width:100%;height:170px;object-fit:cover;object-position:top}
+  .blank{width:100%;height:170px;background:#fff}
+  .name{font-size:13px;font-weight:bold;color:#111;padding:6px 4px 2px}
+  .choor{background:#c1121f;color:#ffd23f;font-size:13px;font-weight:bold;padding:5px;letter-spacing:.5px}
+  .choor + .choor{border-top:2px solid #fff}
+  .star{outline:4px solid #ffd23f;outline-offset:-4px}
+  .star .choor{background:#111}
+
+  .divider{margin:40px auto 18px;max-width:1200px;text-align:center}
+  .divider h2{font-size:34px;color:#ffd23f;text-shadow:3px 3px 0 #000;margin:0}
+  .divider p{color:#ffe9a8;font-size:16px;margin:6px 0 0}
+
+  .tools{position:absolute;top:6px;right:6px;z-index:14;display:flex;gap:4px;
+    opacity:0;transform:translateY(-4px);transition:opacity .15s,transform .15s;pointer-events:none}
+  .card:hover .tools,.hero-card:hover .tools{opacity:1;transform:translateY(0);pointer-events:auto}
+  .tools button{width:30px;height:30px;padding:0;border-radius:50%;border:2px solid #c1121f;
+    background:#fff;font-size:16px;line-height:1;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 5px rgba(0,0,0,.4);transition:transform .1s,background .1s}
+  .tools button:hover{background:#ffe9a8;transform:scale(1.12)}
+  .tools button.sel{background:#ffd23f;border-color:#111;transform:scale(1.18)}
+  .tools .tip{position:absolute;top:34px;right:0;white-space:nowrap;font-size:11px;font-weight:bold;
+    background:#111;color:#ffd23f;border:1px solid #ffd23f;border-radius:6px;padding:2px 6px;
+    opacity:0;pointer-events:none;transition:opacity .1s}
+  .tools button:hover .tip{opacity:1}
+
+  .bigtotal{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;pointer-events:none;
+    background:rgba(0,0,0,.45);opacity:0;transition:opacity .15s}
+  .card:hover .bigtotal,.hero-card:hover .bigtotal{opacity:1}
+  .bigtotal .n{font-family:Impact,'Arial Black',sans-serif;font-size:96px;line-height:1;
+    color:#ffd23f;text-shadow:4px 4px 0 #c1121f,0 0 22px rgba(0,0,0,.7)}
+  .card .bigtotal .n{font-size:72px}
+  .bigtotal .lbl{font-size:13px;font-weight:bold;letter-spacing:3px;color:#ffe9a8;
+    text-shadow:1px 1px 0 #000;margin-top:4px}
+  .bigtotal .mini{font-size:12px;font-weight:bold;color:#fff;margin-top:8px;letter-spacing:1px;
+    background:rgba(193,18,31,.85);border:1px solid #ffd23f;border-radius:12px;padding:2px 10px}
+
+  .card,.hero-card{position:relative;cursor:pointer;
+    -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  .chappal{position:absolute;left:50%;top:42%;font-size:46px;line-height:1;
+    pointer-events:none;z-index:9;opacity:0;
+    transform:translate(-50%,-80px) rotate(-50deg) scale(.8);
+    filter:drop-shadow(0 5px 6px rgba(0,0,0,.45))}
+  .hit .chappal{animation:whack .75s cubic-bezier(.3,.7,.4,1)}
+  @keyframes whack{
+    0%{opacity:0;transform:translate(-50%,-80px) rotate(-50deg) scale(.8)}
+    12%{opacity:1;transform:translate(-50%,-80px) rotate(-50deg) scale(1)}
+    35%{opacity:1;transform:translate(-50%,-6px) rotate(8deg) scale(1)}
+    45%{opacity:1;transform:translate(-50%,-16px) rotate(-4deg) scale(1)}
+    60%{opacity:1;transform:translate(-50%,-6px) rotate(4deg) scale(1)}
+    80%{opacity:1;transform:translate(-50%,-45px) rotate(-25deg) scale(1)}
+    100%{opacity:0;transform:translate(-50%,-80px) rotate(-50deg) scale(.8)}
+  }
+  .hit{animation:shake .5s ease-in-out}
+  @keyframes shake{
+    0%,100%{transform:translate(0,0) rotate(0)}
+    15%{transform:translate(-6px,0) rotate(-2deg)}
+    30%{transform:translate(6px,0) rotate(2deg)}
+    45%{transform:translate(-5px,0) rotate(-1.5deg)}
+    60%{transform:translate(4px,0) rotate(1.5deg)}
+    80%{transform:translate(-3px,0) rotate(-1deg)}
+  }
+  .burst{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%) scale(.3);
+    font-family:Impact,'Arial Black',sans-serif;font-size:20px;color:#fff;background:#c1121f;
+    border:2px solid #ffd23f;padding:2px 9px;border-radius:6px;letter-spacing:1px;
+    z-index:10;opacity:0;pointer-events:none;text-shadow:1px 1px 0 #000;white-space:nowrap}
+  .hit .burst{animation:pop .75s ease-out}
+  @keyframes pop{
+    0%,30%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-12deg)}
+    45%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(-8deg)}
+    60%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-8deg)}
+    100%{opacity:0;transform:translate(-70%,-95%) scale(1) rotate(-8deg)}
+  }
+
+  .count{position:absolute;top:6px;left:6px;z-index:11;min-width:22px;height:22px;
+    border-radius:12px;background:#ffd23f;color:#111;border:2px solid #c1121f;
+    font:bold 12px/18px Arial;padding:0 5px;box-shadow:0 2px 6px rgba(0,0,0,.5);
+    display:none}
+  .count.show{display:block}
+  .count.pop{animation:cpop .4s}
+  @keyframes cpop{0%{transform:scale(1)}40%{transform:scale(1.7) rotate(-8deg)}100%{transform:scale(1)}}
+  .brk{display:none;font-size:11px;font-weight:bold;color:#111;padding:3px 4px 0;background:#ffe9a8;
+    border-top:1px dashed #c1121f;letter-spacing:.5px}
+  .brk.show{display:block}
+
+  #summaryWrap{max-width:1200px;margin:0 auto 60px}
+  table.sum{width:100%;border-collapse:collapse;background:#fff;border:4px solid #ffd23f;border-radius:10px;overflow:hidden}
+  table.sum th,table.sum td{padding:8px 10px;text-align:left;font-size:14px;color:#111;border-bottom:1px solid #eee}
+  table.sum thead th{background:#111;color:#ffd23f;font-size:13px;letter-spacing:.5px;text-transform:uppercase}
+  table.sum td.num,table.sum th.num{text-align:center;width:80px;font-weight:bold}
+  table.sum tbody tr:nth-child(even){background:#fff8e6}
+  table.sum tbody tr:hover{background:#ffe9a8}
+  table.sum td.tot{background:#c1121f;color:#ffd23f;font-weight:bold;text-align:center}
+  table.sum tfoot td{background:#ffd23f;color:#111;font-weight:bold;border-top:3px solid #c1121f}
+  table.sum .rk{font-weight:bold;color:#c1121f}
+  #summaryEmpty{color:#ffe9a8;text-align:center;font-size:16px;padding:16px}
+
+  /* ===== CLOUD SETTINGS PANEL ===== */
+  #cloudPanel{position:fixed;top:70px;right:18px;z-index:40;width:340px;background:#1a0505;
+    border:3px solid #ffd23f;border-radius:14px;padding:16px;box-shadow:0 14px 40px rgba(0,0,0,.7);
+    display:none}
+  #cloudPanel.open{display:block}
+  #cloudPanel h3{margin:0 0 10px;color:#ffd23f;font-size:18px}
+  #cloudPanel p{margin:0 0 10px;font-size:12px;color:#ffe9a8;line-height:1.5}
+  #cloudPanel label{display:block;font-size:12px;font-weight:bold;color:#ffe9a8;margin:8px 0 3px}
+  #cloudPanel input{width:100%;box-sizing:border-box;font-family:monospace;font-size:12px;
+    padding:7px 9px;border-radius:7px;border:2px solid #ffd23f;background:#fff;color:#111}
+  #cloudPanel .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  #cloudPanel .row button{flex:1;cursor:pointer;font-family:Georgia,serif;font-size:12px;font-weight:bold;
+    color:#ffd23f;background:#c1121f;border:2px solid #ffd23f;border-radius:8px;padding:8px 6px}
+  #cloudPanel .row button:hover{background:#8f0d17}
+  #cloudPanel .row button.alt{background:#0a6b2f;color:#c9ffd8;border-color:#c9ffd8}
+  #cloudPanel .row button.alt:hover{background:#0c4f24}
+  #cloudMsg{font-size:12px;margin-top:10px;color:#ffe9a8;min-height:16px;word-break:break-word}
+  #cloudPanel a{color:#ffd23f}
+</style>
+</head>
+<body>
+  <div id="hint">&#128070; Photo par hover &rarr; hathiyar chuno &rarr; click! Cloud on ho to count sabko dikhega.</div>
+  <div id="topbar">
+    <span id="cloudpill" title="Cloud sync status">&#9729; Cloud Off</span>
+    <button id="cloudBtn">&#9881; Cloud</button>
+    <button id="mute">&#128266; Sound On</button>
+    <button id="reset">&#8635; Reset</button>
+  </div>
+
+  <div id="cloudPanel">
+    <h3>&#9729; Cloud Sync (GitHub Gist)</h3>
+    <p>Ek public Gist banao — wahi shared database banega. Sab log ek hi count dekhenge.
+       Token sirf likhne ke liye chahiye (scope: <b>gist</b>). Padhne ke liye zaroori nahi.</p>
+    <label>Gist ID</label>
+    <input id="cfgGist" placeholder="e.g. 1a2b3c4d5e6f7g8h9i0j">
+    <label>GitHub Token (ghp_... / github_pat_...)</label>
+    <input id="cfgToken" placeholder="ghp_xxxxxxxxxxxx" type="password">
+    <label>File name</label>
+    <input id="cfgFile" value="choor_counts.json">
+    <div class="row">
+      <button id="btnCreate" class="alt">Create New Gist</button>
+      <button id="btnConnect">Connect &amp; Load</button>
+    </div>
+    <div class="row">
+      <button id="btnPull">Pull</button>
+      <button id="btnPush">Push</button>
+      <button id="btnOff">Disconnect</button>
+    </div>
+    <div id="cloudMsg"></div>
+  </div>
+
+  <h1>MODI BABA AUR TIS CHOOR</h1>
+  <div class="sub">Chooron Ka Cabinet 2026 — Asli Choor List, Pakdo aur Chappal se, Laat se Maaro!</div>
+
+  <div class="hero">
+    <div class="hero-card">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/The_official_portrait_of_Shri_Narendra_Modi%2C_the_Prime_Minister_of_the_Republic_of_India.jpg"
+           onerror="this.src='https://via.placeholder.com/340x360?text=Modi'">
+      <div class="hero-name">NARENDRA MODI</div>
+      <div class="hero-choor">MAHA CHOOR</div>
+    </div>
+    <aside id="totalbox" aria-live="polite"><div class="grand">Kul pitai: 0</div><div class="list-title">HATHIYAR KE HISAB SE</div><div class="weapons"><div class="weapon-row"><span class="weapon-icon">🩴</span><span>Chappal ki maar</span><span class="weapon-count">0</span></div><div class="weapon-row"><span class="weapon-icon">👞</span><span>Jooton ki maar</span><span class="weapon-count">0</span></div><div class="weapon-row"><span class="weapon-icon">🦯</span><span>Dandon ki maar</span><span class="weapon-count">0</span></div><div class="weapon-row"><span class="weapon-icon">🦵</span><span>Laaton ki maar</span><span class="weapon-count">0</span></div></div></aside>
+  </div>
+
+  <div class="grid" id="g"></div>
+
+  <div class="divider">
+    <h2>CHANDA CHOOR</h2>
+    <p>Ram Mandir daan-patra chori — Trust ke andar ka khel</p>
+  </div>
+  <div class="grid" id="rm"></div>
+
+  <div class="divider">
+    <h2>HISAAB-KITAB</h2>
+    <p>Kisko kitni pitai padi — chappal, juta, danda, laat wise</p>
+  </div>
+  <div id="summaryWrap">
+    <table class="sum">
+      <thead>
+        <tr>
+          <th>#</th><th>Naam</th>
+          <th class="num">&#129698; Chappal</th>
+          <th class="num">&#128094; Juta</th>
+          <th class="num">&#129683; Danda</th>
+          <th class="num">&#129461; Laat</th>
+          <th class="num">Kul</th>
+        </tr>
+      </thead>
+      <tbody id="sumBody"></tbody>
+      <tfoot id="sumFoot"></tfoot>
+    </table>
+    <div id="summaryEmpty">Abhi tak kisi ko maara nahi — kisi bhi photo par click karo!</div>
+  </div>
+
+<script>
+/* ============================================================
+   CLOUD CONFIG — yahan hardcode bhi kar sakte ho, warna
+   panel se ek baar set karo (localStorage me save ho jata hai)
+   ============================================================ */
+const CLOUD_CFG = {
+  gistId: '',            // <-- apna Gist ID yahan daalo
+  token:  '',            // <-- apna token yahan daalo
+  file:   'choor_counts.json'
+};
+
+/* ===== WEAPONS ===== */
+const WEAPONS={
+  chappal:{emoji:'🩴', label:'Chappal'},
+  juta:   {emoji:'👞', label:'Juta (Shoe)'},
+  danda:  {emoji:'🦯', label:'Danda (Stick)'},
+  laat:   {emoji:'🦵', label:'Laat (Leg)'}
+};
+const ORDER=['chappal','juta','danda','laat'];
+const WKEY='choor_weapon_v3';
+let weapon = localStorage.getItem(WKEY) || 'chappal';
+if(!WEAPONS[weapon]) weapon='chappal';
+
+function toolsHTML(){
+  return `<div class="tools">` + ORDER.map(k=>
+    `<button data-w="${k}" title="${WEAPONS[k].label}">${WEAPONS[k].emoji}<span class="tip">${WEAPONS[k].label}</span></button>`
+  ).join('') + `</div>`;
+}
+function syncTools(){
+  document.querySelectorAll('.tools button').forEach(b=>b.classList.toggle('sel', b.dataset.w===weapon));
+}
+
+const choors=[
+ ["RAKSHA CHOOR","Rajnath Singh","https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Shri_Rajnath_Singh%2C_in_New_Delhi_on_May_09%2C_2023_%28cropped%29.jpg/500px-Shri_Rajnath_Singh%2C_in_New_Delhi_on_May_09%2C_2023_%28cropped%29.jpg"],
+ ["GRIH CHOOR","Amit Shah","https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Shri_Amit_Shah_in_Raigad.jpg/500px-Shri_Amit_Shah_in_Raigad.jpg"],
+ [["SADAK CHOOR","PETROL CHOOR"],"Nitin Gadkari","https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Nitin_Jairam_Gadkari.jpg/500px-Nitin_Jairam_Gadkari.jpg"],
+ ["TAX CHOOR","Nirmala Sitharaman","https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Am_11._April_2025_empfing_Au%C3%9Fenministerin_Beate_Meinl-Reisinger_die_indische_Finanzministerin_Nirmala_Sitharaman_in_Wien_%2854445397025%29_%28cropped%29.jpg/500px-Am_11._April_2025_empfing_Au%C3%9Fenministerin_Beate_Meinl-Reisinger_die_indische_Finanzministerin_Nirmala_Sitharaman_in_Wien_%2854445397025%29_%28cropped%29.jpg"],
+ ["KISAN CHOOR","Shivraj Singh Chouhan","https://upload.wikimedia.org/wikipedia/commons/b/b8/Shivraj_Singh_Chouhan_2025.jpg"],
+ ["VIDESH CHOOR","S. Jaishankar","https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/The_official_portrait_of_External_Minister_Subrahmanyam_Jaishankar.jpg/500px-The_official_portrait_of_External_Minister_Subrahmanyam_Jaishankar.jpg"],
+ ["DAWAI CHOOR","J. P. Nadda","https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Jagat_Prakash_Nadda_2023.jpg/500px-Jagat_Prakash_Nadda_2023.jpg"],
+ ["BIJLI CHOOR","Manohar Lal Khattar","https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Manohar_Lal%2C_Minister_of_Power.jpg/500px-Manohar_Lal%2C_Minister_of_Power.jpg"],
+ ["LOHA CHOOR","H. D. Kumaraswamy","https://upload.wikimedia.org/wikipedia/commons/d/d6/HDK_Minister_of_Steel.jpg"],
+ ["VYAPAR CHOOR","Piyush Goyal","https://upload.wikimedia.org/wikipedia/commons/6/63/Piyush_Goyal_crop.jpg"],
+ ["CHHOTA UDYOG CHOOR","Jitan Ram Manjhi","https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Jitan_Ram_Manjhi_June_2024_cropped.jpg/500px-Jitan_Ram_Manjhi_June_2024_cropped.jpg"],
+ ["MACHHLI CHOOR","Lalan Singh","https://upload.wikimedia.org/wikipedia/commons/3/36/Shri_Rajiv_Ranjan_Singh_alias_Lalan_Singh_interacting_with_media_after_taking_charge_as_the_Union_Minister_for_Fisheries%2C_Animal_Husbandry_and_Dairying.jpg"],
+ ["BANDAR CHOOR","Sarbananda Sonowal","https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Sarbananda_Sonowal_with_PM_Modi_%28cropped%29.jpg/500px-Sarbananda_Sonowal_with_PM_Modi_%28cropped%29.jpg"],
+ ["AARAKSHAN CHOOR","Virendra Kumar","https://upload.wikimedia.org/wikipedia/commons/a/a1/Virendra_Kumar_Khatik_with_PM_Modi_%28cropped%29.jpg"],
+ ["HAWAI CHOOR","K. Rammohan Naidu","https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Kinjarapu_Ram_Mohan_Naidu_%28cropped%29.jpg/500px-Kinjarapu_Ram_Mohan_Naidu_%28cropped%29.jpg"],
+ [["KITAB CHOOR","PAPER CHOOR (NEW)"],"Pralhad Joshi","https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Pralhad_Joshi_in_2024.jpg/500px-Pralhad_Joshi_in_2024.jpg"],
+ ["PAPER CHOOR","Dharmendra Pradhan","https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Dharmendra_Pradhan%2C_Minister_of_Education.jpg/500px-Dharmendra_Pradhan%2C_Minister_of_Education.jpg"],
+ ["JANGAL CHOOR","Jual Oram","https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Jual_Oram_Tribal_Affairs_Minister.jpg/500px-Jual_Oram_Tribal_Affairs_Minister.jpg"],
+ ["KAPDA CHOOR","Giriraj Singh","https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Giriraj_Singh_addressing_at_the_inauguration_of_the_National_Conclave_%28MSME_Udyam_Sangam_2018%29%2C_on_the_occasion_of_the_2nd_United_Nations_MSME_Day%2C_in_New_Delhi.JPG/500px-thumbnail.jpg"],
+ ["RAIL CHOOR","Ashwini Vaishnaw","https://upload.wikimedia.org/wikipedia/commons/3/35/Ashwini_Vaishnaw_cropped.jpg"],
+ ["MOBILE CHOOR","Jyotiraditya Scindia","https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/H20250428182531.jpg/500px-H20250428182531.jpg"],
+ ["PARYAVARAN CHOOR","Bhupender Yadav","https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Union_Minister_Bhupender_Yadav.jpg/500px-Union_Minister_Bhupender_Yadav.jpg"],
+ ["SANSKRITI CHOOR","Gajendra Singh Shekhawat","https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/The_Union_Minister_of_Culture_and_Tourism%2C_Shri_Gajendra_Singh_Shekhawat_addressing_at_the_inauguration_of_the_7th_Edition_of_the_International_Hospitality_Expo._2024_at_Greater_Noida%2C_in_Uttar_Pradesh_on_August_03%2C_2024_%28cropped%29.jpg/500px-thumbnail.jpg"],
+ ["NARI CHOOR","Annpurna Devi","https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Annpurna_Devi_Minister_%28cropped%29.jpg/500px-Annpurna_Devi_Minister_%28cropped%29.jpg"],
+ ["MINORITY CHOOR","Kiren Rijiju","https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Kiren_Rijiju_with_Modi_%28cropped%29.jpg/500px-Kiren_Rijiju_with_Modi_%28cropped%29.jpg"],
+ ["TEL CHOOR","Hardeep Singh Puri","https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Hardeep_Singh_Puri_with_PM_Modi_%28cropped%29.jpg/500px-Hardeep_Singh_Puri_with_PM_Modi_%28cropped%29.jpg"],
+ ["KHEL CHOOR","Mansukh Mandaviya","https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Mansukh_Mandaviya_photo_2.png/500px-Mansukh_Mandaviya_photo_2.png"],
+ ["KOYLA CHOOR","G. Kishan Reddy","https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/G._Kishan_Reddy_in_2025.jpg/500px-G._Kishan_Reddy_in_2025.jpg"],
+ ["ANAAJ CHOOR","Chirag Paswan","https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/The_Union_Minister_of_Food_Processing_Industries%2C_Shri_Chirag_Paswan_chaired_a_Curtain_Raiser_Press_Conference_on_%E2%80%9CWorld_Food_India-2024%E2%80%9D_%E2%80%93_in_New_Delhi_on_June_19%2C_2024_%28Cropped%29.jpg/500px-thumbnail.jpg"],
+ ["PAANI CHOOR","C. R. Patil","https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/The_Union_Minister_for_Jal_Shakti%2C_Shri_C.R._Paatil_addressing_at_the_Jal_Shakti_Abhiyan-_Catch_the_Rain_Programme%2C_in_New_Delhi_on_June_24%2C_2024_%28cropped%29.jpg/500px-thumbnail.jpg"],
+ ["VOTE CHOOR","Gyanesh Kumar (CEC)","https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/The_Chief_Election_Commissioner_of_India%2C_Sh._Gyanesh_Kumar.jpg/500px-The_Chief_Election_Commissioner_of_India%2C_Sh._Gyanesh_Kumar.jpg",true]
+];
+
+const chanda=[
+ ["CHANDA CHOOR (BOSS)","Champat Rai","https://upload.wikimedia.org/wikipedia/commons/c/cf/Champat_rai_vhp.jpg",true],
+ ["CHANDA CHOOR","Anil Mishra",""],
+ ["MAHA CHANDA CHOOR","Subhash Srivastava","https://c.ndtvimg.com/2026-07/uv8u8i7g_mandir_625x300_03_July_26.jpg",true],
+ ["CHANDA CHOOR","Tinnu Yadav","https://static.toiimg.com/thumb/msid-132027776,imgsize-109122,width-400,height-225,resizemode-75/a-special-investigation-team-sit-probe-into-alleged-theft-from-ayodhyas-ram-janmabhoomi-temple-donation-boxes-has-led-to-eight-arrests-and-the-recovery-of-over-rs-79-lakh-picture-champat-rai-r-tinnu-yadav-l.jpg"],
+ ["CHANDA CHOOR","Avinash Shukla",""],
+ ["CHANDA CHOOR","Anukalp Mishra","https://c.ndtvimg.com/2026-07/l4j804n8_anukalp_625x300_03_July_26.jpg"],
+ ["CHANDA CHOOR","Karunesh Pandey",""],
+ ["CHANDA CHOOR","Manish Kumar Yadav",""],
+ ["CHANDA CHOOR","Lavkush Mishra",""],
+ ["CHANDA CHOOR","Ram Shankar Mishra",""],
+ ["CHANDA CHOOR","Gopal Rao",""]
+];
+
+const HITS=["DHISHOOM!","THWACK!","CHAPAL!","DHAP!","OUCH!","THAPPAD!"];
+
+/* ===== LOCAL COUNTS ===== */
+const KEY='choor_counts_v4';
+let counts={};
+try{ counts = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ counts={}; }
+
+function blankRec(){ const o={}; ORDER.forEach(k=>o[k]=0); return o; }
+function rec(name){
+  let r = counts[name];
+  if(!r || typeof r==='number'){ r = blankRec(); if(typeof counts[name]==='number') r.chappal=counts[name]; counts[name]=r; }
+  ORDER.forEach(k=>{ if(typeof r[k]!=='number') r[k]=0; });
+  return r;
+}
+function saveCounts(){ try{ localStorage.setItem(KEY, JSON.stringify(counts)); }catch(e){} }
+function recTotal(r){ return ORDER.reduce((a,k)=>a+r[k],0); }
+function grandTotal(){ return Object.keys(counts).reduce((a,n)=>a+recTotal(rec(n)),0); }
+function refreshTotal(){
+  const t=blankRec();
+  Object.keys(counts).forEach(n=>{ const r=rec(n); ORDER.forEach(k=>t[k]+=r[k]); });
+  document.getElementById('totalbox').innerHTML =
+    `<div class="grand">Kul pitai: ${grandTotal()}</div><div class="list-title">HATHIYAR KE HISAB SE</div><div class="weapons"><div class="weapon-row"><span class="weapon-icon">🩴</span><span>Chappal ki maar</span><span class="weapon-count">${t.chappal}</span></div><div class="weapon-row"><span class="weapon-icon">👞</span><span>Jooton ki maar</span><span class="weapon-count">${t.juta}</span></div><div class="weapon-row"><span class="weapon-icon">🦯</span><span>Dandon ki maar</span><span class="weapon-count">${t.danda}</span></div><div class="weapon-row"><span class="weapon-icon">🦵</span><span>Laaton ki maar</span><span class="weapon-count">${t.laat}</span></div></div>`;
+}
+
+/* ============================================================
+   CLOUD SYNC (GitHub Gist)
+   ============================================================ */
+const cloud = {
+  gistId: localStorage.getItem('choor_gist') || CLOUD_CFG.gistId || '',
+  token:  localStorage.getItem('choor_token') || CLOUD_CFG.token || '',
+  file:   localStorage.getItem('choor_file')  || CLOUD_CFG.file,
+  enabled:false,
+  lastSynced:null,
+  timer:null
+};
+function cloudReady(){ return !!(cloud.gistId && cloud.enabled); }
+function setPill(state,text){
+  const p=document.getElementById('cloudpill');
+  p.className=''; if(state) p.classList.add(state);
+  p.innerHTML = text;
+}
+function msg(t){ document.getElementById('cloudMsg').textContent = t; }
+function snapshot(){ return JSON.parse(JSON.stringify(counts)); }
+function ghHeaders(auth){
+  const h={'Accept':'application/vnd.github+json'};
+  if(auth && cloud.token) h['Authorization']='Bearer '+cloud.token;
+  return h;
+}
+async function fetchRemote(){
+  if(!cloud.gistId) return {};
+  const r = await fetch('https://api.github.com/gists/'+cloud.gistId, {headers:ghHeaders(false)});
+  if(!r.ok) throw new Error('Read failed ('+r.status+')');
+  const j = await r.json();
+  const f = j.files && j.files[cloud.file];
+  if(!f) return {};
+  let content = f.content;
+  if(f.truncated && f.raw_url){ content = await (await fetch(f.raw_url)).text(); }
+  try{ return JSON.parse(content||'{}'); }catch(e){ return {}; }
+}
+async function patchRemote(data){
+  const r = await fetch('https://api.github.com/gists/'+cloud.gistId,{
+    method:'PATCH',
+    headers:Object.assign(ghHeaders(true),{'Content-Type':'application/json'}),
+    body: JSON.stringify({files:{[cloud.file]:{content:JSON.stringify(data,null,2)}}})
+  });
+  if(!r.ok) throw new Error('Write failed ('+r.status+') — token check karo');
+  return r.json();
+}
+function mergeRemote(remote){
+  const names=new Set([...Object.keys(remote||{}),...Object.keys(counts),...Object.keys(cloud.lastSynced||{})]);
+  const merged={};
+  names.forEach(n=>{
+    merged[n]=blankRec();
+    ORDER.forEach(k=>{
+      const r=((remote&&remote[n]&&remote[n][k])||0);
+      const l=(counts[n]&&counts[n][k])||0;
+      const s=(cloud.lastSynced&&cloud.lastSynced[n]&&cloud.lastSynced[n][k])||0;
+      merged[n][k]=Math.max(0, r + (l - s));
+    });
+  });
+  return merged;
+}
+async function cloudSync(){
+  if(!cloudReady()) return;
+  clearTimeout(cloud.timer);
+  cloud.timer=setTimeout(cloudSyncNow, 1200);
+}
+async function cloudSyncNow(){
+  if(!cloudReady()) return;
+  setPill('busy','&#9729; Syncing...');
+  try{
+    const remote = await fetchRemote();
+    const merged = mergeRemote(remote);
+    counts = merged;
+    await patchRemote(counts);
+    cloud.lastSynced = snapshot();
+    saveCounts(); refreshAll(); 
+    setPill('ok','&#9729; Synced');
+    msg('Synced: '+new Date().toLocaleTimeString());
+  }catch(e){
+    setPill('err','&#9729; Error');
+    msg(e.message);
+  }
+}
+async function cloudLoad(){
+  setPill('busy','&#9729; Loading...');
+  try{
+    const remote = await fetchRemote();
+    counts = remote || {};
+    Object.keys(counts).forEach(n=>rec(n));
+    cloud.lastSynced = snapshot();
+    cloud.enabled = true;
+    saveCounts(); refreshAll();
+    setPill('ok','&#9729; Connected');
+    msg('Loaded. Gist: '+cloud.gistId);
+  }catch(e){
+    setPill('err','&#9729; Error');
+    msg(e.message);
+  }
+}
+async function cloudCreate(){
+  if(!cloud.token){ msg('Pehle token daalo.'); return; }
+  setPill('busy','&#9729; Creating...');
+  try{
+    const r = await fetch('https://api.github.com/gists',{
+      method:'POST',
+      headers:Object.assign(ghHeaders(true),{'Content-Type':'application/json'}),
+      body: JSON.stringify({description:'Choor Chappal Counter DB', public:true, files:{[cloud.file]:{content:JSON.stringify(counts,null,2)}}})
+    });
+    if(!r.ok) throw new Error('Create failed ('+r.status+')');
+    const j = await r.json();
+    cloud.gistId = j.id;
+    localStorage.setItem('choor_gist', cloud.gistId);
+    document.getElementById('cfgGist').value = cloud.gistId;
+    cloud.lastSynced = snapshot();
+    cloud.enabled = true;
+    setPill('ok','&#9729; Connected');
+    msg('Naya gist bana: '+cloud.gistId);
+  }catch(e){ setPill('err','&#9729; Error'); msg(e.message); }
+}
+
+/* ===== AUDIO ===== */
+let actx=null, master=null, soundOn=true;
+function initAudio(){
+  if(actx) return;
+  const AC = window.AudioContext||window.webkitAudioContext;
+  if(!AC) return;
+  actx=new AC(); master=actx.createGain(); master.gain.value=0.9; master.connect(actx.destination);
+}
+const SOUNDCFG={
+  chappal:{hp:1200,bp:900,o1:240,o2:70,noise:0.22,nAmp:1.0,oscAmp:1.0},
+  juta:  {hp:800, bp:600,o1:190,o2:55,noise:0.26,nAmp:1.1,oscAmp:1.1},
+  danda: {hp:2200,bp:1600,o1:620,o2:190,noise:0.13,nAmp:1.15,oscAmp:0.7},
+  laat:  {hp:420, bp:280, o1:150,o2:42, noise:0.32,nAmp:0.6, oscAmp:1.25}
+};
+function playHit(type){
+  if(!soundOn) return;
+  if(!actx) initAudio();
+  if(!actx) return;
+  if(actx.state==='suspended') actx.resume();
+  const c=SOUNDCFG[type]||SOUNDCFG.chappal;
+  const t=actx.currentTime, sr=actx.sampleRate;
+  const buf=actx.createBuffer(1,Math.floor(sr*c.noise),sr);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.5); }
+  const noise=actx.createBufferSource(); noise.buffer=buf;
+  const hp=actx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=c.hp;
+  const ng=actx.createGain(); ng.gain.value=c.nAmp;
+  noise.connect(hp); hp.connect(ng); ng.connect(master); noise.start(t);
+  const noise2=actx.createBufferSource(); noise2.buffer=buf;
+  const bp=actx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=c.bp; bp.Q.value=0.7;
+  const n2g=actx.createGain(); n2g.gain.value=c.nAmp*1.1;
+  noise2.connect(bp); bp.connect(n2g); n2g.connect(master); noise2.start(t);
+  const osc=actx.createOscillator(); osc.type='sine';
+  osc.frequency.setValueAtTime(c.o1,t);
+  osc.frequency.exponentialRampToValueAtTime(c.o2,t+c.noise*0.64);
+  const og=actx.createGain();
+  og.gain.setValueAtTime(c.oscAmp,t);
+  og.gain.exponentialRampToValueAtTime(0.001,t+c.noise*0.9);
+  osc.connect(og); og.connect(master); osc.start(t); osc.stop(t+c.noise);
+}
+
+/* ===== CARD BADGE / BIG TOTAL ===== */
+function badge(card){
+  const r=rec(card.dataset.name), tot=recTotal(r);
+  const el=card.querySelector('.count');
+  if(tot>0){ el.textContent='x'+tot; el.classList.add('show'); } else el.classList.remove('show');
+  const bt=card.querySelector('.bigtotal .n'); if(bt) bt.textContent=tot;
+  const bm=card.querySelector('.bigtotal .mini');
+  if(bm) bm.textContent=`🩴${r.chappal}  👞${r.juta}  🦯${r.danda}  🦵${r.laat}`;
+  const brk=card.querySelector('.brk');
+  if(brk){
+    if(tot>0){ brk.textContent=`🩴${r.chappal}  👞${r.juta}  🦯${r.danda}  🦵${r.laat}`; brk.classList.add('show'); }
+    else brk.classList.remove('show');
+  }
+}
+function wireTools(scope){
+  scope.querySelectorAll('.tools button').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      weapon=btn.dataset.w;
+      try{ localStorage.setItem(WKEY,weapon); }catch(err){}
+      syncTools();
+    });
+  });
+}
+function render(el,data){
+  const wrap=document.getElementById(el);
+  wrap.innerHTML=data.map(c=>{
+    const tags=Array.isArray(c[0])?c[0]:[c[0]];
+    const hasImg=c[2]&&c[2].trim()!=='';
+    const media=hasImg?`<img src="${c[2]}" onerror="this.outerHTML='<div class=\\'blank\\'></div>'">`:`<div class="blank"></div>`;
+    return `<div class="card${c[3]?' star':''}" data-name="${c[1]}">${media}
+      <div class="bigtotal"><span class="n">0</span><span class="lbl">KUL PITAI</span><span class="mini"></span></div>
+      <span class="count"></span>${toolsHTML()}
+      <span class="chappal">${WEAPONS.chappal.emoji}</span>
+      <span class="burst">${HITS[0]}</span>
+      <div class="name">${c[1]}</div><div class="brk"></div>
+      ${tags.map(t=>`<div class="choor">${t}</div>`).join('')}</div>`;
+  }).join('');
+  wrap.querySelectorAll('.card').forEach(card=>{ badge(card); card.addEventListener('click',()=>whack(card)); });
+  wireTools(wrap);
+}
+function whack(card){
+  playHit(weapon);
+  card.querySelector('.chappal').textContent=WEAPONS[weapon].emoji;
+  const r=rec(card.dataset.name);
+  r[weapon]=(r[weapon]||0)+1;
+  saveCounts(); refreshTotal();
+  const el=card.querySelector('.count');
+  el.textContent='x'+recTotal(r); el.classList.add('show');
+  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  badge(card);
+  card.querySelector('.burst').textContent=HITS[Math.floor(Math.random()*HITS.length)];
+  card.classList.remove('hit'); void card.offsetWidth; card.classList.add('hit');
+  renderSummary();
+  cloudSync();
+}
+function renderSummary(){
+  const body=document.getElementById('sumBody'), foot=document.getElementById('sumFoot');
+  const rows=Object.keys(counts).map(n=>({n,r:rec(n)})).filter(o=>recTotal(o.r)>0).sort((a,b)=>recTotal(b.r)-recTotal(a.r));
+  if(!rows.length){ body.innerHTML=''; foot.innerHTML=''; document.getElementById('summaryEmpty').style.display='block'; return; }
+  document.getElementById('summaryEmpty').style.display='none';
+  const gt=blankRec();
+  body.innerHTML=rows.map((o,i)=>{
+    const r=o.r,tot=recTotal(r); ORDER.forEach(k=>gt[k]+=r[k]);
+    return `<tr><td class="rk">${i+1}</td><td>${o.n}</td>
+      <td class="num">${r.chappal}</td><td class="num">${r.juta}</td>
+      <td class="num">${r.danda}</td><td class="num">${r.laat}</td>
+      <td class="tot">${tot}</td></tr>`;
+  }).join('');
+  const grand=ORDER.reduce((a,k)=>a+gt[k],0);
+  foot.innerHTML=`<tr><td colspan="2">KUL JOD (${rows.length} log)</td>
+    <td class="num">${gt.chappal}</td><td class="num">${gt.juta}</td>
+    <td class="num">${gt.danda}</td><td class="num">${gt.laat}</td>
+    <td class="num" style="background:#c1121f;color:#ffd23f">${grand}</td></tr>`;
+}
+function refreshAll(){
+  refreshTotal();
+  document.querySelectorAll('.card').forEach(badge);
+  badge(hero);
+  renderSummary();
+}
+
+render('g',choors); render('rm',chanda); refreshTotal();
+const hero=document.querySelector('.hero-card');
+hero.dataset.name='NARENDRA MODI';
+hero.insertAdjacentHTML('beforeend',
+  `<div class="bigtotal"><span class="n">0</span><span class="lbl">KUL PITAI</span><span class="mini"></span></div>
+   <span class="count"></span>${toolsHTML()}<span class="chappal">${WEAPONS.chappal.emoji}</span><span class="burst">DHISHOOM!</span><div class="brk"></div>`);
+badge(hero); hero.addEventListener('click',()=>whack(hero)); wireTools(hero);
+syncTools(); renderSummary();
+
+/* ===== BUTTONS ===== */
+const muteBtn=document.getElementById('mute');
+muteBtn.addEventListener('click',e=>{
+  e.stopPropagation(); soundOn=!soundOn;
+  if(soundOn && actx && actx.state==='suspended') actx.resume();
+  muteBtn.innerHTML = soundOn ? '&#128266; Sound On' : '&#128263; Muted';
+});
+document.getElementById('reset').addEventListener('click', async e=>{
+  e.stopPropagation();
+  if(cloudReady()){
+    try{ const remote=await fetchRemote(); cloud.lastSynced=remote; }catch(err){ cloud.lastSynced={}; }
+  }
+  counts={}; cloud.lastSynced=cloud.lastSynced||{}; saveCounts(); refreshAll();
+  if(cloudReady()) cloudSyncNow();
+});
+document.getElementById('cloudBtn').addEventListener('click',e=>{
+  e.stopPropagation();
+  const p=document.getElementById('cloudPanel');
+  p.classList.toggle('open');
+  document.getElementById('cfgGist').value=cloud.gistId||'';
+  document.getElementById('cfgFile').value=cloud.file||'choor_counts.json';
+});
+document.getElementById('btnConnect').addEventListener('click',e=>{
+  e.stopPropagation();
+  cloud.gistId=document.getElementById('cfgGist').value.trim();
+  cloud.token=document.getElementById('cfgToken').value.trim()||cloud.token;
+  cloud.file=document.getElementById('cfgFile').value.trim()||'choor_counts.json';
+  localStorage.setItem('choor_gist',cloud.gistId);
+  localStorage.setItem('choor_token',cloud.token);
+  localStorage.setItem('choor_file',cloud.file);
+  cloudLoad();
+});
+document.getElementById('btnCreate').addEventListener('click',e=>{
+  e.stopPropagation();
+  cloud.token=document.getElementById('cfgToken').value.trim()||cloud.token;
+  cloud.file=document.getElementById('cfgFile').value.trim()||'choor_counts.json';
+  localStorage.setItem('choor_token',cloud.token);
+  localStorage.setItem('choor_file',cloud.file);
+  cloudCreate();
+});
+document.getElementById('btnPull').addEventListener('click',e=>{ e.stopPropagation(); cloudLoad(); });
+document.getElementById('btnPush').addEventListener('click',e=>{ e.stopPropagation(); cloudSyncNow(); });
+document.getElementById('btnOff').addEventListener('click',e=>{
+  e.stopPropagation(); cloud.enabled=false; setPill('','&#9729; Cloud Off'); msg('Disconnected.');
+});
+
+/* ===== AUTO-LOAD ON START ===== */
+if(cloud.gistId){ document.getElementById('cfgGist').value=cloud.gistId; cloudLoad(); }
+else setPill('','&#9729; Cloud Off');
+</script>
+</body>
+</html>
+
+
+
+
+
+
