@@ -1,0 +1,109 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function allowedMember(id) {
+      return id in [
+        'narendra-modi',
+        'rajnath-singh',
+        'amit-shah',
+        'nitin-gadkari',
+        'nirmala-sitharaman',
+        'shivraj-singh-chouhan',
+        's-jaishankar',
+        'j-p-nadda',
+        'manohar-lal-khattar',
+        'h-d-kumaraswamy',
+        'piyush-goyal',
+        'jitan-ram-manjhi',
+        'lalan-singh',
+        'sarbananda-sonowal',
+        'virendra-kumar',
+        'k-rammohan-naidu',
+        'pralhad-joshi',
+        'dharmendra-pradhan',
+        'jual-oram',
+        'giriraj-singh',
+        'ashwini-vaishnaw',
+        'jyotiraditya-scindia',
+        'bhupender-yadav',
+        'gajendra-singh-shekhawat',
+        'annpurna-devi',
+        'kiren-rijiju',
+        'hardeep-singh-puri',
+        'mansukh-mandaviya',
+        'g-kishan-reddy',
+        'chirag-paswan',
+        'c-r-patil',
+        'gyanesh-kumar-cec',
+        'champat-rai',
+        'anil-mishra',
+        'subhash-srivastava',
+        'tinnu-yadav',
+        'avinash-shukla',
+        'anukalp-mishra',
+        'karunesh-pandey',
+        'manish-kumar-yadav',
+        'lavkush-mishra',
+        'ram-shankar-mishra',
+        'gopal-rao'
+      ];
+    }
+
+    function validRecord(data) {
+      return data.keys().hasAll(['chappal', 'juta', 'danda', 'laat'])
+        && data.keys().hasOnly(['chappal', 'juta', 'danda', 'laat'])
+        && data.chappal is int
+        && data.juta is int
+        && data.danda is int
+        && data.laat is int
+        && data.chappal >= 0
+        && data.juta >= 0
+        && data.danda >= 0
+        && data.laat >= 0;
+    }
+
+    match /members/{memberId} {
+      // Public reads let everyone see the shared totals.
+      allow read: if true;
+
+      // Only listed member IDs can be initialized, and only with zero counts.
+      allow create: if allowedMember(memberId)
+        && validRecord(request.resource.data)
+        && request.resource.data.chappal == 0
+        && request.resource.data.juta == 0
+        && request.resource.data.danda == 0
+        && request.resource.data.laat == 0;
+
+      // Each write can increase exactly one weapon count by exactly one.
+      allow update: if allowedMember(memberId)
+        && validRecord(resource.data)
+        && validRecord(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['chappal', 'juta', 'danda', 'laat'])
+        && (
+          (request.resource.data.chappal == resource.data.chappal + 1
+            && request.resource.data.juta == resource.data.juta
+            && request.resource.data.danda == resource.data.danda
+            && request.resource.data.laat == resource.data.laat)
+          ||
+          (request.resource.data.juta == resource.data.juta + 1
+            && request.resource.data.chappal == resource.data.chappal
+            && request.resource.data.danda == resource.data.danda
+            && request.resource.data.laat == resource.data.laat)
+          ||
+          (request.resource.data.danda == resource.data.danda + 1
+            && request.resource.data.chappal == resource.data.chappal
+            && request.resource.data.juta == resource.data.juta
+            && request.resource.data.laat == resource.data.laat)
+          ||
+          (request.resource.data.laat == resource.data.laat + 1
+            && request.resource.data.chappal == resource.data.chappal
+            && request.resource.data.juta == resource.data.juta
+            && request.resource.data.danda == resource.data.danda)
+        );
+
+      // Clients cannot delete any counter document.
+      allow delete: if false;
+    }
+  }
+}
