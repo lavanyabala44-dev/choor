@@ -62,11 +62,25 @@ service cloud.firestore {
         && data.laat >= 0;
     }
 
+    function validMessageStat(data) {
+      return data.keys().hasAll(['memberId', 'weapon', 'message', 'date', 'count'])
+        && data.keys().hasOnly(['memberId', 'weapon', 'message', 'date', 'count'])
+        && allowedMember(data.memberId)
+        && data.weapon in ['chappal', 'juta', 'danda', 'laat']
+        && data.message is string
+        && data.message.size() > 0
+        && data.message.size() <= 90
+        && data.date is string
+        && data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && data.count is int
+        && data.count >= 1;
+    }
+
     match /members/{memberId} {
-      // Public reads let everyone see the shared totals.
+      // The public page displays shared totals to every visitor.
       allow read: if true;
 
-      // Only listed member IDs can be initialized, and only with zero counts.
+      // Clients may initialize known members only with zero counts.
       allow create: if allowedMember(memberId)
         && validRecord(request.resource.data)
         && request.resource.data.chappal == 0
@@ -74,7 +88,7 @@ service cloud.firestore {
         && request.resource.data.danda == 0
         && request.resource.data.laat == 0;
 
-      // Each write can increase exactly one weapon count by exactly one.
+      // Each accepted write must increase exactly one weapon count by one.
       allow update: if allowedMember(memberId)
         && validRecord(resource.data)
         && validRecord(request.resource.data)
@@ -102,8 +116,22 @@ service cloud.firestore {
             && request.resource.data.danda == resource.data.danda)
         );
 
-      // Clients cannot delete any counter document.
+      // No one can delete a member's counts through the client.
+      allow delete: if false;
+    }
+
+    // Daily per-person, per-weapon, per-message aggregates. Each accepted
+    // client write can only create a count of one or increment by exactly one.
+    match /messageStats/{statId} {
+      allow read: if true;
+      allow create: if validMessageStat(request.resource.data)
+        && request.resource.data.count == 1;
+      allow update: if validMessageStat(resource.data)
+        && validMessageStat(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count'])
+        && request.resource.data.count == resource.data.count + 1;
       allow delete: if false;
     }
   }
 }
+
