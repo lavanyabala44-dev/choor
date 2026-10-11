@@ -34,6 +34,13 @@
   #cloudpill.ok{background:#0a6b2f;color:#c9ffd8;border-color:#c9ffd8}
   #cloudpill.busy{background:#7a5a00;color:#ffe9a8}
   #cloudpill.err{background:#7a0000;color:#ffd0d0;border-color:#ff9a9a}
+  #messageControl{display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid #ffd23f;
+    border-radius:12px;background:#111;color:#ffe9a8;font:12px Arial,sans-serif}
+  #messageControl input[type="text"]{width:180px;max-width:32vw;padding:6px 8px;border:1px solid #ffd23f;
+    border-radius:7px;background:#fff;color:#111;font:13px Arial,sans-serif}
+  #messageControl label{display:flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer}
+  .burst.custom-message{font:700 16px/1.25 Georgia,serif;letter-spacing:0;white-space:normal;
+    width:max-content;max-width:min(90%,320px);padding:7px 10px}
   #hint{position:absolute;top:14px;left:18px;z-index:20;font-size:13px;color:#ffe9a8;
     background:rgba(0,0,0,.35);border-radius:20px;padding:6px 12px;max-width:320px}
 
@@ -154,6 +161,10 @@
   <div id="hint">&#128070; Photo par hover &rarr; hathiyar chuno &rarr; click! Shared count sabko live dikhega.</div>
   <div id="topbar">
     <span id="cloudpill" title="Shared counter database status" aria-live="polite">&#9729; Connecting...</span>
+    <div id="messageControl">
+      <input id="hitMessage" type="text" maxlength="90" placeholder="Optional message, e.g. Demonetization ke liye!" aria-label="Optional message to show on each click">
+      <label><input id="useHitMessage" type="checkbox"> Show each hit</label>
+    </div>
     <button id="mute">&#128266; Sound On</button>
   </div>
 
@@ -463,7 +474,11 @@ async function whack(card){
     el.classList.add('show');
     el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
     badge(card);
-    card.querySelector('.burst').textContent=HITS[Math.floor(Math.random()*HITS.length)];
+    const burst=card.querySelector('.burst');
+    const customMessage=document.getElementById('hitMessage').value.trim();
+    const showCustom=document.getElementById('useHitMessage').checked&&customMessage;
+    burst.textContent=showCustom?customMessage:HITS[Math.floor(Math.random()*HITS.length)];
+    burst.classList.toggle('custom-message',Boolean(showCustom));
     card.classList.remove('hit'); void card.offsetWidth; card.classList.add('hit');
   }catch(error){
     setPill('err','&#9729; Save failed');
@@ -507,6 +522,18 @@ syncTools(); renderSummary();
 
 /* ===== BUTTONS ===== */
 const muteBtn=document.getElementById('mute');
+const hitMessageInput=document.getElementById('hitMessage');
+const useHitMessage=document.getElementById('useHitMessage');
+try{
+  hitMessageInput.value=localStorage.getItem('choor_hit_message')||'';
+  useHitMessage.checked=localStorage.getItem('choor_show_hit_message')==='true';
+}catch(err){}
+hitMessageInput.addEventListener('input',()=>{
+  try{localStorage.setItem('choor_hit_message',hitMessageInput.value);}catch(err){}
+});
+useHitMessage.addEventListener('change',()=>{
+  try{localStorage.setItem('choor_show_hit_message',String(useHitMessage.checked));}catch(err){}
+});
 muteBtn.addEventListener('click',e=>{
   e.stopPropagation(); soundOn=!soundOn;
   if(soundOn && actx && actx.state==='suspended') actx.resume();
@@ -516,6 +543,8 @@ connectFirebase();
 </script>
 </body>
 </html>
+
+
 
 
 
