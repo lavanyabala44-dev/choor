@@ -42,8 +42,7 @@
   .burst.custom-message{font:700 16px/1.25 Georgia,serif;letter-spacing:0;white-space:normal;
     width:max-content;max-width:min(90%,320px);padding:7px 10px}
   #analysisScreen[hidden]{display:none}
-  #analysisScreen{position:fixed;inset:0;z-index:100;background:#260707;overflow:auto;padding:20px;
-    color:#fff;box-sizing:border-box}
+  #analysisScreen{position:fixed;inset:0;z-index:100;height:100vh;height:100dvh;overflow-x:hidden;overflow-y:scroll;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:20px;background:#260707;color:#fff;box-sizing:border-box}
   .analysis-header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
     max-width:1250px;margin:0 auto 18px}
   .analysis-header h2{color:#ffd23f;font-size:clamp(26px,4vw,38px);margin:0;text-shadow:2px 2px #000}
@@ -67,7 +66,7 @@
   .chart-value{text-align:right;color:#fff;font-weight:bold}
   #trendChart{display:block;width:100%;height:auto;min-height:180px}
   #trendChart text{font:12px Arial,sans-serif;fill:#ffe9a8}
-  #messageReport{overflow:auto;max-height:55vh}
+  #messageReport{overflow:visible;max-height:none}
   #messageReport table{width:100%;border-collapse:collapse;background:#fff;color:#111;font:13px Arial,sans-serif}
   #messageReport th,#messageReport td{padding:8px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}
   #messageReport th{position:sticky;top:0;background:#ffd23f;color:#111}
