@@ -42,7 +42,9 @@
   .burst.custom-message{font:700 16px/1.25 Georgia,serif;letter-spacing:0;white-space:normal;
     width:max-content;max-width:min(90%,320px);padding:7px 10px}
   #analysisScreen[hidden]{display:none}
-  #analysisScreen{position:fixed;inset:0;z-index:100;height:100vh;height:100dvh;overflow-x:hidden;overflow-y:scroll;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:20px;background:#260707;color:#fff;box-sizing:border-box}
+  body.analysis-open{margin:0;padding:0;min-height:100vh}
+  body.analysis-open > :not(#analysisScreen){display:none!important}
+  #analysisScreen{position:relative;inset:auto;z-index:auto;min-height:100vh;overflow:visible;padding:20px;background:#260707;color:#fff;box-sizing:border-box}
   .analysis-header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
     max-width:1250px;margin:0 auto 18px}
   .analysis-header h2{color:#ffd23f;font-size:clamp(26px,4vw,38px);margin:0;text-shadow:2px 2px #000}
@@ -727,11 +729,23 @@ useHitMessage.addEventListener('change',()=>{
   try{localStorage.setItem('choor_show_hit_message',String(useHitMessage.checked));}catch(err){}
 });
 const analysisScreen=document.getElementById('analysisScreen');
-document.getElementById('analysisOpen').addEventListener('click',()=>{analysisScreen.hidden=false;loadAnalysis();});
-document.getElementById('analysisClose').addEventListener('click',()=>{analysisScreen.hidden=true;});
+let cabinetScrollY=0;
+function closeAnalysis(){
+  analysisScreen.hidden=true;
+  document.body.classList.remove('analysis-open');
+  window.scrollTo(0,cabinetScrollY);
+}
+document.getElementById('analysisOpen').addEventListener('click',()=>{
+  cabinetScrollY=window.scrollY;
+  document.body.classList.add('analysis-open');
+  analysisScreen.hidden=false;
+  window.scrollTo(0,0);
+  loadAnalysis();
+});
+document.getElementById('analysisClose').addEventListener('click',closeAnalysis);
 document.getElementById('analysisRefresh').addEventListener('click',loadAnalysis);
 document.getElementById('analysisMessageFilter').addEventListener('change',()=>renderAnalysis());
-document.addEventListener('keydown',event=>{if(event.key==='Escape')analysisScreen.hidden=true;});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closeAnalysis();});
 muteBtn.addEventListener('click',e=>{
   e.stopPropagation(); soundOn=!soundOn;
   if(soundOn && actx && actx.state==='suspended') actx.resume();
