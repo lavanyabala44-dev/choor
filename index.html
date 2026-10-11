@@ -41,6 +41,43 @@
   #messageControl label{display:flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer}
   .burst.custom-message{font:700 16px/1.25 Georgia,serif;letter-spacing:0;white-space:normal;
     width:max-content;max-width:min(90%,320px);padding:7px 10px}
+  #analysisScreen[hidden]{display:none}
+  #analysisScreen{position:fixed;inset:0;z-index:100;background:#260707;overflow:auto;padding:20px;
+    color:#fff;box-sizing:border-box}
+  .analysis-header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    max-width:1250px;margin:0 auto 18px}
+  .analysis-header h2{color:#ffd23f;font-size:clamp(26px,4vw,38px);margin:0;text-shadow:2px 2px #000}
+  .analysis-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .analysis-actions button,.analysis-actions select{font:700 14px Georgia,serif;padding:9px 13px;border:2px solid #ffd23f;
+    border-radius:12px;background:#111;color:#ffd23f;cursor:pointer}
+  .analysis-note{max-width:1250px;margin:0 auto 14px;color:#ffe9a8;font-size:14px}
+  .analysis-metrics,.analysis-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;
+    max-width:1250px;margin:0 auto 14px}
+  .analysis-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .analysis-card{background:#111;border:2px solid #765100;border-radius:14px;padding:16px;min-width:0;
+    box-shadow:0 5px 18px rgba(0,0,0,.3)}
+  .analysis-card h3{color:#ffd23f;margin:0 0 12px;font-size:20px}
+  .analysis-metric{font-size:26px;font-weight:bold;color:#fff;overflow-wrap:anywhere}
+  .analysis-metric-label{color:#ffe9a8;font-size:12px;letter-spacing:.08em;margin-top:4px}
+  .chart-rows{display:flex;flex-direction:column;gap:9px}
+  .chart-row{display:grid;grid-template-columns:minmax(78px,150px) 1fr 54px;gap:8px;align-items:center;font:13px Arial,sans-serif}
+  .chart-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ffe9a8}
+  .chart-track{height:16px;border-radius:10px;background:#341212;overflow:hidden}
+  .chart-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#c1121f,#ffd23f);min-width:0}
+  .chart-value{text-align:right;color:#fff;font-weight:bold}
+  #trendChart{display:block;width:100%;height:auto;min-height:180px}
+  #trendChart text{font:12px Arial,sans-serif;fill:#ffe9a8}
+  #messageReport{overflow:auto;max-height:55vh}
+  #messageReport table{width:100%;border-collapse:collapse;background:#fff;color:#111;font:13px Arial,sans-serif}
+  #messageReport th,#messageReport td{padding:8px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}
+  #messageReport th{position:sticky;top:0;background:#ffd23f;color:#111}
+  .analysis-empty{color:#ffe9a8;text-align:center;padding:20px}
+  @media(max-width:760px){
+    .analysis-metrics{grid-template-columns:1fr}
+    .analysis-grid{grid-template-columns:1fr}
+    #analysisScreen{padding:12px}
+    .chart-row{grid-template-columns:minmax(72px,112px) 1fr 42px;font-size:12px}
+  }
   #hint{position:absolute;top:14px;left:18px;z-index:20;font-size:13px;color:#ffe9a8;
     background:rgba(0,0,0,.35);border-radius:20px;padding:6px 12px;max-width:320px}
 
@@ -165,8 +202,37 @@
       <input id="hitMessage" type="text" maxlength="90" placeholder="Optional message, e.g. Demonetization ke liye!" aria-label="Optional message to show on each click">
       <label><input id="useHitMessage" type="checkbox"> Show each hit</label>
     </div>
+    <button id="analysisOpen" type="button">&#128202; Analysis</button>
     <button id="mute">&#128266; Sound On</button>
   </div>
+
+  <section id="analysisScreen" hidden aria-labelledby="analysisTitle">
+    <div class="analysis-header">
+      <h2 id="analysisTitle">&#128202; Pitai Analysis</h2>
+      <div class="analysis-actions">
+        <label for="analysisMessageFilter">Message:</label>
+        <select id="analysisMessageFilter" aria-label="Filter trend chart by message">
+          <option value="">All messages</option>
+        </select>
+        <button id="analysisRefresh" type="button">Refresh reports</button>
+        <button id="analysisClose" type="button">&#8592; Back to Cabinet</button>
+      </div>
+    </div>
+    <p class="analysis-note">Shared reports from Firebase. Earlier hits are included in person and weapon totals; message and daily reports begin when tracking was added.</p>
+    <div id="analysisStatus" class="analysis-note" role="status">Open reports to load shared data.</div>
+    <div class="analysis-metrics">
+      <div class="analysis-card"><div id="analysisTotal" class="analysis-metric">—</div><div class="analysis-metric-label">ALL TIME HITS</div></div>
+      <div class="analysis-card"><div id="analysisTopMember" class="analysis-metric">—</div><div class="analysis-metric-label">MOST HIT PERSON</div></div>
+      <div class="analysis-card"><div id="analysisTopMessage" class="analysis-metric">—</div><div class="analysis-metric-label">TOP MESSAGE</div></div>
+    </div>
+    <div class="analysis-grid">
+      <div class="analysis-card"><h3>&#129698; Weapon totals</h3><div id="weaponChart" class="chart-rows"></div></div>
+      <div class="analysis-card"><h3>&#128200; Daily hits — last 30 days</h3><svg id="trendChart" viewBox="0 0 900 270" role="img" aria-label="Line graph of hits by day"></svg></div>
+      <div class="analysis-card"><h3>&#127942; Top 10 people</h3><div id="memberChart" class="chart-rows"></div></div>
+      <div class="analysis-card"><h3>&#128172; Top 10 messages</h3><div id="messageChart" class="chart-rows"></div></div>
+      <div class="analysis-card" style="grid-column:1/-1"><h3>Message-by-message report</h3><div id="messageReport"></div></div>
+    </div>
+  </section>
 
   <h1>MODI BABA AUR TIS CHOOR</h1>
   <div class="sub">Chooron Ka Cabinet 2026 — Asli Choor List, Pakdo aur Chappal se, Laat se Maaro!</div>
@@ -464,26 +530,45 @@ async function whack(card){
     setPill('err','&#9729; Unknown member');
     return;
   }
+  const burst=card.querySelector('.burst');
+  const customMessage=document.getElementById('hitMessage').value.trim();
+  const showCustom=document.getElementById('useHitMessage').checked&&customMessage;
+  const shownMessage=showCustom?customMessage:HITS[Math.floor(Math.random()*HITS.length)];
+  const hitDay=new Date().toISOString().slice(0,10);
   playHit(weapon);
   try{
-    await db.collection('members').doc(id).update({
-      [weapon]:firebase.firestore.FieldValue.increment(1)
+    const statId=await hashMessageStat(`${id}|${weapon}|${shownMessage}|${hitDay}`);
+    const memberRef=db.collection('members').doc(id);
+    const statRef=db.collection('messageStats').doc(statId);
+    await db.runTransaction(async transaction=>{
+      const [memberSnap,statSnap]=await Promise.all([transaction.get(memberRef),transaction.get(statRef)]);
+      if(!memberSnap.exists) throw new Error('Member record is missing.');
+      if(statSnap.exists){
+        const old=statSnap.data();
+        if(old.memberId!==id||old.weapon!==weapon||old.message!==shownMessage||old.date!==hitDay)
+          throw new Error('Message report key conflict.');
+        transaction.update(statRef,{count:firebase.firestore.FieldValue.increment(1)});
+      }else{
+        transaction.set(statRef,{memberId:id,weapon,message:shownMessage,date:hitDay,count:1});
+      }
+      transaction.update(memberRef,{[weapon]:firebase.firestore.FieldValue.increment(1)});
     });
     card.querySelector('.chappal').textContent=WEAPONS[weapon].emoji;
     const el=card.querySelector('.count');
     el.classList.add('show');
     el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
     badge(card);
-    const burst=card.querySelector('.burst');
-    const customMessage=document.getElementById('hitMessage').value.trim();
-    const showCustom=document.getElementById('useHitMessage').checked&&customMessage;
-    burst.textContent=showCustom?customMessage:HITS[Math.floor(Math.random()*HITS.length)];
+    burst.textContent=shownMessage;
     burst.classList.toggle('custom-message',Boolean(showCustom));
     card.classList.remove('hit'); void card.offsetWidth; card.classList.add('hit');
   }catch(error){
     setPill('err','&#9729; Save failed');
     console.error('Firestore count update failed:',error);
   }
+}
+async function hashMessageStat(value){
+  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
 }
 function renderSummary(){
   const body=document.getElementById('sumBody'), foot=document.getElementById('sumFoot');
@@ -503,6 +588,99 @@ function renderSummary(){
     <td class="num">${gt.chappal}</td><td class="num">${gt.juta}</td>
     <td class="num">${gt.danda}</td><td class="num">${gt.laat}</td>
     <td class="num" style="background:#c1121f;color:#ffd23f">${grand}</td></tr>`;
+}
+let analysisData={stats:[],members:[]};
+function makeChartBars(container,rows){
+  container.replaceChildren();
+  const max=Math.max(1,...rows.map(row=>row.value));
+  rows.forEach(row=>{
+    const line=document.createElement('div'); line.className='chart-row';
+    const label=document.createElement('span'); label.className='chart-label'; label.textContent=row.label; label.title=row.label;
+    const track=document.createElement('div'); track.className='chart-track';
+    const fill=document.createElement('div'); fill.className='chart-fill'; fill.style.width=`${Math.max(0,row.value/max*100)}%`; track.append(fill);
+    const value=document.createElement('span'); value.className='chart-value'; value.textContent=row.value.toLocaleString();
+    line.append(label,track,value); container.append(line);
+  });
+  if(!rows.length){const empty=document.createElement('div');empty.className='analysis-empty';empty.textContent='No report data yet.';container.append(empty);}
+}
+function renderTrend(stats){
+  const svg=document.getElementById('trendChart');
+  const filter=document.getElementById('analysisMessageFilter').value;
+  const now=new Date(), days=[];
+  for(let ago=29;ago>=0;ago--){
+    const d=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()-ago));
+    const key=d.toISOString().slice(0,10);
+    days.push({date:key,label:key.slice(5),value:stats.filter(s=>s.date===key&&(!filter||s.message===filter)).reduce((sum,s)=>sum+s.count,0)});
+  }
+  const W=900,H=270,p={l:48,r:16,t:18,b:42},max=Math.max(1,...days.map(d=>d.value));
+  const x=i=>p.l+(W-p.l-p.r)*i/(days.length-1), y=v=>p.t+(H-p.t-p.b)*(1-v/max);
+  const grid=Array.from({length:5},(_,i)=>{
+    const val=max*i/4,yy=y(val);
+    return `<line x1="${p.l}" y1="${yy}" x2="${W-p.r}" y2="${yy}" stroke="#543" stroke-width="1"/><text x="${p.l-8}" y="${yy+4}" text-anchor="end">${Math.round(val)}</text>`;
+  }).join('');
+  const points=days.map((d,i)=>`${x(i)},${y(d.value)}`).join(' ');
+  const dots=days.map((d,i)=>`<circle cx="${x(i)}" cy="${y(d.value)}" r="3" fill="#ffd23f"><title>${d.date}: ${d.value}</title></circle>`).join('');
+  const labels=days.filter((_,i)=>i%5===0||i===days.length-1).map(d=>{
+    const i=days.indexOf(d);return `<text x="${x(i)}" y="${H-12}" text-anchor="middle">${d.label}</text>`;
+  }).join('');
+  svg.innerHTML=`<title>Daily hit counts for the last 30 days</title>${grid}<polyline points="${points}" fill="none" stroke="#ffd23f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${dots}${labels}`;
+}
+function renderAnalysis(){
+  const selected=document.getElementById('analysisMessageFilter').value;
+  const weapons=blankRec(), memberTotals=new Map(), messageTotals=new Map(), reportRows=new Map();
+  analysisData.members.forEach(({id,data})=>{
+    let total=0;
+    ORDER.forEach(w=>{const value=Number.isInteger(data[w])&&data[w]>=0?data[w]:0;weapons[w]+=value;total+=value;});
+    memberTotals.set(id,total);
+  });
+  analysisData.stats.forEach(s=>{
+    if(!WEAPONS[s.weapon]||!MEMBER_NAME_BY_ID[s.memberId]||typeof s.message!=='string'||!s.message||!Number.isInteger(s.count)||s.count<1) return;
+    messageTotals.set(s.message,(messageTotals.get(s.message)||0)+s.count);
+    if(selected&&s.message!==selected) return;
+    const key=JSON.stringify([s.memberId,s.weapon,s.message]);
+    const row=reportRows.get(key)||{memberId:s.memberId,weapon:s.weapon,message:s.message,count:0};
+    row.count+=s.count;reportRows.set(key,row);
+  });
+  const rankedMembers=Array.from(memberTotals,([id,value])=>({label:MEMBER_NAME_BY_ID[id]||id,value})).sort((a,b)=>b.value-a.value);
+  const rankedMessages=Array.from(messageTotals,([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);
+  const sum=Array.from(memberTotals.values()).reduce((a,b)=>a+b,0);
+  document.getElementById('analysisTotal').textContent=sum.toLocaleString();
+  document.getElementById('analysisTopMember').textContent=rankedMembers[0]?.label||'—';
+  document.getElementById('analysisTopMessage').textContent=rankedMessages[0]?`${rankedMessages[0].label} (${rankedMessages[0].value.toLocaleString()})`:'No messages yet';
+  makeChartBars(document.getElementById('weaponChart'),ORDER.map(w=>({label:`${WEAPONS[w].emoji} ${WEAPONS[w].label}`,value:weapons[w]})));
+  makeChartBars(document.getElementById('memberChart'),rankedMembers.slice(0,10));
+  makeChartBars(document.getElementById('messageChart'),rankedMessages.slice(0,10));
+  const table=document.createElement('table');
+  const thead=table.createTHead(),hr=thead.insertRow();
+  ['Message','Weapon','Person','Hits'].forEach(label=>{const th=document.createElement('th');th.textContent=label;hr.append(th);});
+  const tbody=table.createTBody();
+  Array.from(reportRows.values()).sort((a,b)=>b.count-a.count).forEach(row=>{
+    const tr=tbody.insertRow();
+    [row.message,`${WEAPONS[row.weapon].emoji} ${WEAPONS[row.weapon].label}`,MEMBER_NAME_BY_ID[row.memberId],row.count.toLocaleString()].forEach(value=>{const td=tr.insertCell();td.textContent=value;});
+  });
+  const report=document.getElementById('messageReport');report.replaceChildren();
+  if(tbody.rows.length) report.append(table);
+  else {const empty=document.createElement('div');empty.className='analysis-empty';empty.textContent=selected?'No hits yet for this message.':'No messages recorded yet.';report.append(empty);}
+  const filter=document.getElementById('analysisMessageFilter'),old=filter.value;
+  filter.replaceChildren(new Option('All messages',''));
+  rankedMessages.forEach(m=>filter.add(new Option(`${m.label} (${m.value})`,m.label)));
+  if(Array.from(filter.options).some(o=>o.value===old))filter.value=old;
+  renderTrend(analysisData.stats);
+}
+async function loadAnalysis(){
+  const status=document.getElementById('analysisStatus');status.textContent='Loading shared reports…';
+  try{
+    const [statsSnap,membersSnap]=await Promise.all([db.collection('messageStats').get(),db.collection('members').get()]);
+    analysisData={
+      stats:statsSnap.docs.map(doc=>doc.data()),
+      members:membersSnap.docs.map(doc=>({id:doc.id,data:doc.data()}))
+    };
+    renderAnalysis();
+    status.textContent=`Loaded ${statsSnap.size.toLocaleString()} message/day records from Firebase.`;
+  }catch(error){
+    status.textContent='Could not load reports. Check the shared database connection and try again.';
+    console.error('Analysis report load failed:',error);
+  }
 }
 function refreshAll(){
   refreshTotal();
@@ -534,6 +712,12 @@ hitMessageInput.addEventListener('input',()=>{
 useHitMessage.addEventListener('change',()=>{
   try{localStorage.setItem('choor_show_hit_message',String(useHitMessage.checked));}catch(err){}
 });
+const analysisScreen=document.getElementById('analysisScreen');
+document.getElementById('analysisOpen').addEventListener('click',()=>{analysisScreen.hidden=false;loadAnalysis();});
+document.getElementById('analysisClose').addEventListener('click',()=>{analysisScreen.hidden=true;});
+document.getElementById('analysisRefresh').addEventListener('click',loadAnalysis);
+document.getElementById('analysisMessageFilter').addEventListener('change',()=>renderAnalysis());
+document.addEventListener('keydown',event=>{if(event.key==='Escape')analysisScreen.hidden=true;});
 muteBtn.addEventListener('click',e=>{
   e.stopPropagation(); soundOn=!soundOn;
   if(soundOn && actx && actx.state==='suspended') actx.resume();
