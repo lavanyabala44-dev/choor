@@ -146,55 +146,15 @@
   table.sum .rk{font-weight:bold;color:#c1121f}
   #summaryEmpty{color:#ffe9a8;text-align:center;font-size:16px;padding:16px}
 
-  /* ===== CLOUD SETTINGS PANEL ===== */
-  #cloudPanel{position:fixed;top:70px;right:18px;z-index:40;width:340px;background:#1a0505;
-    border:3px solid #ffd23f;border-radius:14px;padding:16px;box-shadow:0 14px 40px rgba(0,0,0,.7);
-    display:none}
-  #cloudPanel.open{display:block}
-  #cloudPanel h3{margin:0 0 10px;color:#ffd23f;font-size:18px}
-  #cloudPanel p{margin:0 0 10px;font-size:12px;color:#ffe9a8;line-height:1.5}
-  #cloudPanel label{display:block;font-size:12px;font-weight:bold;color:#ffe9a8;margin:8px 0 3px}
-  #cloudPanel input{width:100%;box-sizing:border-box;font-family:monospace;font-size:12px;
-    padding:7px 9px;border-radius:7px;border:2px solid #ffd23f;background:#fff;color:#111}
-  #cloudPanel .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-  #cloudPanel .row button{flex:1;cursor:pointer;font-family:Georgia,serif;font-size:12px;font-weight:bold;
-    color:#ffd23f;background:#c1121f;border:2px solid #ffd23f;border-radius:8px;padding:8px 6px}
-  #cloudPanel .row button:hover{background:#8f0d17}
-  #cloudPanel .row button.alt{background:#0a6b2f;color:#c9ffd8;border-color:#c9ffd8}
-  #cloudPanel .row button.alt:hover{background:#0c4f24}
-  #cloudMsg{font-size:12px;margin-top:10px;color:#ffe9a8;min-height:16px;word-break:break-word}
-  #cloudPanel a{color:#ffd23f}
 </style>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div id="hint">&#128070; Photo par hover &rarr; hathiyar chuno &rarr; click! Cloud on ho to count sabko dikhega.</div>
+  <div id="hint">&#128070; Photo par hover &rarr; hathiyar chuno &rarr; click! Shared count sabko live dikhega.</div>
   <div id="topbar">
-    <span id="cloudpill" title="Cloud sync status">&#9729; Cloud Off</span>
-    <button id="cloudBtn">&#9881; Cloud</button>
+    <span id="cloudpill" title="Shared counter database status" aria-live="polite">&#9729; Connecting...</span>
     <button id="mute">&#128266; Sound On</button>
-    <button id="reset">&#8635; Reset</button>
-  </div>
-
-  <div id="cloudPanel">
-    <h3>&#9729; Cloud Sync (GitHub Gist)</h3>
-    <p>Ek public Gist banao — wahi shared database banega. Sab log ek hi count dekhenge.
-       Token sirf likhne ke liye chahiye (scope: <b>gist</b>). Padhne ke liye zaroori nahi.</p>
-    <label>Gist ID</label>
-    <input id="cfgGist" placeholder="e.g. 1a2b3c4d5e6f7g8h9i0j">
-    <label>GitHub Token (ghp_... / github_pat_...)</label>
-    <input id="cfgToken" placeholder="ghp_xxxxxxxxxxxx" type="password">
-    <label>File name</label>
-    <input id="cfgFile" value="choor_counts.json">
-    <div class="row">
-      <button id="btnCreate" class="alt">Create New Gist</button>
-      <button id="btnConnect">Connect &amp; Load</button>
-    </div>
-    <div class="row">
-      <button id="btnPull">Pull</button>
-      <button id="btnPush">Push</button>
-      <button id="btnOff">Disconnect</button>
-    </div>
-    <div id="cloudMsg"></div>
   </div>
 
   <h1>MODI BABA AUR TIS CHOOR</h1>
@@ -241,17 +201,17 @@
   </div>
 
 <script>
-/* ============================================================
-   CLOUD CONFIG — yahan hardcode bhi kar sakte ho, warna
-   panel se ek baar set karo (localStorage me save ho jata hai)
-   ============================================================ */
-const CLOUD_CFG = {
-  gistId: '',            // <-- apna Gist ID yahan daalo
-  token:  '',            // <-- apna token yahan daalo
-  file:   'choor_counts.json'
+const firebaseConfig = {
+  apiKey: "AIzaSyDAqvCl1giznzRuCmtAQTWQRaYcYwYV1D4",
+  authDomain: "choor-share-lavanya-20261011.firebaseapp.com",
+  projectId: "choor-share-lavanya-20261011",
+  storageBucket: "choor-share-lavanya-20261011.firebasestorage.app",
+  messagingSenderId: "701643761256",
+  appId: "1:701643761256:web:66767bf2271eba99333ddd"
 };
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-/* ===== WEAPONS ===== */
 const WEAPONS={
   chappal:{emoji:'🩴', label:'Chappal'},
   juta:   {emoji:'👞', label:'Juta (Shoe)'},
@@ -322,21 +282,19 @@ const chanda=[
 
 const HITS=["DHISHOOM!","THWACK!","CHAPAL!","DHAP!","OUCH!","THAPPAD!"];
 
-/* ===== LOCAL COUNTS ===== */
-const KEY='choor_counts_v4';
+/* ===== SHARED FIRESTORE COUNTS ===== */
 let counts={};
-try{ counts = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ counts={}; }
-
 function blankRec(){ const o={}; ORDER.forEach(k=>o[k]=0); return o; }
 function rec(name){
-  let r = counts[name];
-  if(!r || typeof r==='number'){ r = blankRec(); if(typeof counts[name]==='number') r.chappal=counts[name]; counts[name]=r; }
-  ORDER.forEach(k=>{ if(typeof r[k]!=='number') r[k]=0; });
+  let r=counts[name];
+  if(!r){ r=blankRec(); counts[name]=r; }
+  ORDER.forEach(k=>{ if(!Number.isInteger(r[k])||r[k]<0) r[k]=0; });
   return r;
 }
-function saveCounts(){ try{ localStorage.setItem(KEY, JSON.stringify(counts)); }catch(e){} }
+function saveCounts(){}
 function recTotal(r){ return ORDER.reduce((a,k)=>a+r[k],0); }
 function grandTotal(){ return Object.keys(counts).reduce((a,n)=>a+recTotal(rec(n)),0); }
+
 function refreshTotal(){
   const t=blankRec();
   Object.keys(counts).forEach(n=>{ const r=rec(n); ORDER.forEach(k=>t[k]+=r[k]); });
@@ -344,121 +302,63 @@ function refreshTotal(){
     `<div class="grand">Kul pitai: ${grandTotal()}</div><div class="list-title">HATHIYAR KE HISAB SE</div><div class="weapons"><div class="weapon-row"><span class="weapon-icon">🩴</span><span>Chappal ki maar</span><span class="weapon-count">${t.chappal}</span></div><div class="weapon-row"><span class="weapon-icon">👞</span><span>Jooton ki maar</span><span class="weapon-count">${t.juta}</span></div><div class="weapon-row"><span class="weapon-icon">🦯</span><span>Dandon ki maar</span><span class="weapon-count">${t.danda}</span></div><div class="weapon-row"><span class="weapon-icon">🦵</span><span>Laaton ki maar</span><span class="weapon-count">${t.laat}</span></div></div>`;
 }
 
-/* ============================================================
-   CLOUD SYNC (GitHub Gist)
-   ============================================================ */
-const cloud = {
-  gistId: localStorage.getItem('choor_gist') || CLOUD_CFG.gistId || '',
-  token:  localStorage.getItem('choor_token') || CLOUD_CFG.token || '',
-  file:   localStorage.getItem('choor_file')  || CLOUD_CFG.file,
-  enabled:false,
-  lastSynced:null,
-  timer:null
-};
-function cloudReady(){ return !!(cloud.gistId && cloud.enabled); }
+/* ===== FIREBASE SHARED COUNTS ===== */
+const MEMBER_NAMES=[...new Set(['NARENDRA MODI',...choors.map(x=>x[1]),...chanda.map(x=>x[1])])];
+function memberId(name){
+  return name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+const MEMBER_NAME_BY_ID=Object.fromEntries(MEMBER_NAMES.map(name=>[memberId(name),name]));
+let cloudConnected=false;
+function cloudReady(){ return cloudConnected; }
 function setPill(state,text){
   const p=document.getElementById('cloudpill');
-  p.className=''; if(state) p.classList.add(state);
-  p.innerHTML = text;
+  p.className='';
+  if(state) p.classList.add(state);
+  p.innerHTML=text;
+  p.title=text.replace(/<[^>]*>/g,'');
 }
-function msg(t){ document.getElementById('cloudMsg').textContent = t; }
-function snapshot(){ return JSON.parse(JSON.stringify(counts)); }
-function ghHeaders(auth){
-  const h={'Accept':'application/vnd.github+json'};
-  if(auth && cloud.token) h['Authorization']='Bearer '+cloud.token;
-  return h;
-}
-async function fetchRemote(){
-  if(!cloud.gistId) return {};
-  const r = await fetch('https://api.github.com/gists/'+cloud.gistId, {headers:ghHeaders(false)});
-  if(!r.ok) throw new Error('Read failed ('+r.status+')');
-  const j = await r.json();
-  const f = j.files && j.files[cloud.file];
-  if(!f) return {};
-  let content = f.content;
-  if(f.truncated && f.raw_url){ content = await (await fetch(f.raw_url)).text(); }
-  try{ return JSON.parse(content||'{}'); }catch(e){ return {}; }
-}
-async function patchRemote(data){
-  const r = await fetch('https://api.github.com/gists/'+cloud.gistId,{
-    method:'PATCH',
-    headers:Object.assign(ghHeaders(true),{'Content-Type':'application/json'}),
-    body: JSON.stringify({files:{[cloud.file]:{content:JSON.stringify(data,null,2)}}})
-  });
-  if(!r.ok) throw new Error('Write failed ('+r.status+') — token check karo');
-  return r.json();
-}
-function mergeRemote(remote){
-  const names=new Set([...Object.keys(remote||{}),...Object.keys(counts),...Object.keys(cloud.lastSynced||{})]);
-  const merged={};
-  names.forEach(n=>{
-    merged[n]=blankRec();
-    ORDER.forEach(k=>{
-      const r=((remote&&remote[n]&&remote[n][k])||0);
-      const l=(counts[n]&&counts[n][k])||0;
-      const s=(cloud.lastSynced&&cloud.lastSynced[n]&&cloud.lastSynced[n][k])||0;
-      merged[n][k]=Math.max(0, r + (l - s));
+async function connectFirebase(){
+  setPill('busy','&#9729; Connecting...');
+  try{
+    const collection=db.collection('members');
+    const existing=await collection.get();
+    const present=new Set(existing.docs.map(doc=>doc.id));
+    const missing=MEMBER_NAMES.filter(name=>!present.has(memberId(name)));
+    if(missing.length){
+      const batch=db.batch();
+      missing.forEach(name=>batch.set(collection.doc(memberId(name)),blankRec()));
+      try{
+        await batch.commit();
+      }catch(error){
+        // Another visitor may have initialized the same zero-count records first.
+        const retry=await collection.get();
+        const remaining=MEMBER_NAMES.filter(name=>!retry.docs.some(doc=>doc.id===memberId(name)));
+        if(remaining.length) throw error;
+      }
+    }
+    collection.onSnapshot(snapshot=>{
+      const next={};
+      MEMBER_NAMES.forEach(name=>next[name]=blankRec());
+      snapshot.forEach(doc=>{
+        const name=MEMBER_NAME_BY_ID[doc.id];
+        if(!name) return;
+        const data=doc.data();
+        ORDER.forEach(key=>next[name][key]=Number.isInteger(data[key])&&data[key]>=0?data[key]:0);
+      });
+      counts=next;
+      cloudConnected=true;
+      refreshAll();
+      setPill('ok','&#9729; Shared live');
+    },error=>{
+      cloudConnected=false;
+      setPill('err','&#9729; Sync error');
+      console.error('Firestore listener error:',error);
     });
-  });
-  return merged;
-}
-async function cloudSync(){
-  if(!cloudReady()) return;
-  clearTimeout(cloud.timer);
-  cloud.timer=setTimeout(cloudSyncNow, 1200);
-}
-async function cloudSyncNow(){
-  if(!cloudReady()) return;
-  setPill('busy','&#9729; Syncing...');
-  try{
-    const remote = await fetchRemote();
-    const merged = mergeRemote(remote);
-    counts = merged;
-    await patchRemote(counts);
-    cloud.lastSynced = snapshot();
-    saveCounts(); refreshAll(); 
-    setPill('ok','&#9729; Synced');
-    msg('Synced: '+new Date().toLocaleTimeString());
-  }catch(e){
-    setPill('err','&#9729; Error');
-    msg(e.message);
+  }catch(error){
+    cloudConnected=false;
+    setPill('err','&#9729; Database unavailable');
+    console.error('Firestore connection error:',error);
   }
-}
-async function cloudLoad(){
-  setPill('busy','&#9729; Loading...');
-  try{
-    const remote = await fetchRemote();
-    counts = remote || {};
-    Object.keys(counts).forEach(n=>rec(n));
-    cloud.lastSynced = snapshot();
-    cloud.enabled = true;
-    saveCounts(); refreshAll();
-    setPill('ok','&#9729; Connected');
-    msg('Loaded. Gist: '+cloud.gistId);
-  }catch(e){
-    setPill('err','&#9729; Error');
-    msg(e.message);
-  }
-}
-async function cloudCreate(){
-  if(!cloud.token){ msg('Pehle token daalo.'); return; }
-  setPill('busy','&#9729; Creating...');
-  try{
-    const r = await fetch('https://api.github.com/gists',{
-      method:'POST',
-      headers:Object.assign(ghHeaders(true),{'Content-Type':'application/json'}),
-      body: JSON.stringify({description:'Choor Chappal Counter DB', public:true, files:{[cloud.file]:{content:JSON.stringify(counts,null,2)}}})
-    });
-    if(!r.ok) throw new Error('Create failed ('+r.status+')');
-    const j = await r.json();
-    cloud.gistId = j.id;
-    localStorage.setItem('choor_gist', cloud.gistId);
-    document.getElementById('cfgGist').value = cloud.gistId;
-    cloud.lastSynced = snapshot();
-    cloud.enabled = true;
-    setPill('ok','&#9729; Connected');
-    msg('Naya gist bana: '+cloud.gistId);
-  }catch(e){ setPill('err','&#9729; Error'); msg(e.message); }
 }
 
 /* ===== AUDIO ===== */
@@ -543,20 +443,32 @@ function render(el,data){
   wrap.querySelectorAll('.card').forEach(card=>{ badge(card); card.addEventListener('click',()=>whack(card)); });
   wireTools(wrap);
 }
-function whack(card){
+async function whack(card){
+  if(!cloudReady()){
+    setPill('busy','&#9729; Connecting...');
+    return;
+  }
+  const id=memberId(card.dataset.name);
+  if(!MEMBER_NAME_BY_ID[id]){
+    setPill('err','&#9729; Unknown member');
+    return;
+  }
   playHit(weapon);
-  card.querySelector('.chappal').textContent=WEAPONS[weapon].emoji;
-  const r=rec(card.dataset.name);
-  r[weapon]=(r[weapon]||0)+1;
-  saveCounts(); refreshTotal();
-  const el=card.querySelector('.count');
-  el.textContent='x'+recTotal(r); el.classList.add('show');
-  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
-  badge(card);
-  card.querySelector('.burst').textContent=HITS[Math.floor(Math.random()*HITS.length)];
-  card.classList.remove('hit'); void card.offsetWidth; card.classList.add('hit');
-  renderSummary();
-  cloudSync();
+  try{
+    await db.collection('members').doc(id).update({
+      [weapon]:firebase.firestore.FieldValue.increment(1)
+    });
+    card.querySelector('.chappal').textContent=WEAPONS[weapon].emoji;
+    const el=card.querySelector('.count');
+    el.classList.add('show');
+    el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+    badge(card);
+    card.querySelector('.burst').textContent=HITS[Math.floor(Math.random()*HITS.length)];
+    card.classList.remove('hit'); void card.offsetWidth; card.classList.add('hit');
+  }catch(error){
+    setPill('err','&#9729; Save failed');
+    console.error('Firestore count update failed:',error);
+  }
 }
 function renderSummary(){
   const body=document.getElementById('sumBody'), foot=document.getElementById('sumFoot');
@@ -600,48 +512,7 @@ muteBtn.addEventListener('click',e=>{
   if(soundOn && actx && actx.state==='suspended') actx.resume();
   muteBtn.innerHTML = soundOn ? '&#128266; Sound On' : '&#128263; Muted';
 });
-document.getElementById('reset').addEventListener('click', async e=>{
-  e.stopPropagation();
-  if(cloudReady()){
-    try{ const remote=await fetchRemote(); cloud.lastSynced=remote; }catch(err){ cloud.lastSynced={}; }
-  }
-  counts={}; cloud.lastSynced=cloud.lastSynced||{}; saveCounts(); refreshAll();
-  if(cloudReady()) cloudSyncNow();
-});
-document.getElementById('cloudBtn').addEventListener('click',e=>{
-  e.stopPropagation();
-  const p=document.getElementById('cloudPanel');
-  p.classList.toggle('open');
-  document.getElementById('cfgGist').value=cloud.gistId||'';
-  document.getElementById('cfgFile').value=cloud.file||'choor_counts.json';
-});
-document.getElementById('btnConnect').addEventListener('click',e=>{
-  e.stopPropagation();
-  cloud.gistId=document.getElementById('cfgGist').value.trim();
-  cloud.token=document.getElementById('cfgToken').value.trim()||cloud.token;
-  cloud.file=document.getElementById('cfgFile').value.trim()||'choor_counts.json';
-  localStorage.setItem('choor_gist',cloud.gistId);
-  localStorage.setItem('choor_token',cloud.token);
-  localStorage.setItem('choor_file',cloud.file);
-  cloudLoad();
-});
-document.getElementById('btnCreate').addEventListener('click',e=>{
-  e.stopPropagation();
-  cloud.token=document.getElementById('cfgToken').value.trim()||cloud.token;
-  cloud.file=document.getElementById('cfgFile').value.trim()||'choor_counts.json';
-  localStorage.setItem('choor_token',cloud.token);
-  localStorage.setItem('choor_file',cloud.file);
-  cloudCreate();
-});
-document.getElementById('btnPull').addEventListener('click',e=>{ e.stopPropagation(); cloudLoad(); });
-document.getElementById('btnPush').addEventListener('click',e=>{ e.stopPropagation(); cloudSyncNow(); });
-document.getElementById('btnOff').addEventListener('click',e=>{
-  e.stopPropagation(); cloud.enabled=false; setPill('','&#9729; Cloud Off'); msg('Disconnected.');
-});
-
-/* ===== AUTO-LOAD ON START ===== */
-if(cloud.gistId){ document.getElementById('cfgGist').value=cloud.gistId; cloudLoad(); }
-else setPill('','&#9729; Cloud Off');
+connectFirebase();
 </script>
 </body>
 </html>
