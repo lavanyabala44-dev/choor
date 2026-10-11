@@ -534,6 +534,7 @@ async function whack(card){
   const showCustom=document.getElementById('useHitMessage').checked&&customMessage;
   const shownMessage=showCustom?customMessage:HITS[Math.floor(Math.random()*HITS.length)];
   const hitDay=new Date().toISOString().slice(0,10);
+  const countBeforeSave=rec(card.dataset.name)[weapon];
   playHit(weapon);
   try{
     const statId=await hashMessageStat(`${id}|${weapon}|${shownMessage}|${hitDay}`);
@@ -552,6 +553,9 @@ async function whack(card){
       }
       transaction.update(memberRef,{[weapon]:firebase.firestore.FieldValue.increment(1)});
     });
+    const currentCount=rec(card.dataset.name)[weapon];
+    if(currentCount<=countBeforeSave) rec(card.dataset.name)[weapon]=countBeforeSave+1;
+    refreshAll();
     card.querySelector('.chappal').textContent=WEAPONS[weapon].emoji;
     const el=card.querySelector('.count');
     el.classList.add('show');
