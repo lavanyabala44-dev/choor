@@ -70,6 +70,7 @@
   #messageReport table{width:100%;border-collapse:collapse;background:#fff;color:#111;font:13px Arial,sans-serif}
   #messageReport th,#messageReport td{padding:8px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}
   #messageReport th{position:sticky;top:0;background:#ffd23f;color:#111}
+  #messageReport .report-person td{background:#c1121f;color:#ffd23f;font-weight:bold;font-size:15px}
   .analysis-empty{color:#ffe9a8;text-align:center;padding:20px}
   @media(max-width:760px){
     .analysis-metrics{grid-template-columns:1fr}
@@ -655,11 +656,21 @@ function renderAnalysis(){
   makeChartBars(document.getElementById('messageChart'),rankedMessages.slice(0,10));
   const table=document.createElement('table');
   const thead=table.createTHead(),hr=thead.insertRow();
-  ['Message','Weapon','Person','Hits'].forEach(label=>{const th=document.createElement('th');th.textContent=label;hr.append(th);});
+  ['Message','Weapon','Hits'].forEach(label=>{const th=document.createElement('th');th.textContent=label;hr.append(th);});
   const tbody=table.createTBody();
-  Array.from(reportRows.values()).sort((a,b)=>b.count-a.count).forEach(row=>{
-    const tr=tbody.insertRow();
-    [row.message,`${WEAPONS[row.weapon].emoji} ${WEAPONS[row.weapon].label}`,MEMBER_NAME_BY_ID[row.memberId],row.count.toLocaleString()].forEach(value=>{const td=tr.insertCell();td.textContent=value;});
+  const personGroups=new Map();
+  Array.from(reportRows.values()).forEach(row=>{
+    const group=personGroups.get(row.memberId)||{memberId:row.memberId,total:0,rows:[]};
+    group.total+=row.count;group.rows.push(row);personGroups.set(row.memberId,group);
+  });
+  Array.from(personGroups.values()).sort((a,b)=>b.total-a.total).forEach(group=>{
+    const heading=tbody.insertRow();heading.className='report-person';
+    const label=heading.insertCell();label.colSpan=3;
+    label.textContent=`${MEMBER_NAME_BY_ID[group.memberId]} — ${group.total.toLocaleString()} hits`;
+    group.rows.sort((a,b)=>b.count-a.count).forEach(row=>{
+      const tr=tbody.insertRow();
+      [row.message,`${WEAPONS[row.weapon].emoji} ${WEAPONS[row.weapon].label}`,row.count.toLocaleString()].forEach(value=>{const td=tr.insertCell();td.textContent=value;});
+    });
   });
   const report=document.getElementById('messageReport');report.replaceChildren();
   if(tbody.rows.length) report.append(table);
