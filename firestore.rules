@@ -132,6 +132,27 @@ service cloud.firestore {
         && request.resource.data.count == resource.data.count + 1;
       allow delete: if false;
     }
+
+    // One shared, page-view counter. Public clients may only read it or
+    // increase its count by exactly one; they cannot lower or delete it.
+    match /siteStats/{statId} {
+      allow read: if statId == 'visitors';
+      allow create: if statId == 'visitors'
+        && request.resource.data.keys().hasAll(['count'])
+        && request.resource.data.keys().hasOnly(['count'])
+        && request.resource.data.count is int
+        && request.resource.data.count == 1;
+      allow update: if statId == 'visitors'
+        && resource.data.keys().hasAll(['count'])
+        && resource.data.keys().hasOnly(['count'])
+        && resource.data.count is int
+        && resource.data.count >= 1
+        && request.resource.data.keys().hasAll(['count'])
+        && request.resource.data.keys().hasOnly(['count'])
+        && request.resource.data.count is int
+        && request.resource.data.count == resource.data.count + 1
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count']);
+      allow delete: if false;
+    }
   }
 }
-
