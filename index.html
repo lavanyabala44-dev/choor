@@ -750,7 +750,37 @@ muteBtn.addEventListener('click',e=>{
   e.stopPropagation(); soundOn=!soundOn;
   if(soundOn && actx && actx.state==='suspended') actx.resume();
   muteBtn.innerHTML = soundOn ? '&#128266; Sound On' : '&#128263; Muted';
-});
+});const visitorFooter=document.createElement('footer');
+visitorFooter.id='siteFooter';
+visitorFooter.setAttribute('aria-live','polite');
+visitorFooter.style.cssText='max-width:1200px;margin:0 auto 24px;padding:18px 12px;border-top:2px solid #ffd23f;color:#ffe9a8;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;text-align:center;font:14px Arial,sans-serif';
+visitorFooter.innerHTML='<span>👣 Total visits: <strong id="visitorCount" style="font:700 24px Georgia,serif;color:#ffd23f">Loading…</strong></span><span style="font-size:12px">Shared page visits, saved for everyone</span>';
+document.body.append(visitorFooter);
+function trackPageVisit(){
+  const display=document.getElementById('visitorCount');
+  const visitorRef=db.collection('siteStats').doc('visitors');
+  visitorRef.onSnapshot(snapshot=>{
+    const count=snapshot.exists?snapshot.data().count:0;
+    display.textContent=Number.isSafeInteger(count)&&count>=0?count.toLocaleString():'—';
+  },error=>{
+    display.textContent='Unavailable';
+    console.error('Visitor counter listener failed:',error);
+  });
+  db.runTransaction(async transaction=>{
+    const snapshot=await transaction.get(visitorRef);
+    if(snapshot.exists){
+      const count=snapshot.data().count;
+      if(!Number.isSafeInteger(count)||count<1) throw new Error('Visitor count is invalid.');
+      transaction.update(visitorRef,{count:count+1});
+    }else{
+      transaction.set(visitorRef,{count:1});
+    }
+  }).catch(error=>{
+    display.textContent='Unavailable';
+    console.error('Visitor count save failed:',error);
+  });
+}
+trackPageVisit();
 connectFirebase();
 </script>
 </body>
