@@ -754,7 +754,7 @@ muteBtn.addEventListener('click',e=>{
 visitorFooter.id='siteFooter';
 visitorFooter.setAttribute('aria-live','polite');
 visitorFooter.style.cssText='max-width:1200px;margin:0 auto 24px;padding:18px 12px;border-top:2px solid #ffd23f;color:#ffe9a8;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;text-align:center;font:14px Arial,sans-serif';
-visitorFooter.innerHTML='<span>👣 Total visits: <strong id="visitorCount" style="font:700 24px Georgia,serif;color:#ffd23f">Loading…</strong></span><span style="font-size:12px">Shared page visits, saved for everyone</span>';
+visitorFooter.innerHTML='<span>👣 Total visits: <strong id="visitorCount" style="font:700 24px Georgia,serif;color:#ffd23f">Loading…</strong></span><span style="font-size:12px"></span>';
 document.body.append(visitorFooter);
 function trackPageVisit(){
   const display=document.getElementById('visitorCount');
