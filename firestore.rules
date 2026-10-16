@@ -115,6 +115,25 @@ service cloud.firestore {
         && data.count >= 1;
     }
 
+    function validPersonLocationStat(data, statId) {
+      return data.keys().hasAll(['memberId', 'countryCode', 'country', 'city', 'weapon', 'count'])
+        && data.keys().hasOnly(['memberId', 'countryCode', 'country', 'city', 'weapon', 'count'])
+        && allowedMember(data.memberId)
+        && data.countryCode is string
+        && data.countryCode.matches('^[A-Z]{2}$')
+        && data.country is string
+        && data.country.size() > 0
+        && data.country.size() <= 80
+        && data.city is string
+        && data.city.size() > 0
+        && data.city.size() <= 80
+        && data.city.matches('^[^/|]+$')
+        && data.weapon in ['chappal', 'juta', 'danda', 'laat']
+        && statId == data.memberId + '|' + data.countryCode + '|' + data.city + '|' + data.weapon
+        && data.count is int
+        && data.count >= 1;
+    }
+
     match /members/{memberId} {
       // The public page displays shared totals to every visitor.
       allow read: if true;
@@ -185,6 +204,18 @@ service cloud.firestore {
         && request.resource.data.count == 1;
       allow update: if validLocationStat(resource.data, statId)
         && validLocationStat(request.resource.data, statId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count'])
+        && request.resource.data.count == resource.data.count + 1;
+      allow delete: if false;
+    }
+
+    // Per-person country/city/weapon aggregates; never store raw IP addresses.
+    match /personLocationStats/{statId} {
+      allow read: if true;
+      allow create: if validPersonLocationStat(request.resource.data, statId)
+        && request.resource.data.count == 1;
+      allow update: if validPersonLocationStat(resource.data, statId)
+        && validPersonLocationStat(request.resource.data, statId)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count'])
         && request.resource.data.count == resource.data.count + 1;
       allow delete: if false;

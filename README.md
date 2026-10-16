@@ -14,6 +14,7 @@ The GitHub Pages site uses Firebase Cloud Firestore for shared live counts and r
 - `members/{member-id}` stores the four shared integer totals: `chappal`, `juta`, `danda`, and `laat`.
 - `messageStats/{sha256-id}` stores a daily aggregate for one person, weapon, and displayed message. Repeated identical hits on the same UTC day increment that record.
 - `locationStats/{country|city|weapon}` stores aggregate hit totals by approximate country, city, and weapon. On a tab's first hit, the browser requests the visitor's approximate location from the third-party IP geolocation provider ipapi.co. Its provider receives the visitor's IP address; the app stores only country, city, and weapon totals, never the raw IP address. City-level estimates may be inaccurate or unknown.
+- `personLocationStats/{person|country|city|weapon}` stores aggregate totals by person, approximate country, city, and weapon. This breakdown begins with its deployment; earlier location totals were not split by person and cannot be backfilled.
 - The Analysis screen combines those daily records into message/person/weapon totals and a 30-day daily line chart, and shows the location/weapon aggregates. Message, daily and location reporting only covers hits since each feature was deployed; older shared counts have no location data.
 
 ## Access and limitations
