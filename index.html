@@ -442,21 +442,8 @@ async function connectFirebase(){
   setPill('busy','&#9729; Connecting...');
   try{
     const collection=db.collection('members');
-    const existing=await collection.get();
-    const present=new Set(existing.docs.map(doc=>doc.id));
-    const missing=MEMBER_NAMES.filter(name=>!present.has(memberId(name)));
-    if(missing.length){
-      const batch=db.batch();
-      missing.forEach(name=>batch.set(collection.doc(memberId(name)),blankRec()));
-      try{
-        await batch.commit();
-      }catch(error){
-        // Another visitor may have initialized the same zero-count records first.
-        const retry=await collection.get();
-        const remaining=MEMBER_NAMES.filter(name=>!retry.docs.some(doc=>doc.id===memberId(name)));
-        if(remaining.length) throw error;
-      }
-    }
+    // Subscribe before any writes so a failed first-hit write for a new member
+    // cannot prevent existing shared counts from appearing on the main page.
     collection.onSnapshot(snapshot=>{
       const next={};
       MEMBER_NAMES.forEach(name=>next[name]=blankRec());
@@ -587,7 +574,6 @@ async function whack(card){
     const statRef=db.collection('messageStats').doc(statId);
     await db.runTransaction(async transaction=>{
       const [memberSnap,statSnap]=await Promise.all([transaction.get(memberRef),transaction.get(statRef)]);
-      if(!memberSnap.exists) throw new Error('Member record is missing.');
       if(statSnap.exists){
         const old=statSnap.data();
         if(old.memberId!==id||old.weapon!==weapon||old.message!==shownMessage||old.date!==hitDay)
@@ -596,7 +582,13 @@ async function whack(card){
       }else{
         transaction.set(statRef,{memberId:id,weapon,message:shownMessage,date:hitDay,count:1});
       }
-      transaction.update(memberRef,{[weapon]:firebase.firestore.FieldValue.increment(1)});
+      if(memberSnap.exists){
+        transaction.update(memberRef,{[weapon]:firebase.firestore.FieldValue.increment(1)});
+      }else{
+        const initial=blankRec();
+        initial[weapon]=1;
+        transaction.set(memberRef,initial);
+      }
     });
     const currentCount=rec(card.dataset.name)[weapon];
     if(currentCount<=countBeforeSave) rec(card.dataset.name)[weapon]=countBeforeSave+1;
