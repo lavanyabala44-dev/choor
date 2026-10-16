@@ -35,6 +35,22 @@ service cloud.firestore {
         'chirag-paswan',
         'c-r-patil',
         'gyanesh-kumar-cec',
+        'pema-khandu',
+        'himanta-biswa-sarma',
+        'samrat-choudhary',
+        'vishnu-deo-sai',
+        'pramod-sawant',
+        'bhupendra-patel',
+        'nayab-singh-saini',
+        'mohan-yadav',
+        'devendra-fadnavis',
+        'yumnam-khemchand-singh',
+        'mohan-charan-majhi',
+        'bhajan-lal-sharma',
+        'manik-saha',
+        'yogi-adityanath',
+        'pushkar-singh-dhami',
+        'suvendu-adhikari',
         'champat-rai',
         'anil-mishra',
         'subhash-srivastava',
@@ -80,13 +96,19 @@ service cloud.firestore {
       // The public page displays shared totals to every visitor.
       allow read: if true;
 
-      // Clients may initialize known members only with zero counts.
+      // Clients may initialize known members at zero or record exactly one first hit.
       allow create: if allowedMember(memberId)
         && validRecord(request.resource.data)
-        && request.resource.data.chappal == 0
-        && request.resource.data.juta == 0
-        && request.resource.data.danda == 0
-        && request.resource.data.laat == 0;
+        && (
+          (request.resource.data.chappal == 0
+            && request.resource.data.juta == 0
+            && request.resource.data.danda == 0
+            && request.resource.data.laat == 0)
+          || request.resource.data.chappal
+             + request.resource.data.juta
+             + request.resource.data.danda
+             + request.resource.data.laat == 1
+        );
 
       // Each accepted write must increase exactly one weapon count by one.
       allow update: if allowedMember(memberId)
