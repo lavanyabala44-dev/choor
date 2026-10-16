@@ -84,10 +84,45 @@
   #messageReport th{position:sticky;top:0;background:#ffd23f;color:#111}
   #messageReport .report-person td{background:#c1121f;color:#ffd23f;font-weight:bold;font-size:15px}
   .analysis-empty{color:#ffe9a8;text-align:center;padding:20px}
+  #cmInfoScreen[hidden]{display:none}
+  body.cm-info-open{margin:0;padding:0;min-height:100vh}
+  body.cm-info-open > :not(#cmInfoScreen){display:none!important}
+  #cmInfoScreen{position:fixed;inset:0;z-index:1000;overflow-y:auto;background:#260707;color:#fff;
+    padding:20px;box-sizing:border-box}
+  .cm-info-wrap{width:min(100%,1050px);margin:0 auto}
+  .cm-info-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+  .cm-info-header h2{margin:0;color:#ffd23f;font-size:clamp(25px,4vw,38px);text-shadow:2px 2px #000}
+  .cm-info-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .cm-info-actions button{font:700 14px Georgia,serif;padding:9px 13px;border:2px solid #ffd23f;border-radius:12px;background:#111;color:#ffd23f;cursor:pointer}
+  .cm-info-profile{display:grid;grid-template-columns:minmax(150px,230px) 1fr;gap:18px;align-items:center;background:#111;border:2px solid #765100;border-radius:16px;padding:16px;margin-bottom:16px}
+  .cm-info-profile img{display:block;width:100%;height:250px;object-fit:cover;object-position:top;border:3px solid #ffd23f;border-radius:10px;background:#fff}
+  .cm-info-profile h3{font-size:clamp(22px,4vw,32px);margin:0 0 10px;color:#fff}
+  .cm-info-tags{display:flex;gap:8px;flex-wrap:wrap}
+  .cm-info-tag{display:inline-block;border:1px solid #ffd23f;border-radius:999px;background:#c1121f;color:#ffd23f;font:bold 13px Arial,sans-serif;padding:7px 11px}
+  .cm-info-disclaimer{color:#ffe9a8;font:14px/1.5 Arial,sans-serif;margin:10px 0 18px}
+  .cm-case{background:#111;border:2px solid #765100;border-radius:14px;padding:16px;margin:0 0 14px}
+  .cm-case h3{color:#ffd23f;margin:0 0 8px;font-size:21px}
+  .cm-case-status{display:inline-block;color:#111;background:#ffd23f;border-radius:999px;padding:5px 9px;font:700 12px Arial,sans-serif;margin-bottom:8px}
+  .cm-case p{font:15px/1.55 Arial,sans-serif;color:#ffe9a8;margin:5px 0}
+  .cm-case-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .cm-case-links a{color:#ffd23f;font:700 13px Arial,sans-serif;text-decoration:underline}
+  .cm-video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;margin-top:12px}
+  .cm-video{border:1px solid #765100;border-radius:10px;overflow:hidden;background:#080808}
+  .cm-video button{display:block;width:100%;border:0;padding:0;background:#080808;color:#ffe9a8;cursor:pointer;text-align:left;font:700 13px Arial,sans-serif}
+  .cm-video img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+  .cm-video span{display:block;padding:8px}
+  .cm-video iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+  .cm-info-button{position:absolute;top:6px;left:6px;z-index:16;width:31px;height:31px;padding:0;border:2px solid #ffd23f;border-radius:50%;
+    background:#111;color:#ffd23f;font:bold 19px/1 Arial,sans-serif;cursor:pointer;box-shadow:0 2px 6px #0008}
+  .cm-info-button:hover,.cm-info-button:focus-visible{background:#ffd23f;color:#111;outline:2px solid #fff;outline-offset:2px}
+  .card.has-cm-info .count{top:42px}
   @media(max-width:760px){
     .analysis-metrics{grid-template-columns:1fr}
     .analysis-grid{grid-template-columns:1fr}
     #analysisScreen{padding:12px}
+    #cmInfoScreen{padding:12px}
+    .cm-info-profile{grid-template-columns:100px 1fr;padding:10px;gap:12px}
+    .cm-info-profile img{height:150px}
     .chart-row{grid-template-columns:minmax(72px,112px) 1fr 42px;font-size:12px}
   }
   #hint{position:relative;z-index:20;font-size:13px;color:#ffe9a8;
@@ -258,6 +293,19 @@
     </div>
   </section>
 
+  <section id="cmInfoScreen" hidden role="dialog" aria-modal="true" aria-labelledby="cmInfoTitle">
+    <div class="cm-info-wrap">
+      <div class="cm-info-header">
+        <h2 id="cmInfoTitle">CM information</h2>
+        <div class="cm-info-actions">
+          <button id="cmInfoShare" type="button">&#128228; Share this page</button>
+          <button id="cmInfoClose" type="button">&#8592; Back to Cabinet</button>
+        </div>
+      </div>
+      <div id="cmInfoContent"></div>
+    </div>
+  </section>
+
   <h1>MODI BABA AUR 50 CHOOR</h1>
   <div class="sub">Chooron Ka Cabinet 2026 — Asli Choor List, Pakdo aur Chappal se, Laat se Maaro!</div>
 
@@ -385,6 +433,24 @@ const stateChiefMinisters=[
  [["UTTARAKHAND CM","DHAM CHOOR"],"Pushkar Singh Dhami","https://cdnbbsr.s3waas.gov.in/s371560ce98c8250ce57a6a970c9991a5f/uploads/2025/05/202505081356716132-1429x2048.png"],
  [["WEST BENGAL CM","BALU CHOOR"],"Suvendu Adhikari","https://upload.wikimedia.org/wikipedia/commons/2/24/Suvendu_Adhikari_May_2026_%28cropped%29.jpg"]
 ];
+const cmDossiers={
+ "Pema Khandu":{cases:[{title:"Contracts awarded to firms linked to relatives",status:"CBI preliminary inquiry",facts:["The Supreme Court directed the CBI to conduct a preliminary inquiry into allegations that public contracts went to firms linked to members of Khandu’s family.","The order followed a PIL; an inquiry is not a finding of wrongdoing."],sources:[{title:"The Tribune: Supreme Court orders inquiry",url:"https://www.tribuneindia.com/news/sc-orders-inquiry-into-contracts-to-firms-owned-by-khandus-kin/"},{title:"Hindustan Times: CBI inquiry order",url:"https://www.hindustantimes.com/india-news/supreme-court-orders-cbi-probe-against-arunachal-pradesh-cm-pema-khandu-over-public-contracts-allotment-101775453552164.html"}]}]},
+ "Himanta Biswa Sarma":{cases:[{title:"Saradha chit-fund investigation",status:"CBI questioned · denied involvement",facts:["The CBI questioned Sarma in 2014 as part of its Saradha investigation; he said he was not involved.","The Indian Express later reported he had not been named in a CBI chargesheet. These reports describe questioning, not a finding of guilt."],sources:[{title:"Indian Express: CBI questioning",url:"https://indianexpress.com/article/india/india-others/saradha-scam-cbi-grills-gogois-ex-minister-for-eight-hours-he-says-only-90-minutes/"},{title:"Indian Express: Saradha probe and chargesheets",url:"https://indianexpress.com/article/india/cbi-pressure-eased-off-on-two-in-saradha-after-they-joined-bjp-5569251/"}],videos:[{id:"qhgyqXELGGA",title:"Saradha case video"},{id:"bFm8wEZNcgk",title:"Saradha case video"}]}]},
+ "Samrat Choudhary":{cases:[{title:"NEET-UG 2024: photo with an accused",status:"Allegation · response reported",facts:["During the Bihar NEET investigation, opposition leaders circulated a photograph said to show Choudhary with an accused; he responded to questions about the image.","The reporting does not establish that Choudhary was involved in the paper leak."],sources:[{title:"Mint: NEET row and the photograph",url:"https://www.livemint.com/politics/news/neet-row-turns-political-in-bihar-from-tejashwi-yadavs-link-to-samrat-choudharys-picture-with-paper-leak-accused-11719075973353.html"},{title:"Indian Express: Bihar probe into NEET leak",url:"https://indianexpress.com/article/india/clear-suggestion-of-neet-ug-paper-leak-probable-involvement-of-organised-gangs-bihars-probe-unit-in-report-to-centre-9409167/"}]},{title:"1995 Tarapur case and age affidavit",status:"Alleged · historical court record disputed",facts:["Police initially named Choudhary and his father among 27 people after the 1995 Tarapur killing. Choudhary said the case against them was dropped before a chargesheet for lack of corroborating evidence.","A later political dispute questioned an age affidavit; Choudhary said the court did not accept it. The linked coverage summarizes the dispute and his response."],sources:[{title:"Indian Express: Tarapur case, affidavit and response",url:"https://indianexpress.com/article/political-pulse/bihar-deputy-cm-samrat-choudhary-prashant-kishor-lawyer-filed-affidavit-10326764/lite/"},{title:"Economic Times: Tarapur and affidavit controversy",url:"https://economictimes.indiatimes.com/news/elections/assembly-elections/bihar/bihar-polls-samrat-choudharys-affidavit-leaves-room-for-controversy-over-age-edu-qualifications/articleshow/124620403.cms"}]}]},
+ "Vishnu Deo Sai":{cases:[{title:"Chhattisgarh liquor-scam investigation",status:"Alleged · officials suspended",facts:["Sai’s government suspended 22 excise officials over alleged involvement in a liquor scam from the previous administration.","The report concerns alleged conduct by department officials; it does not accuse Sai personally."],sources:[{title:"Indian Express: Chhattisgarh suspends officials over alleged scam",url:"https://indianexpress.com/article/news-today/chhattisgarh-government-strong-message-zero-tolerance-towards-corruption-10122378/"}]}]},
+ "Pramod Sawant":{cases:[{title:"Goa cash-for-jobs allegations",status:"Alleged · probe promised",facts:["An accused in Goa’s cash-for-jobs case alleged that a minister and officials were involved; the report did not identify the minister as Sawant.","Sawant said the claims would be investigated. The allegation is not a finding against the chief minister."],sources:[{title:"Indian Express: Police expand cash-for-jobs probe",url:"https://indianexpress.com/article/india/goa-cash-for-jobs-scam-police-expand-probe-after-key-accused-claims-minister-ias-officer-involved-10360198/"},{title:"Economic Times: CM assures investigation",url:"https://economictimes.indiatimes.com/news/india/accused-in-goa-job-scam-claims-minister-ias-officers-involvement-cm-sawant-assures-probe/articleshow/12519998.cms"}]}]},
+ "Bhupendra Patel":{cases:[{title:"BZ investment fraud in Gujarat",status:"FIRs · chargesheet reported",facts:["Gujarat’s government told the Assembly that cases had been registered against 16 people in the BZ investment scheme fraud, which investigators said duped investors.","The reporting concerns a state-level scam; it does not allege Patel’s personal involvement."],sources:[{title:"New Indian Express: Gujarat government response to BZ scam",url:"https://www.newindianexpress.com/india/2025/Mar/24/gujarat-government-admits-to-rs-422-crore-bz-scam-11183-duped"}]}]},
+ "Nayab Singh Saini":{cases:[{title:"Haryana board-exam paper leaks",status:"FIRs filed · exam-centre allegations",facts:["Class 10 and 12 papers leaked at centres in Haryana in February 2025, including a Class 12 English paper in Nuh.","Saini said FIRs were filed and officials were suspended. The reports concern exam security and do not accuse him of leaking papers."],sources:[{title:"Indian Express: Board exam leaks and FIRs",url:"https://indianexpress.com/article/education/haryana-board-exams-2025-bseh-class-10-12-exams-leaked-9864059/"},{title:"Hindustan Times: Class 12 English paper leak",url:"https://www.hindustantimes.com/cities/others/haryana-boards-class-12-english-paper-leaked-in-nuh-101740747215208.html"}],videos:[{id:"4H5-ZkSSz80",title:"Haryana board paper-leak report"},{id:"bh3LGRbeGks",title:"Haryana board paper-leak report"}]}]},
+ "Mohan Yadav":{cases:[{title:"Ujjain land-purchase allegations",status:"Alleged · investigation demanded",facts:["The Indian Express reported that members of Yadav’s family bought land near roads upgraded or announced by the state government.","The report describes opposition demands for an inquiry; it does not establish illegal conduct."],sources:[{title:"Indian Express: Ujjain land-purchase row",url:"https://indianexpress.com/article/india/madhya-pradesh-cm-mohan-yadav-family-ujjain-land-deals-row-bjp-response-10757886/"},{title:"Hindustan Times: BJP response to allegations",url:"https://www.hindustantimes.com/genesis/bjp-rejects-allegations-against-mp-cm-mohan-yadav-in-illegal-land-purchase-case-calls-congress-claims-a-conspiracy-101782386031488.html"}]}]},
+ "Devendra Fadnavis":{cases:[{title:"Kunal Kamra speech and police case",status:"FIR / investigation reported",facts:["After comedian Kunal Kamra joked about deputy chief minister Eknath Shinde, police opened an investigation and Shiv Sena workers vandalised the venue.","Fadnavis called for an apology and said defamation would not be tolerated; AP reported concerns about free expression."],sources:[{title:"Associated Press: Kamra case and response",url:"https://apnews.com/article/c76dc1410f2b5f148691917756ea7a3d"},{title:"Indian Express: Fadnavis responds to Kamra row",url:"https://indianexpress.com/article/cities/mumbai/kunal-kamra-row-maharashtra-cm-devendra-fadnavis-says-low-level-comedy-9902925/lite/"}]}]},
+ "Yumnam Khemchand Singh":{cases:[{title:"Manipur unrest and public-safety challenges",status:"Reported unrest · allegations disputed",facts:["After taking office in February 2026, Khemchand faced protests and renewed unrest in a state emerging from President’s Rule.","A report described protests against the government and claims of weak law and order; these are political allegations, not a court finding."],sources:[{title:"Economic Times: Protests during CM visit",url:"https://economictimes.indiatimes.com/news/india/protests-force-manipur-cm-khemchand-singh-to-take-chopper-firing-during-visit/articleshow/130426257.cms"},{title:"Indian Express: Manipur’s continuing ethnic faultlines",url:"https://indianexpress.com/article/opinion/columns/yumnam-khemchand-singh-manipur-cm-manipur-conflict-ethnic-faultlines-10515276/"}]}]},
+ "Mohan Charan Majhi":{cases:[{title:"Odisha police SI recruitment scam",status:"CBI probe ordered",facts:["Majhi approved handing the police sub-inspector recruitment investigation to the CBI after an alleged paper leak and arrests.","The probe order itself is not a finding against Majhi."],sources:[{title:"Indian Express: CBI probe ordered into SI recruitment scam",url:"https://indianexpress.com/article/india/odisha-govt-orders-cbi-probe-into-police-si-recruitment-scam-10321385/"},{title:"Hindustan Times: Odisha hands SI exam probe to CBI",url:"https://www.hindustantimes.com/india-news/odisha-hands-over-sub-inspector-recruitment-question-paper-leak-case-to-cbi-101761194660292-amp.html"}]}]},
+ "Bhajan Lal Sharma":{cases:[{title:"Phone-tapping allegations by cabinet minister",status:"Alleged · no finding cited",facts:["Rajasthan minister Kirodi Lal Meena alleged snooping and phone tapping by the state government in 2025.","Opposition leaders demanded Sharma respond; the article reports allegations and political reaction, not proof that Sharma ordered surveillance."],sources:[{title:"Indian Express: Snooping claims in Rajasthan Assembly",url:"https://indianexpress.com/article/india/rajasthan-assembly-congress-cm-respond-cabinet-minister-9823506/"}]}]},
+ "Manik Saha":{cases:[{title:"IPFT remark at campaign rally",status:"Denied / apology reported",facts:["Saha apologised after a campaign-rally remark about Indigenous People’s Front of Tripura drew criticism.","The report describes a public controversy and apology, not a criminal case."],sources:[{title:"Indian Express: Saha apologises after rally remark",url:"https://indianexpress.com/article/india/after-poll-rally-speech-faux-pas-over-ipft-tripura-cm-manik-saha-expresses-apology-reaches-out-to-ally-chief-10317191/lite/"}]}]},
+ "Yogi Adityanath":{cases:[{title:"Ram Mandir donation / chanda allegations",status:"Alleged · SIT probe",facts:["Reports of alleged irregularities in donations at the Ayodhya temple led to an SIT investigation requested by the temple trust.","Yogi said the allegations should be supported by evidence and that anyone found guilty would face action; reporting does not accuse him personally of taking donations."],sources:[{title:"Indian Express: Donation allegations and SIT",url:"https://indianexpress.com/article/cities/lucknow/yogi-adityanath-ayodhya-ram-temple-donation-theft-case-arvind-kejriwal-10758464/"},{title:"Hindustan Times: Donation row and Yogi’s response",url:"https://www.hindustantimes.com/cities/lucknow-news/donation-row-we-waited-500-years-for-ram-temple-let-s-wait-15-more-days-for-the-truth-guilty-will-not-be-spared-says-yogi-101781898656254.html/"}],videos:[{id:"Zy0DanPc1kM",title:"Ram Mandir donation case video"},{id:"BvLTS_fazRk",title:"Ram Mandir donation case video"}]}]},
+ "Pushkar Singh Dhami":{cases:[{title:"UKSSSC recruitment-exam paper leak",status:"FIR / probe reported",facts:["A UKSSSC recruitment exam in September 2025 triggered protests after reports that the paper had leaked during the test.","Dhami’s government announced an inquiry and action; coverage records public demands for accountability, not a finding that Dhami was involved."],sources:[{title:"BBC News Hindi: UKSSSC paper-leak protests",url:"https://www.youtube.com/watch?v=_5eCCUt_TUg"},{title:"Indian Express: Probe into ad-hoc appointments",url:"https://indianexpress.com/article/india/cm-pushkar-singh-dhami-sought-probe-on-ad-hoc-appointments-terminated-services-uttarakhand-govt-10541512/"}]}]},
+ "Suvendu Adhikari":{cases:[{title:"Election petition challenging Bhabanipur result",status:"Court petition admitted",facts:["The Calcutta High Court admitted Mamata Banerjee’s petition challenging her Bhabanipur election loss to Adhikari in 2026.","Admission allows the petition to proceed; it is not a finding that the result was invalid."],sources:[{title:"Indian Express: High Court admits election petition",url:"https://indianexpress.com/article/legal-news/mamata-banerjee-bhabanipur-election-petition-calcutta-high-court-10753728/lite/"}]}]}
+};
 choors.push(...stateChiefMinisters);
 
 const chanda=[
@@ -534,13 +600,91 @@ function wireTools(scope){
     });
   });
 }
+const cmInfoScreen=document.getElementById('cmInfoScreen');
+const cmInfoContent=document.getElementById('cmInfoContent');
+let cmInfoScrollY=0;
+function escapeCmInfo(value){
+  return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function cmSlug(name){return memberId(name);}
+function buildCmInfo(name){
+  const cm=stateChiefMinisters.find(item=>item[1]===name);
+  const dossier=cmDossiers[name];
+  if(!cm||!dossier)return false;
+  const tags=Array.isArray(cm[0])?cm[0]:[cm[0]];
+  document.getElementById('cmInfoTitle').textContent=`${name} — public case notes`;
+  let html=`<div class="cm-info-profile"><img src="${escapeCmInfo(cm[2])}" alt="${escapeCmInfo(name)}" onerror="this.style.visibility='hidden'"><div><h3>${escapeCmInfo(name)}</h3><div class="cm-info-tags"><span class="cm-info-tag">CM CHOOR · SATIRE</span>${tags.map(tag=>`<span class="cm-info-tag">${escapeCmInfo(tag)}</span>`).join('')}</div></div></div>`;
+  html+='<p class="cm-info-disclaimer">Satirical labels on this page are opinion. Case notes summarize linked reporting; allegations are identified as allegations and are not findings of guilt. Read the linked sources for updates and context.</p>';
+  dossier.cases.forEach(item=>{
+    html+=`<article class="cm-case"><h3>${escapeCmInfo(item.title)}</h3><span class="cm-case-status">${escapeCmInfo(item.status)}</span>${item.facts.map(fact=>`<p>${escapeCmInfo(fact)}</p>`).join('')}`;
+    html+=`<div class="cm-case-links">${item.sources.map(source=>`<a href="${escapeCmInfo(source.url)}" target="_blank" rel="noopener noreferrer">${escapeCmInfo(source.title)} ↗</a>`).join('')}</div>`;
+    if(item.videos&&item.videos.length){
+      html+='<div class="cm-video-grid">'+item.videos.map((video,index)=>{
+        const id=/^[A-Za-z0-9_-]{11}$/.test(video.id)?video.id:'';
+        if(!id)return '';
+        const title=escapeCmInfo(video.title||`Video ${index+1}`);
+        return `<div class="cm-video"><button type="button" data-video-id="${id}" aria-label="Play ${title}"><img src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt=""><span>▶ ${title}</span></button></div>`;
+      }).join('')+'</div>';
+    }
+    html+='</article>';
+  });
+  cmInfoContent.innerHTML=html;
+  cmInfoContent.querySelectorAll('.cm-video button').forEach(button=>button.addEventListener('click',()=>{
+    const id=button.dataset.videoId;
+    if(!/^[A-Za-z0-9_-]{11}$/.test(id||''))return;
+    const frame=document.createElement('iframe');
+    frame.src=`https://www.youtube.com/embed/${id}?rel=0`;
+    frame.title=button.getAttribute('aria-label')||'YouTube video';
+    frame.loading='lazy';
+    frame.allow='accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    frame.allowFullscreen=true;
+    button.replaceWith(frame);
+  }));
+  return true;
+}
+function showCmInfo(name){
+  if(!buildCmInfo(name))return;
+  if(!document.body.classList.contains('cm-info-open'))cmInfoScrollY=window.scrollY;
+  document.body.classList.remove('analysis-open');
+  document.body.classList.add('cm-info-open');
+  cmInfoScreen.hidden=false;
+  window.scrollTo(0,0);
+}
+function closeCmInfo(updateHash=true){
+  cmInfoScreen.hidden=true;
+  document.body.classList.remove('cm-info-open');
+  if(updateHash&&window.location.hash.startsWith('#/cm/')){
+    history.replaceState(null,'',window.location.pathname+window.location.search);
+  }
+  window.scrollTo(0,cmInfoScrollY);
+}
+function openCmInfo(name){
+  if(!buildCmInfo(name))return;
+  cmInfoScrollY=window.scrollY;
+  history.pushState(null,'',`${window.location.pathname}${window.location.search}#/cm/${cmSlug(name)}`);
+  document.body.classList.remove('analysis-open');
+  document.body.classList.add('cm-info-open');
+  cmInfoScreen.hidden=false;
+  window.scrollTo(0,0);
+}
+function routeCmInfoFromHash(){
+  const match=window.location.hash.match(/^#\/cm\/([a-z0-9-]+)$/i);
+  if(!match){
+    if(!cmInfoScreen.hidden)closeCmInfo(false);
+    return;
+  }
+  const cm=stateChiefMinisters.find(item=>cmSlug(item[1])===match[1]);
+  if(cm)showCmInfo(cm[1]);
+  else closeCmInfo(false);
+}
 function render(el,data){
   const wrap=document.getElementById(el);
   wrap.innerHTML=data.map(c=>{
     const tags=Array.isArray(c[0])?c[0]:[c[0]];
     const hasImg=c[2]&&c[2].trim()!=='';
     const media=hasImg?`<img src="${c[2]}" onerror="this.outerHTML='<div class=\\'blank\\'></div>'">`:`<div class="blank"></div>`;
-    return `<div class="card${c[3]?' star':''}" data-name="${c[1]}">${media}
+    const isCm=stateChiefMinisters.some(cm=>cm[1]===c[1]);
+    return `<div class="card${c[3]?' star':''}${isCm?' has-cm-info':''}" data-name="${c[1]}">${isCm?`<button class="cm-info-button" type="button" aria-label="Information about ${c[1]}" title="Public case information">&#8505;</button>`:''}${media}
       <div class="bigtotal"><span class="n">0</span><span class="lbl">KUL PITAI</span><span class="mini"></span></div>
       <span class="count"></span>${toolsHTML()}
       <span class="chappal">${WEAPONS.chappal.emoji}</span>
@@ -549,6 +693,9 @@ function render(el,data){
       ${tags.map(t=>`<div class="choor">${t}</div>`).join('')}</div>`;
   }).join('');
   wrap.querySelectorAll('.card').forEach(card=>{ badge(card); card.addEventListener('click',()=>whack(card)); });
+  wrap.querySelectorAll('.cm-info-button').forEach(button=>button.addEventListener('click',event=>{
+    event.preventDefault();event.stopPropagation();openCmInfo(button.closest('.card').dataset.name);
+  }));
   wireTools(wrap);
 }
 async function whack(card){
@@ -751,7 +898,7 @@ syncTools(); renderSummary();
 /* ===== SHARE PAGE ===== */
 const sharePageBtn=document.getElementById('sharePage');
 sharePageBtn.addEventListener('click',async()=>{
-  const shareUrl=window.location.href.split('#')[0];
+  const shareUrl=window.location.href;
   const shareData={
     title:'Chooron Ka Cabinet 2026',
     text:'Take a look at this interactive cabinet and shared counter page. Open it and share it with friends if you find it interesting.',
@@ -807,7 +954,21 @@ document.getElementById('analysisOpen').addEventListener('click',()=>{
 document.getElementById('analysisClose').addEventListener('click',closeAnalysis);
 document.getElementById('analysisRefresh').addEventListener('click',loadAnalysis);
 document.getElementById('analysisMessageFilter').addEventListener('change',()=>renderAnalysis());
-document.addEventListener('keydown',event=>{if(event.key==='Escape')closeAnalysis();});
+document.getElementById('cmInfoClose').addEventListener('click',()=>closeCmInfo());
+document.getElementById('cmInfoShare').addEventListener('click',async()=>{
+  const url=window.location.href;
+  try{
+    if(navigator.share){await navigator.share({title:document.getElementById('cmInfoTitle').textContent,text:'Public case notes and sources',url});return;}
+  }catch(error){if(error&&error.name==='AbortError')return;}
+  try{
+    if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(url);document.getElementById('cmInfoShare').textContent='✓ Link copied';setTimeout(()=>{document.getElementById('cmInfoShare').innerHTML='&#128228; Share this page';},2200);return;}
+  }catch(error){console.warn('Clipboard API unavailable:',error);}
+  window.prompt('Copy this case page link:',url);
+});
+window.addEventListener('hashchange',routeCmInfoFromHash);
+window.addEventListener('popstate',routeCmInfoFromHash);
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){if(!cmInfoScreen.hidden)closeCmInfo();else closeAnalysis();}});
+routeCmInfoFromHash();
 muteBtn.addEventListener('click',e=>{
   e.stopPropagation(); soundOn=!soundOn;
   if(soundOn && actx && actx.state==='suspended') actx.resume();
