@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8">
 <title>Chooron Ka Cabinet 2026 — Asli Choor List, Pakdo aur Chappal se, Laat se Maaro!</title>
+<meta name="description" content="Chooron Ka Cabinet — explore the interactive cabinet, shared counters and community stats. Open the page and share it with friends.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Chooron Ka Cabinet 2026">
+<meta property="og:description" content="Explore the interactive cabinet and shared community counters. Visit the page and share it with friends.">
+<meta property="og:url" content="https://lavanyabala44-dev.github.io/choor/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chooron Ka Cabinet 2026">
+<meta name="twitter:description" content="Explore the interactive cabinet and shared community counters.">
 <style>
   html{min-height:100%}
   body{
@@ -204,6 +212,7 @@
       <input id="hitMessage" type="text" maxlength="90" placeholder="Optional message, e.g. Demonetization ke liye!" aria-label="Optional message to show on each click">
       <label><input id="useHitMessage" type="checkbox"> Show each hit</label>
     </div>
+    <button id="sharePage" type="button" aria-label="Share this page">&#128228; Share</button>
     <button id="analysisOpen" type="button">&#128202; Analysis</button>
     <button id="mute">&#128266; Sound On</button>
   </div>
@@ -714,6 +723,34 @@ hero.insertAdjacentHTML('beforeend',
 badge(hero); hero.addEventListener('click',()=>whack(hero)); wireTools(hero);
 syncTools(); renderSummary();
 
+/* ===== SHARE PAGE ===== */
+const sharePageBtn=document.getElementById('sharePage');
+sharePageBtn.addEventListener('click',async()=>{
+  const shareUrl=window.location.href.split('#')[0];
+  const shareData={
+    title:'Chooron Ka Cabinet 2026',
+    text:'Take a look at this interactive cabinet and shared counter page. Open it and share it with friends if you find it interesting.',
+    url:shareUrl
+  };
+  if(navigator.share){
+    try{
+      await navigator.share(shareData);
+      return;
+    }catch(error){
+      if(error&&error.name==='AbortError') return;
+      console.warn('Native sharing was unavailable:',error);
+    }
+  }
+  try{
+    if(navigator.clipboard&&window.isSecureContext){
+      await navigator.clipboard.writeText(shareUrl);
+      sharePageBtn.innerHTML='&#9989; Link Copied!';
+      setTimeout(()=>{sharePageBtn.innerHTML='&#128228; Share';},2200);
+      return;
+    }
+  }catch(error){ console.warn('Clipboard API unavailable:',error); }
+  window.prompt('Copy this page link and share it with friends:',shareUrl);
+});
 /* ===== BUTTONS ===== */
 const muteBtn=document.getElementById('mute');
 const hitMessageInput=document.getElementById('hitMessage');
