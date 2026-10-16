@@ -97,6 +97,24 @@ service cloud.firestore {
         && data.count >= 1;
     }
 
+    function validLocationStat(data, statId) {
+      return data.keys().hasAll(['countryCode', 'country', 'city', 'weapon', 'count'])
+        && data.keys().hasOnly(['countryCode', 'country', 'city', 'weapon', 'count'])
+        && data.countryCode is string
+        && data.countryCode.matches('^[A-Z]{2}$')
+        && data.country is string
+        && data.country.size() > 0
+        && data.country.size() <= 80
+        && data.city is string
+        && data.city.size() > 0
+        && data.city.size() <= 80
+        && data.city.matches('^[^/]+$')
+        && data.weapon in ['chappal', 'juta', 'danda', 'laat']
+        && statId == data.countryCode + '|' + data.city + '|' + data.weapon
+        && data.count is int
+        && data.count >= 1;
+    }
+
     match /members/{memberId} {
       // The public page displays shared totals to every visitor.
       allow read: if true;
@@ -155,6 +173,18 @@ service cloud.firestore {
         && request.resource.data.count == 1;
       allow update: if validMessageStat(resource.data)
         && validMessageStat(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count'])
+        && request.resource.data.count == resource.data.count + 1;
+      allow delete: if false;
+    }
+
+    // Country/city/weapon aggregates only; raw IP addresses are never stored.
+    match /locationStats/{statId} {
+      allow read: if true;
+      allow create: if validLocationStat(request.resource.data, statId)
+        && request.resource.data.count == 1;
+      allow update: if validLocationStat(resource.data, statId)
+        && validLocationStat(request.resource.data, statId)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count'])
         && request.resource.data.count == resource.data.count + 1;
       allow delete: if false;
