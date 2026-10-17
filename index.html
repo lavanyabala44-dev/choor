@@ -93,6 +93,8 @@
   .poll-3d-result-row{display:grid;gap:4px;margin:12px 0 16px;color:#ffe9a8;font:13px Arial,sans-serif}
   .poll-3d-result-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
   .poll-3d-result-name{display:flex;align-items:center;gap:8px;min-width:0;overflow-wrap:anywhere}
+  .poll-3d-result-labels{display:grid;gap:2px;min-width:0}
+  .poll-3d-result-labels small{color:#ffe9a8;font:12px/1.3 Arial,sans-serif}
   .poll-result-mark{display:grid;place-items:center;flex:none;width:42px;height:28px;overflow:hidden;border:1px solid #765100;border-radius:4px;background:#fff;color:#111;font:18px Arial,sans-serif}
   .poll-result-mark img{display:block;width:100%;height:100%;padding:2px;box-sizing:border-box;object-fit:contain}
   .poll-3d-result-value{flex:none;color:#fff;font-weight:bold;text-align:right}
@@ -152,6 +154,11 @@
   .poll-analysis-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px}
   .poll-analysis-state{padding:10px;border:1px solid #765100;border-radius:9px;background:#171111;color:#ffe9a8;font:13px/1.5 Arial,sans-serif}
   .poll-analysis-state strong{color:#ffd23f}
+  .poll-analysis-choices{display:grid;gap:2px;margin-top:6px}
+  .poll-analysis-choice{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;align-items:center;padding:7px 0;border-bottom:1px solid #765100;font:13px/1.4 Arial,sans-serif}
+  .poll-analysis-choice-name{color:#fff;font-weight:700}
+  .poll-analysis-choice-party{grid-column:1;color:#ffe9a8;font-size:12px;overflow-wrap:anywhere}
+  .poll-analysis-choice-votes{grid-column:2;grid-row:1/3;color:#ffd23f;font-weight:700;white-space:nowrap}
   .analysis-header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
     max-width:1250px;margin:0 auto 18px}
   .analysis-header h2{color:#ffd23f;font-size:clamp(26px,4vw,38px);margin:0;text-shadow:2px 2px #000}
@@ -578,15 +585,15 @@ const nationalPollParties=[
   {id:'undecided',name:'Undecided / no party preference',leader:'No party leader shown',symbol:'⚪'}
 ];
 const centralPmChoices=[
-  {id:'modi',name:'Narendra Modi',leader:'BJP',page:'Narendra_Modi',partyImagePage:'Bharatiya Janata Party',symbol:'🪷'},
-  {id:'rahul-gandhi',name:'Rahul Gandhi',leader:'Indian National Congress',page:'Rahul_Gandhi',partyImagePage:'Indian National Congress',symbol:'✋'},
-  {id:'kejriwal',name:'Arvind Kejriwal',leader:'Aam Aadmi Party',page:'Arvind_Kejriwal',partyImagePage:'Aam Aadmi Party',symbol:'🧹'},
-  {id:'mamata-banerjee',name:'Mamata Banerjee',leader:'All India Trinamool Congress',page:'Mamata_Banerjee',partyImagePage:'All India Trinamool Congress',symbol:'🌼'},
-  {id:'nitish-kumar',name:'Nitish Kumar',leader:'Janata Dal (United)',page:'Nitish_Kumar',partyImagePage:'Janata Dal (United)',symbol:'🏹'},
-  {id:'akhilesh-yadav',name:'Akhilesh Yadav',leader:'Samajwadi Party',page:'Akhilesh_Yadav',partyImagePage:'Samajwadi Party',symbol:'🚲'},
-  {id:'chandrababu-naidu',name:'N. Chandrababu Naidu',leader:'Telugu Desam Party',page:'N._Chandrababu_Naidu',partyImagePage:'Telugu Desam Party',symbol:'🚲'},
-  {id:'other-leader',name:'Another leader',leader:'No leader shown',symbol:'➕'},
-  {id:'no-preference',name:'No preference / undecided',leader:'No leader shown',symbol:'⚪'}
+  {id:'modi',name:'Narendra Modi',leader:'BJP',partyName:'Bharatiya Janata Party',page:'Narendra_Modi',partyImagePage:'Bharatiya Janata Party',symbol:'🪷'},
+  {id:'rahul-gandhi',name:'Rahul Gandhi',leader:'Indian National Congress',partyName:'Indian National Congress',page:'Rahul_Gandhi',partyImagePage:'Indian National Congress',symbol:'✋'},
+  {id:'kejriwal',name:'Arvind Kejriwal',leader:'Aam Aadmi Party',partyName:'Aam Aadmi Party',page:'Arvind_Kejriwal',partyImagePage:'Aam Aadmi Party',symbol:'🧹'},
+  {id:'mamata-banerjee',name:'Mamata Banerjee',leader:'All India Trinamool Congress',partyName:'All India Trinamool Congress',page:'Mamata_Banerjee',partyImagePage:'All India Trinamool Congress',symbol:'🌼'},
+  {id:'nitish-kumar',name:'Nitish Kumar',leader:'Janata Dal (United)',partyName:'Janata Dal (United)',page:'Nitish_Kumar',partyImagePage:'Janata Dal (United)',symbol:'🏹'},
+  {id:'akhilesh-yadav',name:'Akhilesh Yadav',leader:'Samajwadi Party',partyName:'Samajwadi Party',page:'Akhilesh_Yadav',partyImagePage:'Samajwadi Party',symbol:'🚲'},
+  {id:'chandrababu-naidu',name:'N. Chandrababu Naidu',leader:'Telugu Desam Party',partyName:'Telugu Desam Party',page:'N._Chandrababu_Naidu',partyImagePage:'Telugu Desam Party',symbol:'🚲'},
+  {id:'other-leader',name:'Another leader',leader:'No leader shown',partyName:'Not specified',symbol:'➕'},
+  {id:'no-preference',name:'No preference / undecided',leader:'No leader shown',partyName:'No party preference',symbol:'⚪'}
 ];
 const statePollParties={
   AP:[['tdp','Telugu Desam Party','N. Chandrababu Naidu','N._Chandrababu_Naidu','🚲'],['ysrcp','YSR Congress Party','Y. S. Jagan Mohan Reddy','Y._S._Jagan_Mohan_Reddy','🌀'],['janasena','Jana Sena Party','Pawan Kalyan','Pawan_Kalyan','⭐']],
@@ -1449,7 +1456,7 @@ function renderPollParties(){
   stateLabel.hidden=mode!=='state';pollStateSelect.hidden=mode!=='state';question.hidden=!definition;
   if(!definition){pollStatusEl.textContent=mode==='state'?'Choose a state to see the parties listed for it.':'Choose a poll to see its choices.';return;}
   if(mode==='state')question.textContent=`If an election were held in ${definition.title} today, which party would you support? Party images come from Wikipedia and may show a party logo or flag; they are not official ECI election symbols.`;
-  else question.textContent='Who would you prefer as Prime Minister? This is an informal preference poll, not an official party nomination or a direct election.';
+  else question.textContent='Who would you prefer as Prime Minister? Candidate party affiliations are shown for context. This is an informal preference poll, not an official party nomination or a direct election.';
   definition.choices.forEach(party=>{
     const card=document.createElement('article');card.className='poll-party-card';card.dataset.partyId=party.id;
     const button=document.createElement('button');button.type='button';button.className='poll-party';button.setAttribute('aria-pressed','false');
@@ -1517,7 +1524,10 @@ function renderPollResults(){
       if(imageSource){
         const image=document.createElement('img');image.src=imageSource;image.alt='';image.loading='lazy';image.onerror=()=>{mark.replaceChildren(document.createTextNode(choice.symbol||''));};mark.replaceChildren(image);
       }
-      name.append(mark,document.createTextNode(label));
+      const labels=document.createElement('span');labels.className='poll-3d-result-labels';
+      const candidate=document.createElement('strong');candidate.textContent=label;labels.append(candidate);
+      if(choice.partyName){const party=document.createElement('small');party.textContent=`Party: ${choice.partyName}`;labels.append(party);}
+      name.append(mark,labels);
     }else name.textContent=label;
     const value=document.createElement('span');value.className='poll-3d-result-value';value.textContent=`${count.toLocaleString()} · ${share.toFixed(1)}%`;
     head.append(name,value);
@@ -1610,8 +1620,16 @@ async function loadPollAnalysis(){
       const rows=snapshot.docs.map(doc=>({choice:choices.get(doc.id),count:doc.data().count})).filter(row=>row.choice&&Number.isSafeInteger(row.count)&&row.count>0).sort((a,b)=>b.count-a.count);
       const total=rows.reduce((sum,row)=>sum+row.count,0),card=document.createElement('div');card.className='poll-analysis-state';
       const heading=document.createElement('strong');heading.textContent=`${title}: ${total.toLocaleString()} responses`;
-      const summary=rows.slice(0,5).map(row=>`${row.choice.name} (${row.count.toLocaleString()})`).join(' · ');
-      card.append(heading,document.createElement('br'),document.createTextNode(summary||'No responses recorded yet.'));centralContainer.append(card);return total;
+      const choicesList=document.createElement('div');choicesList.className='poll-analysis-choices';
+      rows.slice(0,5).forEach(row=>{
+        const item=document.createElement('div');item.className='poll-analysis-choice';
+        const candidate=document.createElement('span');candidate.className='poll-analysis-choice-name';candidate.textContent=`Candidate: ${row.choice.name}`;
+        const party=document.createElement('span');party.className='poll-analysis-choice-party';party.textContent=`Party: ${row.choice.partyName||'Not specified'}`;
+        const votes=document.createElement('span');votes.className='poll-analysis-choice-votes';votes.textContent=`${row.count.toLocaleString()} vote${row.count===1?'':'s'}`;
+        item.append(candidate,party,votes);choicesList.append(item);
+      });
+      if(!rows.length){const empty=document.createElement('span');empty.className='poll-analysis-choice-party';empty.textContent='No responses recorded yet.';choicesList.append(empty);}
+      card.append(heading,choicesList);centralContainer.append(card);return total;
     };
     const pmTotal=addCentralSummary(centralPmSnapshot,centralPmById,'Prime Minister preference');
     centralStatus.textContent=`Loaded ${centralPmSnapshot.size.toLocaleString()} PM-choice tally records.`;
