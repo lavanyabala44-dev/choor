@@ -79,7 +79,9 @@
   .poll-leader{display:grid;place-items:center;width:76px;height:92px;border-radius:9px;border:1px solid #765100;background:#281b10;color:#ffd23f;font:bold 24px Arial,sans-serif;overflow:hidden}
   .poll-leader img{width:100%;height:100%;object-fit:cover;object-position:top}
   .poll-party-copy{display:flex;min-width:0;flex-direction:column;gap:6px}
-  .poll-symbol{font:26px Arial,sans-serif;color:#ffd23f}
+  .poll-symbol{display:grid;place-items:center;width:56px;height:38px;overflow:hidden;border:1px solid #765100;border-radius:6px;
+    background:#fff;color:#ffd23f;font:26px Arial,sans-serif}
+  .poll-symbol img{display:block;max-width:100%;max-height:100%;object-fit:contain}
   .poll-party-name{font:bold 16px/1.3 Arial,sans-serif;overflow-wrap:anywhere}
   .poll-party-leader{font:13px/1.4 Arial,sans-serif;color:#ffe9a8}
   .poll-submit{margin:14px 0 20px;background:#c1121f;font-size:16px;padding:12px 20px}
@@ -393,7 +395,7 @@
       <div class="poll-header"><h2 id="pollTitle">&#128202; Polling Booth</h2><div class="poll-actions"><button id="pollResultsToggle" type="button">View results</button><button id="pollClose" type="button">&#8592; Back to Cabinet</button></div></div>
       <p class="poll-note">Informal, self-selected online poll; it is not an Election Commission poll and does not represent verified voters. One response is allowed per anonymous browser profile. Clearing browser data, using private browsing or another device may allow another response. No IP or device MAC address is used as an identity. The list includes recognised national parties and selected regional parties; it may not include every registered party. Check the current <a href="https://www.eci.gov.in/list-of-political-parties" target="_blank" rel="noopener">Election Commission of India party register</a>. Party names, leaders and recognition can change.</p>
       <div class="poll-tools"><label for="pollState">Choose a state or union territory:</label><select id="pollState"><option value="">Select a state</option></select></div>
-      <p id="pollQuestion" class="poll-note" hidden>If an election were held in your state or territory today, which party would you support? Party icons are visual markers, not official ECI symbols.</p>
+      <p id="pollQuestion" class="poll-note" hidden>If an election were held in your state or territory today, which party would you support? Party images come from Wikipedia and may show a party logo or flag; they are not official ECI election symbols.</p>
       <div id="pollStatus" role="status" aria-live="polite">Choose a state to see the parties listed for it.</div>
       <div id="pollParties" class="poll-party-grid" role="group" aria-label="Political parties"></div>
       <button id="pollSubmit" class="poll-submit" type="button" disabled>Vote</button>
@@ -482,12 +484,12 @@ const pollStates=[
   ['AP','Andhra Pradesh'],['AR','Arunachal Pradesh'],['AS','Assam'],['BR','Bihar'],['CT','Chhattisgarh'],['GA','Goa'],['GJ','Gujarat'],['HR','Haryana'],['HP','Himachal Pradesh'],['JH','Jharkhand'],['KA','Karnataka'],['KL','Kerala'],['MP','Madhya Pradesh'],['MH','Maharashtra'],['MN','Manipur'],['ML','Meghalaya'],['MZ','Mizoram'],['NL','Nagaland'],['OD','Odisha'],['PB','Punjab'],['RJ','Rajasthan'],['SK','Sikkim'],['TN','Tamil Nadu'],['TS','Telangana'],['TR','Tripura'],['UP','Uttar Pradesh'],['UK','Uttarakhand'],['WB','West Bengal'],['AN','Andaman and Nicobar Islands'],['CH','Chandigarh'],['DN','Dadra and Nagar Haveli and Daman and Diu'],['DL','Delhi'],['JK','Jammu and Kashmir'],['LA','Ladakh'],['LD','Lakshadweep'],['PY','Puducherry']
 ].map(([code,name])=>({code,name}));
 const nationalPollParties=[
-  {id:'aap',name:'Aam Aadmi Party',leader:'Arvind Kejriwal',page:'Arvind_Kejriwal',symbol:'🧹'},
-  {id:'bsp',name:'Bahujan Samaj Party',leader:'Mayawati',page:'Mayawati',symbol:'🐘'},
-  {id:'bjp',name:'Bharatiya Janata Party',leader:'Nitin Nabin',page:'Nitin_Nabin',symbol:'🪷'},
-  {id:'cpi-m',name:'Communist Party of India (Marxist)',leader:'M. A. Baby',page:'M._A._Baby',symbol:'⚒️'},
-  {id:'inc',name:'Indian National Congress',leader:'Mallikarjun Kharge',page:'Mallikarjun_Kharge',symbol:'✋'},
-  {id:'npp',name:"National People's Party",leader:'Conrad Sangma',page:'Conrad_Sangma',symbol:'📘'},
+  {id:'aap',name:'Aam Aadmi Party',leader:'Arvind Kejriwal',page:'Arvind_Kejriwal',partyImagePage:'Aam Aadmi Party',symbol:'🧹'},
+  {id:'bsp',name:'Bahujan Samaj Party',leader:'Mayawati',page:'Mayawati',partyImagePage:'Bahujan Samaj Party',symbol:'🐘'},
+  {id:'bjp',name:'Bharatiya Janata Party',leader:'Nitin Nabin',page:'Nitin_Nabin',partyImagePage:'Bharatiya Janata Party',symbol:'🪷'},
+  {id:'cpi-m',name:'Communist Party of India (Marxist)',leader:'M. A. Baby',page:'M._A._Baby',partyImagePage:'Communist Party of India (Marxist)',symbol:'⚒️'},
+  {id:'inc',name:'Indian National Congress',leader:'Mallikarjun Kharge',page:'Mallikarjun_Kharge',partyImagePage:'Indian National Congress',symbol:'✋'},
+  {id:'npp',name:"National People's Party",leader:'Conrad Sangma',page:'Conrad_Sangma',partyImagePage:"National People's Party (India)",symbol:'📘'},
   {id:'other',name:'Other registered party (not listed)',leader:'No party leader shown',symbol:'➕'},
   {id:'undecided',name:'Undecided / no party preference',leader:'No party leader shown',symbol:'⚪'}
 ];
@@ -520,7 +522,7 @@ const statePollParties={
   PY:[['ainrc','All India N.R. Congress','N. Rangaswamy','N._Rangaswamy','🍇']]
 };
 for(const state of pollStates){
-  const regional=(statePollParties[state.code]||[]).map(([id,name,leader,page,symbol])=>({id,name,leader,page,symbol}));
+  const regional=(statePollParties[state.code]||[]).map(([id,name,leader,page,symbol])=>({id,name,leader,page,partyImagePage:name,symbol}));
   state.parties=[...nationalPollParties,...regional.filter(p=>!nationalPollParties.some(n=>n.id===p.id))];
 }
 const pollPartyById=new Map(pollStates.flatMap(s=>s.parties.map(p=>[`${s.code}__${p.id}`,p])));
@@ -1329,7 +1331,7 @@ function renderPollParties(){
     const button=document.createElement('button');button.type='button';button.className='poll-party';button.dataset.partyId=party.id;button.setAttribute('aria-pressed','false');
     const portrait=document.createElement('span');portrait.className='poll-leader';portrait.textContent=pollInitials(party.leader);
     const copy=document.createElement('span');copy.className='poll-party-copy';
-    const symbol=document.createElement('span');symbol.className='poll-symbol';symbol.setAttribute('role','img');symbol.setAttribute('aria-label',`${party.name} visual icon, not an official ECI symbol`);symbol.textContent=party.symbol;
+    const symbol=document.createElement('span');symbol.className='poll-symbol';symbol.setAttribute('role','img');symbol.setAttribute('aria-label',`${party.name} image; Wikipedia party logo or flag when available`);symbol.textContent=party.symbol;
     const name=document.createElement('span');name.className='poll-party-name';name.textContent=party.name;
     const leader=document.createElement('span');leader.className='poll-party-leader';leader.textContent=party.page?`Party leader shown: ${party.leader}`:party.leader;
     copy.append(symbol,name,leader);button.append(portrait,copy);
@@ -1340,22 +1342,32 @@ function renderPollParties(){
     pollPartiesEl.append(button);
   });
   pollStatusEl.textContent=`${state.parties.length} national and selected state-recognised parties are listed. Check the ECI register for current recognition and election symbols.`;
-  loadPollLeaderPhotos(state);
+  loadPollWikipediaImages(state);
   renderPollResults(state.code);
 }
-async function loadPollLeaderPhotos(state){
-  const parties=state.parties.filter(p=>p.page);
-  if(!parties.length)return;
-  const titles=[...new Set(parties.map(p=>p.page))].join('|');
+async function loadPollWikipediaImages(state){
+  const items=state.parties.flatMap(party=>[
+    ...(party.partyImagePage?[{party,kind:'party',title:party.partyImagePage}]:[]),
+    ...(party.page?[{party,kind:'leader',title:party.page}]:[])
+  ]);
+  if(!items.length)return;
+  const titles=[...new Set(items.map(item=>item.title))].join('|');
   const url=`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&piprop=thumbnail&pithumbsize=180&redirects=1&origin=*&titles=${encodeURIComponent(titles)}`;
   try{
     const response=await fetch(url);if(!response.ok)return;
-    const data=await response.json();const photos=new Map(Object.values(data.query?.pages||{}).filter(page=>page.thumbnail?.source).map(page=>[page.title.toLowerCase().replaceAll(' ','_'),page.thumbnail.source]));
+    const data=await response.json();const photos=new Map(Object.values(data.query?.pages||{}).filter(page=>page.thumbnail?.source).map(page=>[page.title.toLowerCase().replaceAll('_',' '),page.thumbnail.source]));
+    for(const redirect of [...(data.query?.normalized||[]),...(data.query?.redirects||[])]){
+      const from=redirect.from.toLowerCase().replaceAll('_',' '),to=redirect.to.toLowerCase().replaceAll('_',' ');
+      if(photos.has(to))photos.set(from,photos.get(to));
+    }
     pollPartiesEl.querySelectorAll('.poll-party').forEach(card=>{
-      const party=state.parties.find(p=>p.id===card.dataset.partyId);const source=party&&photos.get(party.page.toLowerCase());if(!source)return;
-      const portrait=card.querySelector('.poll-leader');const img=document.createElement('img');img.src=source;img.alt=`${party.leader} portrait`;img.loading='lazy';img.onerror=()=>img.remove();portrait.replaceChildren(img);
+      const party=state.parties.find(p=>p.id===card.dataset.partyId);if(!party)return;
+      const partySource=party.partyImagePage&&photos.get(party.partyImagePage.toLowerCase().replaceAll('_',' '));
+      if(partySource){const image=document.createElement('img');image.src=partySource;image.alt='';image.setAttribute('aria-hidden','true');image.loading='lazy';image.onerror=()=>image.remove();card.querySelector('.poll-symbol').replaceChildren(image);}
+      const leaderSource=party.page&&photos.get(party.page.toLowerCase().replaceAll('_',' '));if(!leaderSource)return;
+      const portrait=card.querySelector('.poll-leader');const img=document.createElement('img');img.src=leaderSource;img.alt=`${party.leader} portrait`;img.loading='lazy';img.onerror=()=>img.remove();portrait.replaceChildren(img);
     });
-  }catch(error){console.warn('Party portrait lookup unavailable:',error);}
+  }catch(error){console.warn('Party and leader image lookup unavailable:',error);}
 }
 async function loadPollCounts(){
   const snapshot=await db.collection('pollCounts').get();pollResultData.clear();
