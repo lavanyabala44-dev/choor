@@ -242,5 +242,116 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count']);
       allow delete: if false;
     }
+
+    // Poll responses use Firebase anonymous authentication, separate from all
+    // game counters. Each anonymous account may create one private vote record.
+    function validPollState(code) {
+      return code in ['AP','AR','AS','BR','CT','GA','GJ','HR','HP','JH','KA','KL','MP','MH','MN','ML','MZ','NL','OD','PB','RJ','SK','TN','TS','TR','UP','UK','WB','AN','CH','DN','DL','JK','LA','LD','PY'];
+    }
+
+    function validPollChoice(state, party) {
+      return party in ['aap','bsp','bjp','cpi-m','inc','npp','other','undecided']
+        || (state == 'AP' && party in ['tdp','ysrcp','janasena'])
+        || (state == 'AR' && party in ['ppa'])
+        || (state == 'AS' && party in ['agp','aiudf'])
+        || (state == 'BR' && party in ['jdu','rjd','ljprv','ham'])
+        || (state == 'GA' && party in ['mgp'])
+        || (state == 'GJ' && party in ['aap-guj'])
+        || (state == 'HR' && party in ['jannayak'])
+        || (state == 'JH' && party in ['jmm','ajsu'])
+        || (state == 'KA' && party in ['jds'])
+        || (state == 'KL' && party in ['cpi','iuml','kc-m'])
+        || (state == 'MH' && party in ['ss','ss-ubt','ncp','ncp-sp'])
+        || (state == 'MN' && party in ['npf'])
+        || (state == 'ML' && party in ['udp','vpp'])
+        || (state == 'MZ' && party in ['mnf','zpm'])
+        || (state == 'NL' && party in ['ndpp','npf'])
+        || (state == 'OD' && party in ['bjd'])
+        || (state == 'PB' && party in ['sad'])
+        || (state == 'SK' && party in ['skm','sdf','cap'])
+        || (state == 'TN' && party in ['aiadmk','dmk','ntk'])
+        || (state == 'TS' && party in ['brs','aimim'])
+        || (state == 'TR' && party in ['tmp'])
+        || (state == 'UP' && party in ['sp'])
+        || (state == 'WB' && party in ['aitc','aifb'])
+        || (state == 'DL' && party in ['aap-del'])
+        || (state == 'JK' && party in ['nc','pdp'])
+        || (state == 'PY' && party in ['ainrc']);
+    }
+
+    function validPollTally(data, state, party) {
+      return data.keys().hasAll(['stateCode','stateName','partyId','partyName','count'])
+        && data.keys().hasOnly(['stateCode','stateName','partyId','partyName','count'])
+        && data.stateCode == state
+        && validPollState(state)
+        && data.partyId == party
+        && validPollChoice(state, party)
+        && data.stateName is string
+        && data.stateName.size() > 0
+        && data.stateName.size() <= 80
+        && data.partyName is string
+        && data.partyName.size() > 0
+        && data.partyName.size() <= 120
+        && data.count is int
+        && data.count >= 1;
+    }
+
+    function linkedNewPollVote(state, party) {
+      return request.auth != null
+        && !exists(/databases/$(database)/documents/pollVotes/$(request.auth.uid))
+        && existsAfter(/databases/$(database)/documents/pollVotes/$(request.auth.uid))
+        && getAfter(/databases/$(database)/documents/pollVotes/$(request.auth.uid)).data.uid == request.auth.uid
+        && getAfter(/databases/$(database)/documents/pollVotes/$(request.auth.uid)).data.stateCode == state
+        && getAfter(/databases/$(database)/documents/pollVotes/$(request.auth.uid)).data.partyId == party;
+    }
+
+    function validPollVote(data, voteId) {
+      let tallyPath = /databases/$(database)/documents/pollCounts/$(data.stateCode + '__' + data.partyId);
+      return request.auth != null
+        && voteId == request.auth.uid
+        && data.keys().hasAll(['uid','stateCode','stateName','partyId','partyName','pollId','createdAt'])
+        && data.keys().hasOnly(['uid','stateCode','stateName','partyId','partyName','pollId','createdAt'])
+        && data.uid == request.auth.uid
+        && data.pollId == 'state-support-v1'
+        && validPollState(data.stateCode)
+        && validPollChoice(data.stateCode, data.partyId)
+        && data.stateName is string
+        && data.stateName.size() > 0
+        && data.stateName.size() <= 80
+        && data.partyName is string
+        && data.partyName.size() > 0
+        && data.partyName.size() <= 120
+        && data.createdAt is timestamp
+        && existsAfter(tallyPath)
+        && getAfter(tallyPath).data.stateCode == data.stateCode
+        && getAfter(tallyPath).data.partyId == data.partyId
+        && ((exists(tallyPath) && getAfter(tallyPath).data.count == get(tallyPath).data.count + 1)
+          || (!exists(tallyPath) && getAfter(tallyPath).data.count == 1));
+    }
+
+    match /pollVotes/{voteId} {
+      allow get: if request.auth != null && voteId == request.auth.uid;
+      allow list: if false;
+      allow create: if !exists(/databases/$(database)/documents/pollVotes/$(voteId))
+        && validPollVote(request.resource.data, voteId);
+      allow update, delete: if false;
+    }
+
+    // Publicly readable aggregate tallies; updates must be paired atomically
+    // with creation of that authenticated user's first vote record.
+    match /pollCounts/{tallyId} {
+      allow read: if true;
+      allow create: if validPollTally(request.resource.data, request.resource.data.stateCode, request.resource.data.partyId)
+        && tallyId == request.resource.data.stateCode + '__' + request.resource.data.partyId
+        && request.resource.data.count == 1
+        && linkedNewPollVote(request.resource.data.stateCode, request.resource.data.partyId);
+      allow update: if validPollTally(resource.data, resource.data.stateCode, resource.data.partyId)
+        && validPollTally(request.resource.data, resource.data.stateCode, resource.data.partyId)
+        && tallyId == resource.data.stateCode + '__' + resource.data.partyId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count'])
+        && request.resource.data.count == resource.data.count + 1
+        && linkedNewPollVote(resource.data.stateCode, resource.data.partyId);
+      allow delete: if false;
+    }
   }
 }
