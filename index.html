@@ -66,6 +66,17 @@
   body.poll-results-open > :not(#pollResultsScreen){display:none!important}
   #pollResultsScreen[hidden]{display:none}
   #pollResultsScreen{position:fixed;inset:0;z-index:1110;overflow:auto;padding:20px;background:#260707;color:#fff;box-sizing:border-box}
+  #shareScreen[hidden]{display:none}
+  #shareScreen{position:fixed;inset:0;z-index:1300;display:grid;place-items:center;overflow:auto;padding:18px;background:#000b;box-sizing:border-box}
+  .share-dialog{width:min(100%,560px);padding:20px;border:2px solid #ffd23f;border-radius:16px;background:#260707;color:#fff;box-shadow:0 12px 40px #000b}
+  .share-dialog-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}
+  .share-dialog-header h2{margin:0;color:#ffd23f;font-size:clamp(24px,5vw,32px)}
+  .share-dialog-close{width:40px;height:40px;border:2px solid #ffd23f;border-radius:10px;background:#111;color:#ffd23f;font-size:24px;cursor:pointer}
+  .share-dialog p{color:#ffe9a8;font:14px/1.5 Arial,sans-serif}
+  .share-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+  .share-option{display:flex;align-items:center;justify-content:center;min-height:48px;padding:10px;border:2px solid #765100;border-radius:12px;background:#111;color:#ffe9a8;text-align:center;text-decoration:none;font:700 15px Arial,sans-serif;cursor:pointer}
+  .share-option:hover,.share-option:focus-visible{border-color:#ffd23f;background:#2b1a0c;outline:2px solid #ffd23f;outline-offset:1px}
+  .share-status{min-height:20px;color:#ffd23f;font:14px Arial,sans-serif}
   .poll-wrap{width:min(100%,1150px);margin:0 auto}
   .poll-results-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
   .poll-results-header h2{margin:0;color:#ffd23f;font-size:clamp(26px,4vw,38px);text-shadow:2px 2px #000}
@@ -454,6 +465,23 @@
       <div id="pollResultsStatus" class="poll-results-status" role="status" aria-live="polite">Loading all poll results…</div>
       <section class="poll-results-section"><h3>India-wide PM preference</h3><div id="centralPmResults"></div></section>
       <section class="poll-results-section"><h3>State and union territory party preference</h3><p class="poll-results-status">Every state/UT is listed. Recorded party choices are ranked by response count.</p><div id="statePollResults" class="poll-state-results"></div></section>
+    </div>
+  </section>
+
+  <section id="shareScreen" hidden role="dialog" aria-modal="true" aria-labelledby="shareDialogTitle">
+    <div class="share-dialog">
+      <div class="share-dialog-header"><h2 id="shareDialogTitle">Share this page</h2><button id="shareDialogClose" class="share-dialog-close" type="button" aria-label="Close share options">&times;</button></div>
+      <p>Choose how you want to share this link:</p>
+      <div class="share-options">
+        <a id="shareWhatsApp" class="share-option" target="_blank" rel="noopener">&#128172; WhatsApp</a>
+        <a id="shareFacebook" class="share-option" target="_blank" rel="noopener">&#128216; Facebook</a>
+        <a id="shareX" class="share-option" target="_blank" rel="noopener">&#120143; X</a>
+        <a id="shareTelegram" class="share-option" target="_blank" rel="noopener">&#9992; Telegram</a>
+        <a id="shareEmail" class="share-option">&#9993; Email</a>
+        <button id="shareCopyLink" class="share-option" type="button">&#128203; Copy link</button>
+      </div>
+      <button id="shareMoreOptions" class="share-option" type="button">More sharing options…</button>
+      <div id="shareStatus" class="share-status" role="status" aria-live="polite"></div>
     </div>
   </section>
 
@@ -1606,31 +1634,39 @@ syncTools(); renderSummary();
 
 /* ===== SHARE PAGE ===== */
 const sharePageBtn=document.getElementById('sharePage');
-sharePageBtn.addEventListener('click',async()=>{
-  const shareUrl=window.location.href;
-  const shareData={
-    title:'Chooron Ka Cabinet 2026',
-    text:'Take a look at this interactive cabinet and shared counter page. Open it and share it with friends if you find it interesting.',
-    url:shareUrl
-  };
-  if(navigator.share){
-    try{
-      await navigator.share(shareData);
-      return;
-    }catch(error){
-      if(error&&error.name==='AbortError') return;
-      console.warn('Native sharing was unavailable:',error);
-    }
-  }
+const shareScreen=document.getElementById('shareScreen');
+const shareStatus=document.getElementById('shareStatus');
+function openShareChooser(title,text,url){
+  const encodedUrl=encodeURIComponent(url),encodedText=encodeURIComponent(text),encodedMessage=encodeURIComponent(`${text} ${url}`);
+  document.getElementById('shareDialogTitle').textContent=title||'Share this page';
+  document.getElementById('shareWhatsApp').href=`https://wa.me/?text=${encodedMessage}`;
+  document.getElementById('shareFacebook').href=`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+  document.getElementById('shareX').href=`https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+  document.getElementById('shareTelegram').href=`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`;
+  document.getElementById('shareEmail').href=`mailto:?subject=${encodeURIComponent(title||'Share this page')}&body=${encodeURIComponent(`${text}\n${url}`)}`;
+  document.getElementById('shareCopyLink').dataset.url=url;
+  document.getElementById('shareMoreOptions').dataset.title=title||'Share this page';
+  document.getElementById('shareMoreOptions').dataset.text=text;
+  document.getElementById('shareMoreOptions').dataset.url=url;
+  shareStatus.textContent='';shareScreen.hidden=false;document.getElementById('shareDialogClose').focus();
+}
+function closeShareChooser(){shareScreen.hidden=true;}
+sharePageBtn.addEventListener('click',()=>openShareChooser('Share Chooron Ka Cabinet','Take a look at this interactive cabinet and shared counter page.',window.location.href));
+document.getElementById('cmInfoShare').addEventListener('click',()=>openShareChooser(document.getElementById('cmInfoTitle').textContent,'Public case notes and sources.',window.location.href));
+document.getElementById('shareDialogClose').addEventListener('click',closeShareChooser);
+shareScreen.addEventListener('click',event=>{if(event.target===shareScreen)closeShareChooser();});
+document.getElementById('shareCopyLink').addEventListener('click',async event=>{
+  const url=event.currentTarget.dataset.url||window.location.href;
   try{
-    if(navigator.clipboard&&window.isSecureContext){
-      await navigator.clipboard.writeText(shareUrl);
-      sharePageBtn.innerHTML='&#9989; Link Copied!';
-      setTimeout(()=>{sharePageBtn.innerHTML='&#128228; Share';},2200);
-      return;
-    }
-  }catch(error){ console.warn('Clipboard API unavailable:',error); }
-  window.prompt('Copy this page link and share it with friends:',shareUrl);
+    if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(url);shareStatus.textContent='Link copied. Paste it into any app or message.';return;}
+  }catch(error){console.warn('Clipboard API unavailable:',error);}
+  window.prompt('Copy this page link:',url);
+});
+document.getElementById('shareMoreOptions').addEventListener('click',async event=>{
+  const button=event.currentTarget;
+  if(!navigator.share){shareStatus.textContent='Use one of the sharing options above.';return;}
+  try{await navigator.share({title:button.dataset.title,text:button.dataset.text,url:button.dataset.url});}
+  catch(error){if(error&&error.name!=='AbortError'){shareStatus.textContent='More sharing options could not be opened.';console.warn('Native sharing was unavailable:',error);}}
 });
 /* ===== BUTTONS ===== */
 const muteBtn=document.getElementById('mute');
@@ -1691,19 +1727,9 @@ pollModeButtonsEl.addEventListener('click',event=>{
 pollStateSelect.addEventListener('change',renderPollParties);
 document.getElementById('pollResultsToggle').addEventListener('click',openAllPollResults);
 document.getElementById('cmInfoClose').addEventListener('click',()=>closeCmInfo());
-document.getElementById('cmInfoShare').addEventListener('click',async()=>{
-  const url=window.location.href;
-  try{
-    if(navigator.share){await navigator.share({title:document.getElementById('cmInfoTitle').textContent,text:'Public case notes and sources',url});return;}
-  }catch(error){if(error&&error.name==='AbortError')return;}
-  try{
-    if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(url);document.getElementById('cmInfoShare').textContent='✓ Link copied';setTimeout(()=>{document.getElementById('cmInfoShare').innerHTML='&#128228; Share this page';},2200);return;}
-  }catch(error){console.warn('Clipboard API unavailable:',error);}
-  window.prompt('Copy this case page link:',url);
-});
 window.addEventListener('hashchange',routeCmInfoFromHash);
 window.addEventListener('popstate',routeCmInfoFromHash);
-document.addEventListener('keydown',event=>{if(event.key==='Escape'){if(!cmInfoScreen.hidden)closeCmInfo();else if(!pollResultsScreen.hidden)closePoll();else if(!pollScreen.hidden)closePoll();else if(!analysisScreen.hidden)closeAnalysis();}});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){if(!shareScreen.hidden)closeShareChooser();else if(!cmInfoScreen.hidden)closeCmInfo();else if(!pollResultsScreen.hidden)closePoll();else if(!pollScreen.hidden)closePoll();else if(!analysisScreen.hidden)closeAnalysis();}});
 routeCmInfoFromHash();
 muteBtn.addEventListener('click',e=>{
   e.stopPropagation(); soundOn=!soundOn;
