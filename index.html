@@ -269,6 +269,14 @@
   }
   #hint{position:relative;z-index:20;font-size:13px;color:#ffe9a8;
     background:rgba(0,0,0,.35);border-radius:20px;padding:6px 12px;max-width:320px;margin:0 0 10px}
+  .home-pm-leader{position:relative;z-index:20;display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:6px 18px;width:min(100%,1250px);box-sizing:border-box;margin:0 auto 12px;padding:10px 16px;
+    border:2px solid #ffd23f;border-radius:16px;background:linear-gradient(110deg,#171111,#34200b);color:#ffe9a8;
+    box-shadow:0 5px 16px rgba(0,0,0,.28)}
+  .home-pm-leader h2{margin:0;color:#ffd23f;font-size:clamp(16px,2vw,21px);line-height:1.25}
+  .home-pm-leader p{flex:1 1 420px;min-width:0;margin:0;font:600 15px/1.45 Arial,sans-serif;overflow-wrap:anywhere}
+  .home-pm-leader strong{color:#fff}
+  .home-pm-leader-note{font:12px/1.4 Arial,sans-serif;color:#d9c38d}
 
   h1{text-align:center;font-size:clamp(30px,5vw,44px);color:#ffd23f;text-shadow:3px 3px 0 #000;margin:18px 0 6px}
   .sub{text-align:center;font-size:18px;color:#ffe9a8;margin-bottom:22px}
@@ -277,6 +285,9 @@
              box-shadow:0 10px 26px rgba(0,0,0,.6);width:340px;border:6px solid #ffd23f}
   .hero-card img{width:100%;height:360px;object-fit:cover;object-position:top}
   @media(max-width:760px){
+    .home-pm-leader{justify-content:flex-start;padding:9px 12px;gap:4px 10px}
+    .home-pm-leader h2{width:100%}
+    .home-pm-leader p{font-size:14px}
     #topbar{width:100%;margin-bottom:22px;gap:10px}
     .topbar-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
     #topbar button{padding:8px 6px;font-size:13px}
@@ -407,6 +418,11 @@
 </head>
 <body>
   <div id="hint">&#128070; Photo par hover &rarr; hathiyar chuno &rarr; click! Shared count sabko live dikhega.</div>
+  <section class="home-pm-leader" aria-labelledby="homePmLeaderTitle" aria-live="polite">
+    <h2 id="homePmLeaderTitle">&#127470;&#127475; India-wide PM preference poll</h2>
+    <p><strong>Current leader:</strong> <span id="homePmLeaderText">Loading live poll totals&hellip;</span></p>
+    <span class="home-pm-leader-note">Informal online poll; not an official election result.</span>
+  </section>
   <div id="topbar">
     <div class="topbar-status-row">
       <span id="cloudpill" title="Shared counter database status" aria-live="polite">&#9729; Connecting...</span>
@@ -631,6 +647,19 @@ const pollPartyById=new Map(pollStates.flatMap(s=>s.parties.map(p=>[`${s.code}__
 const centralPmById=new Map(centralPmChoices.map(p=>[p.id,p]));
 const pollPartyImageFiles=window.POLL_PARTY_IMAGE_FILES||{};
 function normalizePollImageTitle(title){return title.toLowerCase().replaceAll('_',' ').trim();}
+function renderHomePmLeader(snapshot){
+  const leaderText=document.getElementById('homePmLeaderText');
+  const counts=snapshot.docs.map(doc=>({choice:centralPmById.get(doc.id),count:doc.data().count}))
+    .filter(item=>item.choice&&Number.isSafeInteger(item.count)&&item.count>0);
+  if(!counts.length){leaderText.textContent='No PM preference votes recorded yet.';return;}
+  const highest=Math.max(...counts.map(item=>item.count));
+  const leaders=counts.filter(item=>item.count===highest).sort((a,b)=>a.choice.name.localeCompare(b.choice.name));
+  leaderText.textContent=leaders.map(item=>`${item.choice.name} — ${item.choice.partyName} (${item.count.toLocaleString()} ${item.count===1?'vote':'votes'})`).join(' · ');
+}
+db.collection('centralPmCounts').onSnapshot(renderHomePmLeader,error=>{
+  document.getElementById('homePmLeaderText').textContent='Poll totals are temporarily unavailable.';
+  console.error('Home PM poll leader update failed:',error);
+});
 
 const WEAPONS={
   chappal:{emoji:'🩴', label:'Chappal'},
