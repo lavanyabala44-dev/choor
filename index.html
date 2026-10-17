@@ -878,10 +878,6 @@ const cmDossiers={
  "N. Rangaswamy":{cases:[{title:"2026 election affidavit: declared pending criminal cases",status:"Candidate self-declaration · 0 pending cases reported",facts:["The affidavit record for Rangaswamy’s 2026 Thattanchavady candidacy reports that he declared no pending criminal cases. The Election Commission explains that candidate affidavits are publicly available through its portal.","This is a snapshot of what was declared in that election affidavit, not an independent finding that no allegation or controversy has ever existed."],sources:[{title:"India Elections: 2026 affidavit summary for N. Rangaswamy",url:"https://indiaelections.org/candidates/puducherry/thattanchavady/n-rangasamy"},{title:"Election Commission of India: Affidavit portal",url:"https://www.eci.gov.in/affidavit-portal"}]}]}
 };
 choors.push(...stateChiefMinisters,...allianceChiefMinisters);
-// The cabinet/CM profiles shown include BJP and its NDA government partners.
-// Keep this as a coalition grouping; partner leaders are not BJP members.
-const NDA_PROFILE_NAMES=new Set(['NARENDRA MODI',...choors.map(item=>item[1]).filter(name=>name!=='Gyanesh Kumar (CEC)')]);
-
 const chanda=[
  ["CHANDA CHOOR (BOSS)","Champat Rai","https://upload.wikimedia.org/wikipedia/commons/c/cf/Champat_rai_vhp.jpg",true],
  ["CHANDA CHOOR","Anil Mishra",""],
@@ -895,6 +891,9 @@ const chanda=[
  ["CHANDA CHOOR","Ram Shankar Mishra",""],
  ["CHANDA CHOOR","Gopal Rao",""]
 ];
+// Combined homepage tally requested for BJP/NDA government profiles and the
+// Chanda profiles; the page does not record party affiliation for Chanda people.
+const COMBINED_PROFILE_NAMES=new Set(['NARENDRA MODI',...choors.map(item=>item[1]).filter(name=>name!=='Gyanesh Kumar (CEC)'),...chanda.map(item=>item[1])]);
 
 const HITS=["DHISHOOM!","THWACK!","CHAPAL!","DHAP!","OUCH!","THAPPAD!"];
 
@@ -912,11 +911,11 @@ function recTotal(r){ return ORDER.reduce((a,k)=>a+r[k],0); }
 function grandTotal(){ return Object.keys(counts).reduce((a,n)=>a+recTotal(rec(n)),0); }
 
 function refreshTotal(){
-  const ndaWeapons=blankRec();
-  Object.keys(counts).forEach(n=>{const r=rec(n);if(NDA_PROFILE_NAMES.has(n))ORDER.forEach(k=>ndaWeapons[k]+=r[k]);});
-  const ndaTotal=ORDER.reduce((sum,key)=>sum+ndaWeapons[key],0);
+  const combinedWeapons=blankRec();
+  Object.keys(counts).forEach(n=>{const r=rec(n);if(COMBINED_PROFILE_NAMES.has(n))ORDER.forEach(k=>combinedWeapons[k]+=r[k]);});
+  const combinedTotal=ORDER.reduce((sum,key)=>sum+combinedWeapons[key],0);
   document.getElementById('totalbox').innerHTML =
-    `<div class="grand">BJP-led NDA ka KUL PITAI: ${ndaTotal.toLocaleString()}</div><div class="total-subnote">BJP and NDA partner profiles combined · not BJP party membership alone</div><div class="list-title">NDA PROFILES · HATHIYAR KE HISAB SE</div><div class="weapons"><div class="weapon-row"><span class="weapon-icon">🩴</span><span>Chappal ki maar</span><span class="weapon-count">${ndaWeapons.chappal.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">👞</span><span>Jooton ki maar</span><span class="weapon-count">${ndaWeapons.juta.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">🦯</span><span>Dandon ki maar</span><span class="weapon-count">${ndaWeapons.danda.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">🦵</span><span>Laaton ki maar</span><span class="weapon-count">${ndaWeapons.laat.toLocaleString()}</span></div></div><div class="total-subnote total-all-profiles">All page profiles combined: ${grandTotal().toLocaleString()} hits, including other profiles outside this coalition grouping.</div>`;
+    `<div class="grand">BJP-led NDA + Chanda profiles · KUL PITAI: ${combinedTotal.toLocaleString()}</div><div class="total-subnote">Combined site grouping: BJP/NDA government profiles plus Chanda profiles.</div><div class="list-title">COMBINED PROFILES · HATHIYAR KE HISAB SE</div><div class="weapons"><div class="weapon-row"><span class="weapon-icon">🩴</span><span>Chappal ki maar</span><span class="weapon-count">${combinedWeapons.chappal.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">👞</span><span>Jooton ki maar</span><span class="weapon-count">${combinedWeapons.juta.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">🦯</span><span>Dandon ki maar</span><span class="weapon-count">${combinedWeapons.danda.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">🦵</span><span>Laaton ki maar</span><span class="weapon-count">${combinedWeapons.laat.toLocaleString()}</span></div></div><div class="total-subnote total-all-profiles">All page profiles combined: ${grandTotal().toLocaleString()} hits.</div>`;
 }
 
 /* ===== FIREBASE SHARED COUNTS ===== */
