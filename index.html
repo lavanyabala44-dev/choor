@@ -100,7 +100,12 @@
   .poll-note{margin:0 0 14px;color:#ffe9a8;font:14px/1.5 Arial,sans-serif}
   .poll-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px;background:#111;border:2px solid #765100;border-radius:14px;margin-bottom:14px}
   .poll-tools label{font:700 15px Arial,sans-serif;color:#ffe9a8}
+  .poll-tools-label{font:700 15px Arial,sans-serif;color:#ffe9a8}
   .poll-tools select{min-width:min(100%,280px)}
+  .poll-mode-buttons{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .poll-mode-button{font:700 14px Georgia,serif;padding:10px 14px;border:2px solid #ffd23f;border-radius:12px;background:#111;color:#ffd23f;cursor:pointer}
+  .poll-mode-button:hover,.poll-mode-button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  .poll-mode-button[aria-pressed="true"]{background:#ffd23f;color:#111;box-shadow:0 3px 0 #9c6c00}
   #pollStatus{min-height:22px;color:#ffe9a8;font:14px/1.5 Arial,sans-serif;margin:8px 0}
   .poll-party-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px}
   .poll-party{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;align-items:center;text-align:left;min-width:0;padding:12px;border:2px solid #765100;border-radius:14px;background:#111;color:#fff;cursor:pointer}
@@ -425,7 +430,7 @@
     <div class="poll-wrap">
       <div class="poll-header"><h2 id="pollTitle">&#128202; Polling Booth</h2><div class="poll-actions"><button id="pollResultsToggle" type="button">View all results</button><button id="pollClose" type="button">&#8592; Back to Cabinet</button></div></div>
       <p class="poll-note">Informal, self-selected online poll; it is not an Election Commission poll and does not represent verified voters. A browser profile may submit one state/UT party vote total, one national party vote, and one PM preference vote. Clearing browser data, using private browsing or another device may allow another response. No IP or device MAC address is used as an identity. Party lists are selected, not exhaustive. Check the current <a href="https://www.eci.gov.in/list-of-political-parties" target="_blank" rel="noopener">Election Commission of India party register</a>. Party names, leaders and recognition can change.</p>
-      <div class="poll-tools"><label for="pollMode">Choose a poll:</label><select id="pollMode"><option value="">Select a poll</option><option value="state">State / union territory party preference</option><option value="central-party">India-wide: party to form Union government</option><option value="central-pm">India-wide: preferred Prime Minister</option></select><label id="pollStateLabel" for="pollState" hidden>Choose a state or union territory:</label><select id="pollState" hidden><option value="">Select a state</option></select></div>
+      <div class="poll-tools"><span class="poll-tools-label">Choose poll type:</span><div id="pollModeButtons" class="poll-mode-buttons" role="group" aria-label="Choose a poll type"><button class="poll-mode-button" type="button" data-poll-mode="state" aria-pressed="false">State / UT Party</button><button class="poll-mode-button" type="button" data-poll-mode="central-party" aria-pressed="false">India-wide Party</button><button class="poll-mode-button" type="button" data-poll-mode="central-pm" aria-pressed="false">PM Preference</button></div><label id="pollStateLabel" for="pollState" hidden>Choose a state or union territory:</label><select id="pollState" hidden><option value="">Select a state</option></select></div>
       <p id="pollQuestion" class="poll-note" hidden></p>
       <div id="pollStatus" role="status" aria-live="polite">Choose a poll to see its choices.</div>
       <div id="pollParties" class="poll-party-grid" role="group" aria-label="Political parties"></div>
@@ -1382,7 +1387,7 @@ function refreshAll(){
 
 const pollScreen=document.getElementById('pollScreen');
 const pollResultsScreen=document.getElementById('pollResultsScreen');
-const pollModeSelect=document.getElementById('pollMode');
+const pollModeButtonsEl=document.getElementById('pollModeButtons');
 const pollStateSelect=document.getElementById('pollState');
 const pollPartiesEl=document.getElementById('pollParties');
 const pollStatusEl=document.getElementById('pollStatus');
@@ -1391,11 +1396,12 @@ const pollResultData=new Map();
 const centralPartyResultData=new Map();
 const centralPmResultData=new Map();
 let selectedPollParty=null;
+let selectedPollMode='';
 let pollScrollY=0;
 pollStates.forEach(state=>{const option=document.createElement('option');option.value=state.code;option.textContent=state.name;pollStateSelect.append(option);});
 function currentPollState(){return pollStates.find(state=>state.code===pollStateSelect.value)||null;}
 function currentPollDefinition(){
-  const mode=pollModeSelect.value;
+  const mode=selectedPollMode;
   if(mode==='state'){const state=currentPollState();return state?{mode,title:state.name,stateCode:state.code,choices:state.parties}:null;}
   if(mode==='central-party')return {mode,title:'India — Union government party preference',stateCode:'IN',choices:centralPollParties};
   if(mode==='central-pm')return {mode,title:'India — PM preference',stateCode:'IN',choices:centralPmChoices};
@@ -1403,7 +1409,7 @@ function currentPollDefinition(){
 }
 function pollInitials(name){return name.split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();}
 function renderPollParties(){
-  const mode=pollModeSelect.value,definition=currentPollDefinition();selectedPollParty=null;pollPartiesEl.replaceChildren();pollSubmitBtn.disabled=true;
+  const mode=selectedPollMode,definition=currentPollDefinition();selectedPollParty=null;pollPartiesEl.replaceChildren();pollSubmitBtn.disabled=true;
   const stateLabel=document.getElementById('pollStateLabel'),question=document.getElementById('pollQuestion');
   stateLabel.hidden=mode!=='state';pollStateSelect.hidden=mode!=='state';question.hidden=!definition;
   if(!definition){pollStatusEl.textContent=mode==='state'?'Choose a state to see the parties listed for it.':'Choose a poll to see its choices.';return;}
@@ -1688,7 +1694,12 @@ document.getElementById('pollResultsBack').addEventListener('click',()=>{
 });
 document.getElementById('pollResultsRefresh').addEventListener('click',openAllPollResults);
 document.getElementById('pollSubmit').addEventListener('click',castPollVote);
-pollModeSelect.addEventListener('change',renderPollParties);
+pollModeButtonsEl.addEventListener('click',event=>{
+  const button=event.target.closest('[data-poll-mode]');if(!button)return;
+  selectedPollMode=button.dataset.pollMode;
+  pollModeButtonsEl.querySelectorAll('[data-poll-mode]').forEach(option=>option.setAttribute('aria-pressed',String(option===button)));
+  renderPollParties();
+});
 pollStateSelect.addEventListener('change',renderPollParties);
 document.getElementById('pollResultsToggle').addEventListener('click',openAllPollResults);
 document.getElementById('cmInfoClose').addEventListener('click',()=>closeCmInfo());
