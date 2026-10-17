@@ -29,6 +29,8 @@
   #topbar{position:relative;z-index:30;display:flex;flex-direction:column;gap:10px;align-items:stretch;
     width:100%;max-width:1250px;margin:0 auto 22px;box-sizing:border-box}
   .topbar-status-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;min-width:0}
+  #languagePicker{display:flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid #765100;border-radius:10px;background:#111;color:#ffe9a8;font:700 12px Arial,sans-serif;white-space:nowrap}
+  #appLanguage{max-width:min(48vw,210px);padding:5px 8px;border:1px solid #ffd23f;border-radius:7px;background:#21170f;color:#ffd23f;font:600 13px Arial,sans-serif}
   .topbar-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%;min-width:0}
   #topbar button{cursor:pointer;font-family:Georgia,serif;font-size:14px;font-weight:bold;
     color:#ffd23f;background:#c1121f;border:2px solid #ffd23f;border-radius:20px;padding:6px 14px;letter-spacing:.5px}
@@ -294,6 +296,8 @@
     #hint{max-width:100%;box-sizing:border-box}
     .topbar-status-row{align-items:stretch}
     #cloudpill{align-self:flex-start}
+    #languagePicker{flex:1 1 100%;justify-content:space-between}
+    #appLanguage{max-width:70%;flex:1}
     #messageControl{flex:1 1 100%;flex-wrap:wrap;max-width:100%}
     #messageControl input[type="text"]{width:auto;flex:1 1 140px;max-width:100%;box-sizing:border-box}
     h1{margin-top:16px;font-size:clamp(28px,8vw,44px);overflow-wrap:anywhere}
@@ -425,6 +429,7 @@
   </section>
   <div id="topbar">
     <div class="topbar-status-row">
+      <label id="languagePicker" for="appLanguage"><span>Language</span><select id="appLanguage" aria-label="Choose language"></select></label>
       <span id="cloudpill" title="Shared counter database status" aria-live="polite">&#9729; Connecting...</span>
       <div id="messageControl">
         <input id="hitMessage" type="text" maxlength="90" placeholder="Optional message, e.g. Demonetization ke liye!" aria-label="Optional message to show on each click">
@@ -1812,6 +1817,7 @@ function trackPageVisit(){
 trackPageVisit();
 connectFirebase();
 </script>
+<script src="app-language.js"></script>
 </body>
 </html>
 
