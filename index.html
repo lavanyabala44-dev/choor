@@ -387,19 +387,20 @@
       <div class="analysis-card" style="grid-column:1/-1"><h3>&#128101; Person hits by country/city and weapon</h3><div class="person-report-tools"><label for="personLocationSearch">Search by person:</label><input id="personLocationSearch" type="search" list="personLocationNames" placeholder="Type a person's name" autocomplete="off"><datalist id="personLocationNames"></datalist><span id="personLocationMeta" class="person-report-meta"></span></div><div id="personLocationTotals" class="person-report-totals" aria-live="polite"></div><div id="personLocationReport"></div><div id="personLocationPages" class="person-report-pages"></div></div>
       <div class="analysis-card" style="grid-column:1/-1"><h3>Message-by-message report</h3><div id="messageReport"></div></div>
       <div class="analysis-card" style="grid-column:1/-1"><h3>&#128202; Polling Booth — state-wise results</h3><p class="analysis-note">Informal online poll totals, grouped by state. Participation is not verified elector voting.</p><div id="pollAnalysisStatus" class="analysis-note" role="status">No poll data loaded.</div><div id="pollAnalysisResults" class="poll-analysis-list"></div><button id="pollAnalysisRefresh" type="button">Refresh poll totals</button></div>
+      <div class="analysis-card" style="grid-column:1/-1"><h3>&#127963; India-wide party and PM preference</h3><p class="analysis-note">Informal national poll totals. PM preference is not an official nomination or a direct election.</p><div id="pollCentralAnalysisStatus" class="analysis-note" role="status">No national poll data loaded.</div><div id="pollCentralAnalysisResults" class="poll-analysis-list"></div></div>
     </div>
   </section>
 
   <section id="pollScreen" hidden role="dialog" aria-modal="true" aria-labelledby="pollTitle">
     <div class="poll-wrap">
       <div class="poll-header"><h2 id="pollTitle">&#128202; Polling Booth</h2><div class="poll-actions"><button id="pollResultsToggle" type="button">View results</button><button id="pollClose" type="button">&#8592; Back to Cabinet</button></div></div>
-      <p class="poll-note">Informal, self-selected online poll; it is not an Election Commission poll and does not represent verified voters. One response is allowed per anonymous browser profile. Clearing browser data, using private browsing or another device may allow another response. No IP or device MAC address is used as an identity. The list includes recognised national parties and selected regional parties; it may not include every registered party. Check the current <a href="https://www.eci.gov.in/list-of-political-parties" target="_blank" rel="noopener">Election Commission of India party register</a>. Party names, leaders and recognition can change.</p>
-      <div class="poll-tools"><label for="pollState">Choose a state or union territory:</label><select id="pollState"><option value="">Select a state</option></select></div>
-      <p id="pollQuestion" class="poll-note" hidden>If an election were held in your state or territory today, which party would you support? Party images come from Wikipedia and may show a party logo or flag; they are not official ECI election symbols.</p>
-      <div id="pollStatus" role="status" aria-live="polite">Choose a state to see the parties listed for it.</div>
+      <p class="poll-note">Informal, self-selected online poll; it is not an Election Commission poll and does not represent verified voters. A browser profile may submit one state/UT party vote total, one national party vote, and one PM preference vote. Clearing browser data, using private browsing or another device may allow another response. No IP or device MAC address is used as an identity. Party lists are selected, not exhaustive. Check the current <a href="https://www.eci.gov.in/list-of-political-parties" target="_blank" rel="noopener">Election Commission of India party register</a>. Party names, leaders and recognition can change.</p>
+      <div class="poll-tools"><label for="pollMode">Choose a poll:</label><select id="pollMode"><option value="">Select a poll</option><option value="state">State / union territory party preference</option><option value="central-party">India-wide: party to form Union government</option><option value="central-pm">India-wide: preferred Prime Minister</option></select><label id="pollStateLabel" for="pollState" hidden>Choose a state or union territory:</label><select id="pollState" hidden><option value="">Select a state</option></select></div>
+      <p id="pollQuestion" class="poll-note" hidden></p>
+      <div id="pollStatus" role="status" aria-live="polite">Choose a poll to see its choices.</div>
       <div id="pollParties" class="poll-party-grid" role="group" aria-label="Political parties"></div>
       <button id="pollSubmit" class="poll-submit" type="button" disabled>Vote</button>
-      <section id="pollResults" class="poll-results" hidden aria-live="polite"><h3 id="pollResultsTitle">State poll results</h3><div id="pollResultsTotal" class="poll-note"></div><div id="pollResultsRows"></div></section>
+      <section id="pollResults" class="poll-results" hidden aria-live="polite"><h3 id="pollResultsTitle">Poll results</h3><div id="pollResultsTotal" class="poll-note"></div><div id="pollResultsRows"></div></section>
     </div>
   </section>
 
@@ -493,6 +494,27 @@ const nationalPollParties=[
   {id:'other',name:'Other registered party (not listed)',leader:'No party leader shown',symbol:'➕'},
   {id:'undecided',name:'Undecided / no party preference',leader:'No party leader shown',symbol:'⚪'}
 ];
+// A separate India-wide list includes national parties plus selected major
+// regional parties. It is not intended to be a complete ballot or an ECI poll.
+const centralPollParties=[
+  ...nationalPollParties,
+  {id:'tdp',name:'Telugu Desam Party',leader:'N. Chandrababu Naidu',page:'N._Chandrababu_Naidu',partyImagePage:'Telugu Desam Party',symbol:'🚲'},
+  {id:'jdu',name:'Janata Dal (United)',leader:'Nitish Kumar',page:'Nitish_Kumar',partyImagePage:'Janata Dal (United)',symbol:'🏹'},
+  {id:'aitc',name:'All India Trinamool Congress',leader:'Mamata Banerjee',page:'Mamata_Banerjee',partyImagePage:'All India Trinamool Congress',symbol:'🌼'},
+  {id:'sp',name:'Samajwadi Party',leader:'Akhilesh Yadav',page:'Akhilesh_Yadav',partyImagePage:'Samajwadi Party',symbol:'🚲'},
+  {id:'dmk',name:'Dravida Munnetra Kazhagam',leader:'M. K. Stalin',page:'M._K._Stalin',partyImagePage:'Dravida Munnetra Kazhagam',symbol:'☀️'}
+];
+const centralPmChoices=[
+  {id:'modi',name:'Narendra Modi',leader:'BJP',page:'Narendra_Modi',symbol:'🪷'},
+  {id:'rahul-gandhi',name:'Rahul Gandhi',leader:'Indian National Congress',page:'Rahul_Gandhi',symbol:'✋'},
+  {id:'kejriwal',name:'Arvind Kejriwal',leader:'Aam Aadmi Party',page:'Arvind_Kejriwal',symbol:'🧹'},
+  {id:'mamata-banerjee',name:'Mamata Banerjee',leader:'All India Trinamool Congress',page:'Mamata_Banerjee',symbol:'🌼'},
+  {id:'nitish-kumar',name:'Nitish Kumar',leader:'Janata Dal (United)',page:'Nitish_Kumar',symbol:'🏹'},
+  {id:'akhilesh-yadav',name:'Akhilesh Yadav',leader:'Samajwadi Party',page:'Akhilesh_Yadav',symbol:'🚲'},
+  {id:'chandrababu-naidu',name:'N. Chandrababu Naidu',leader:'Telugu Desam Party',page:'N._Chandrababu_Naidu',symbol:'🚲'},
+  {id:'other-leader',name:'Another leader',leader:'No leader shown',symbol:'➕'},
+  {id:'no-preference',name:'No preference / undecided',leader:'No leader shown',symbol:'⚪'}
+];
 const statePollParties={
   AP:[['tdp','Telugu Desam Party','N. Chandrababu Naidu','N._Chandrababu_Naidu','🚲'],['ysrcp','YSR Congress Party','Y. S. Jagan Mohan Reddy','Y._S._Jagan_Mohan_Reddy','🌀'],['janasena','Jana Sena Party','Pawan Kalyan','Pawan_Kalyan','⭐']],
   AR:[['ppa','People’s Party of Arunachal','Kamen Ringu','Kamen_Ringu','🌄']],
@@ -526,6 +548,8 @@ for(const state of pollStates){
   state.parties=[...nationalPollParties,...regional.filter(p=>!nationalPollParties.some(n=>n.id===p.id))];
 }
 const pollPartyById=new Map(pollStates.flatMap(s=>s.parties.map(p=>[`${s.code}__${p.id}`,p])));
+const centralPartyById=new Map(centralPollParties.map(p=>[p.id,p]));
+const centralPmById=new Map(centralPmChoices.map(p=>[p.id,p]));
 
 const WEAPONS={
   chappal:{emoji:'🩴', label:'Chappal'},
@@ -1313,27 +1337,41 @@ function refreshAll(){
 }
 
 const pollScreen=document.getElementById('pollScreen');
+const pollModeSelect=document.getElementById('pollMode');
 const pollStateSelect=document.getElementById('pollState');
 const pollPartiesEl=document.getElementById('pollParties');
 const pollStatusEl=document.getElementById('pollStatus');
 const pollSubmitBtn=document.getElementById('pollSubmit');
 const pollResultData=new Map();
+const centralPartyResultData=new Map();
+const centralPmResultData=new Map();
 let selectedPollParty=null;
 let pollScrollY=0;
 pollStates.forEach(state=>{const option=document.createElement('option');option.value=state.code;option.textContent=state.name;pollStateSelect.append(option);});
 function currentPollState(){return pollStates.find(state=>state.code===pollStateSelect.value)||null;}
+function currentPollDefinition(){
+  const mode=pollModeSelect.value;
+  if(mode==='state'){const state=currentPollState();return state?{mode,title:state.name,stateCode:state.code,choices:state.parties}:null;}
+  if(mode==='central-party')return {mode,title:'India — Union government party preference',stateCode:'IN',choices:centralPollParties};
+  if(mode==='central-pm')return {mode,title:'India — PM preference',stateCode:'IN',choices:centralPmChoices};
+  return null;
+}
 function pollInitials(name){return name.split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();}
 function renderPollParties(){
-  const state=currentPollState();selectedPollParty=null;pollPartiesEl.replaceChildren();pollSubmitBtn.disabled=true;
-  document.getElementById('pollQuestion').hidden=!state;
-  if(!state){pollStatusEl.textContent='Choose a state to see the parties listed for it.';return;}
-  state.parties.forEach(party=>{
+  const mode=pollModeSelect.value,definition=currentPollDefinition();selectedPollParty=null;pollPartiesEl.replaceChildren();pollSubmitBtn.disabled=true;
+  const stateLabel=document.getElementById('pollStateLabel'),question=document.getElementById('pollQuestion');
+  stateLabel.hidden=mode!=='state';pollStateSelect.hidden=mode!=='state';question.hidden=!definition;
+  if(!definition){pollStatusEl.textContent=mode==='state'?'Choose a state to see the parties listed for it.':'Choose a poll to see its choices.';return;}
+  if(mode==='state')question.textContent=`If an election were held in ${definition.title} today, which party would you support? Party images come from Wikipedia and may show a party logo or flag; they are not official ECI election symbols.`;
+  else if(mode==='central-party')question.textContent='If a Lok Sabha election were held today, which party would you support to form the Union government? This selected list is informal and is not an official ballot.';
+  else question.textContent='Who would you prefer as Prime Minister? This is an informal preference poll, not an official party nomination or a direct election.';
+  definition.choices.forEach(party=>{
     const button=document.createElement('button');button.type='button';button.className='poll-party';button.dataset.partyId=party.id;button.setAttribute('aria-pressed','false');
     const portrait=document.createElement('span');portrait.className='poll-leader';portrait.textContent=pollInitials(party.leader);
     const copy=document.createElement('span');copy.className='poll-party-copy';
     const symbol=document.createElement('span');symbol.className='poll-symbol';symbol.setAttribute('role','img');symbol.setAttribute('aria-label',`${party.name} image; Wikipedia party logo or flag when available`);symbol.textContent=party.symbol;
     const name=document.createElement('span');name.className='poll-party-name';name.textContent=party.name;
-    const leader=document.createElement('span');leader.className='poll-party-leader';leader.textContent=party.page?`Party leader shown: ${party.leader}`:party.leader;
+    const leader=document.createElement('span');leader.className='poll-party-leader';leader.textContent=party.page?`${mode==='central-pm'?'Party':'Party leader shown'}: ${party.leader}`:party.leader;
     copy.append(symbol,name,leader);button.append(portrait,copy);
     button.addEventListener('click',()=>{
       selectedPollParty=party;pollPartiesEl.querySelectorAll('.poll-party').forEach(card=>card.setAttribute('aria-pressed',String(card===button)));
@@ -1341,12 +1379,13 @@ function renderPollParties(){
     });
     pollPartiesEl.append(button);
   });
-  pollStatusEl.textContent=`${state.parties.length} national and selected state-recognised parties are listed. Check the ECI register for current recognition and election symbols.`;
-  loadPollWikipediaImages(state);
-  renderPollResults(state.code);
+  pollStatusEl.textContent=mode==='state'?`${definition.choices.length} national and selected state-recognised parties are listed. Check the ECI register for current recognition and election symbols.`:`${definition.choices.length} selected choices are listed. This informal poll is not exhaustive.`;
+  loadPollWikipediaImages(definition);
+  renderPollResults();
 }
-async function loadPollWikipediaImages(state){
-  const items=state.parties.flatMap(party=>[
+async function loadPollWikipediaImages(definition){
+  const requestKey=`${definition.mode}:${definition.stateCode||''}`;
+  const items=definition.choices.flatMap(party=>[
     ...(party.partyImagePage?[{party,kind:'party',title:party.partyImagePage}]:[]),
     ...(party.page?[{party,kind:'leader',title:party.page}]:[])
   ]);
@@ -1360,8 +1399,9 @@ async function loadPollWikipediaImages(state){
       const from=redirect.from.toLowerCase().replaceAll('_',' '),to=redirect.to.toLowerCase().replaceAll('_',' ');
       if(photos.has(to))photos.set(from,photos.get(to));
     }
+    const current=currentPollDefinition();if(!current||`${current.mode}:${current.stateCode||''}`!==requestKey)return;
     pollPartiesEl.querySelectorAll('.poll-party').forEach(card=>{
-      const party=state.parties.find(p=>p.id===card.dataset.partyId);if(!party)return;
+      const party=definition.choices.find(p=>p.id===card.dataset.partyId);if(!party)return;
       const partySource=party.partyImagePage&&photos.get(party.partyImagePage.toLowerCase().replaceAll('_',' '));
       if(partySource){const image=document.createElement('img');image.src=partySource;image.alt='';image.setAttribute('aria-hidden','true');image.loading='lazy';image.onerror=()=>image.remove();card.querySelector('.poll-symbol').replaceChildren(image);}
       const leaderSource=party.page&&photos.get(party.page.toLowerCase().replaceAll('_',' '));if(!leaderSource)return;
@@ -1370,17 +1410,21 @@ async function loadPollWikipediaImages(state){
   }catch(error){console.warn('Party and leader image lookup unavailable:',error);}
 }
 async function loadPollCounts(){
-  const snapshot=await db.collection('pollCounts').get();pollResultData.clear();
+  const [snapshot,centralPartySnapshot,centralPmSnapshot]=await Promise.all([db.collection('pollCounts').get(),db.collection('centralPartyCounts').get(),db.collection('centralPmCounts').get()]);pollResultData.clear();centralPartyResultData.clear();centralPmResultData.clear();
   snapshot.docs.forEach(doc=>{const data=doc.data();if(pollPartyById.has(doc.id)&&Number.isSafeInteger(data.count)&&data.count>=1)pollResultData.set(doc.id,data);});
-  renderPollResults(currentPollState()?.code);
-  return snapshot.size;
+  centralPartySnapshot.docs.forEach(doc=>{const data=doc.data();if(centralPartyById.has(doc.id)&&Number.isSafeInteger(data.count)&&data.count>=1)centralPartyResultData.set(doc.id,data);});
+  centralPmSnapshot.docs.forEach(doc=>{const data=doc.data();if(centralPmById.has(doc.id)&&Number.isSafeInteger(data.count)&&data.count>=1)centralPmResultData.set(doc.id,data);});
+  renderPollResults();
+  return snapshot.size+centralPartySnapshot.size+centralPmSnapshot.size;
 }
-function renderPollResults(stateCode){
-  if(!stateCode)return;
-  const state=pollStates.find(item=>item.code===stateCode);if(!state)return;
-  const entries=state.parties.map(party=>({party,count:pollResultData.get(`${stateCode}__${party.id}`)?.count||0})).filter(row=>row.count>0).sort((a,b)=>b.count-a.count);
+function renderPollResults(){
+  const definition=currentPollDefinition();if(!definition)return;
+  let source=pollResultData;
+  if(definition.mode==='central-party')source=centralPartyResultData;
+  if(definition.mode==='central-pm')source=centralPmResultData;
+  const entries=definition.choices.map(party=>({party,count:(definition.mode==='state'?source.get(`${definition.stateCode}__${party.id}`):source.get(party.id))?.count||0})).filter(row=>row.count>0).sort((a,b)=>b.count-a.count);
   const total=entries.reduce((sum,row)=>sum+row.count,0);
-  document.getElementById('pollResultsTitle').textContent=`${state.name} — informal poll results`;
+  document.getElementById('pollResultsTitle').textContent=`${definition.title} — informal poll results`;
   document.getElementById('pollResultsTotal').textContent=`${total.toLocaleString()} recorded response${total===1?'':'s'}. Percentages use this total.`;
   const rows=document.getElementById('pollResultsRows');rows.replaceChildren();
   if(!entries.length){const empty=document.createElement('p');empty.className='analysis-empty';empty.textContent='No responses recorded for this state yet.';rows.append(empty);return;}
@@ -1393,22 +1437,37 @@ function renderPollResults(stateCode){
   });
 }
 async function castPollVote(){
-  const state=currentPollState(),party=selectedPollParty;if(!state||!party)return;
+  const definition=currentPollDefinition(),party=selectedPollParty;if(!definition||!party)return;
   pollSubmitBtn.disabled=true;pollStatusEl.textContent='Connecting securely to record your response…';
   try{
     if(!pollAuth)throw new Error('AUTH_SDK_UNAVAILABLE');
     let user=pollAuth.currentUser;if(!user){const credential=await pollAuth.signInAnonymously();user=credential.user;}
-    const voteRef=db.collection('pollVotes').doc(user.uid);const tallyRef=db.collection('pollCounts').doc(`${state.code}__${party.id}`);
-    await db.runTransaction(async transaction=>{
-      const [voteSnap,tallySnap]=await Promise.all([transaction.get(voteRef),transaction.get(tallyRef)]);
-      if(voteSnap.exists)throw new Error('ALREADY_VOTED');
-      const count=tallySnap.exists?tallySnap.data().count:0;
-      if(!Number.isSafeInteger(count)||count<0)throw new Error('INVALID_POLL_TOTAL');
-      transaction.set(voteRef,{uid:user.uid,stateCode:state.code,stateName:state.name,partyId:party.id,partyName:party.name,pollId:'state-support-v1',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-      transaction.set(tallyRef,{stateCode:state.code,stateName:state.name,partyId:party.id,partyName:party.name,count:count+1});
-    });
+    if(definition.mode==='state'){
+      const voteRef=db.collection('pollVotes').doc(user.uid);const tallyRef=db.collection('pollCounts').doc(`${definition.stateCode}__${party.id}`);
+      await db.runTransaction(async transaction=>{
+        const [voteSnap,tallySnap]=await Promise.all([transaction.get(voteRef),transaction.get(tallyRef)]);
+        if(voteSnap.exists)throw new Error('ALREADY_VOTED');
+        const count=tallySnap.exists?tallySnap.data().count:0;
+        if(!Number.isSafeInteger(count)||count<0)throw new Error('INVALID_POLL_TOTAL');
+        transaction.set(voteRef,{uid:user.uid,stateCode:definition.stateCode,stateName:definition.title,partyId:party.id,partyName:party.name,pollId:'state-support-v1',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        transaction.set(tallyRef,{stateCode:definition.stateCode,stateName:definition.title,partyId:party.id,partyName:party.name,count:count+1});
+      });
+    }else{
+      const isParty=definition.mode==='central-party';
+      const voteCollection=isParty?'centralPartyVotes':'centralPmVotes',tallyCollection=isParty?'centralPartyCounts':'centralPmCounts';
+      const choiceField=isParty?'partyId':'candidateId',nameField=isParty?'partyName':'candidateName',pollId=isParty?'central-party-v1':'central-pm-v1';
+      const voteRef=db.collection(voteCollection).doc(user.uid),tallyRef=db.collection(tallyCollection).doc(party.id);
+      await db.runTransaction(async transaction=>{
+        const [voteSnap,tallySnap]=await Promise.all([transaction.get(voteRef),transaction.get(tallyRef)]);
+        if(voteSnap.exists)throw new Error('ALREADY_VOTED');
+        const count=tallySnap.exists?tallySnap.data().count:0;
+        if(!Number.isSafeInteger(count)||count<0)throw new Error('INVALID_POLL_TOTAL');
+        transaction.set(voteRef,{uid:user.uid,[choiceField]:party.id,[nameField]:party.name,pollId,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        transaction.set(tallyRef,{[choiceField]:party.id,[nameField]:party.name,count:count+1});
+      });
+    }
     selectedPollParty=null;pollPartiesEl.querySelectorAll('.poll-party').forEach(card=>card.setAttribute('aria-pressed','false'));
-    pollStatusEl.textContent=`Your response for ${state.name} has been recorded. This browser profile cannot vote again.`;
+    pollStatusEl.textContent=`Your response for ${definition.title} has been recorded for this browser profile.`;
     await loadPollCounts();
   }catch(error){
     if(error.message==='ALREADY_VOTED')pollStatusEl.textContent='This anonymous browser profile has already submitted a response. You cannot vote again from this profile.';
@@ -1418,14 +1477,27 @@ async function castPollVote(){
   }finally{pollSubmitBtn.disabled=!selectedPollParty;}
 }
 async function loadPollAnalysis(){
-  const status=document.getElementById('pollAnalysisStatus'),container=document.getElementById('pollAnalysisResults');status.textContent='Loading state-wise poll totals…';container.replaceChildren();
+  const status=document.getElementById('pollAnalysisStatus'),container=document.getElementById('pollAnalysisResults');
+  const centralStatus=document.getElementById('pollCentralAnalysisStatus'),centralContainer=document.getElementById('pollCentralAnalysisResults');
+  status.textContent='Loading state-wise poll totals…';container.replaceChildren();centralStatus.textContent='Loading national poll totals…';centralContainer.replaceChildren();
   try{
-    const snapshot=await db.collection('pollCounts').get();const totals=new Map();
+    const [snapshot,centralPartySnapshot,centralPmSnapshot]=await Promise.all([db.collection('pollCounts').get(),db.collection('centralPartyCounts').get(),db.collection('centralPmCounts').get()]);const totals=new Map();
     snapshot.docs.forEach(doc=>{const data=doc.data(),party=pollPartyById.get(doc.id);if(!party||!Number.isSafeInteger(data.count)||data.count<1)return;const entry=totals.get(data.stateCode)||{votes:0,parties:[]};entry.votes+=data.count;entry.parties.push({name:party.name,count:data.count});totals.set(data.stateCode,entry);});
     const sorted=[...totals.entries()].sort((a,b)=>b[1].votes-a[1].votes);
     sorted.forEach(([code,entry])=>{const state=pollStates.find(item=>item.code===code);const card=document.createElement('div');card.className='poll-analysis-state';const title=document.createElement('strong');title.textContent=`${state?.name||code}: ${entry.votes.toLocaleString()} responses`;const top=entry.parties.sort((a,b)=>b.count-a.count).slice(0,3).map(item=>`${item.name} (${item.count.toLocaleString()})`).join(' · ');card.append(title,document.createElement('br'),document.createTextNode(top));container.append(card);});
     status.textContent=`Loaded ${snapshot.size.toLocaleString()} party/state tally records across ${sorted.length.toLocaleString()} state/UT${sorted.length===1?'':'s'}.`;
     if(!sorted.length){const empty=document.createElement('div');empty.className='analysis-empty';empty.textContent='No poll responses recorded yet.';container.append(empty);}
+    const addCentralSummary=(snapshot,choices,title)=>{
+      const rows=snapshot.docs.map(doc=>({choice:choices.get(doc.id),count:doc.data().count})).filter(row=>row.choice&&Number.isSafeInteger(row.count)&&row.count>0).sort((a,b)=>b.count-a.count);
+      const total=rows.reduce((sum,row)=>sum+row.count,0),card=document.createElement('div');card.className='poll-analysis-state';
+      const heading=document.createElement('strong');heading.textContent=`${title}: ${total.toLocaleString()} responses`;
+      const summary=rows.slice(0,5).map(row=>`${row.choice.name} (${row.count.toLocaleString()})`).join(' · ');
+      card.append(heading,document.createElement('br'),document.createTextNode(summary||'No responses recorded yet.'));centralContainer.append(card);return total;
+    };
+    const partyTotal=addCentralSummary(centralPartySnapshot,centralPartyById,'Union government party preference');
+    const pmTotal=addCentralSummary(centralPmSnapshot,centralPmById,'Prime Minister preference');
+    centralStatus.textContent=`Loaded ${centralPartySnapshot.size.toLocaleString()} party and ${centralPmSnapshot.size.toLocaleString()} PM-choice tally records.`;
+    if(!partyTotal&&!pmTotal)centralStatus.textContent='No national poll responses recorded yet.';
   }catch(error){status.textContent='Could not load poll totals. Check the shared database connection and try again.';console.error('Poll analysis load failed:',error);}
 }
 
@@ -1508,6 +1580,7 @@ document.getElementById('pollOpen').addEventListener('click',()=>{
 });
 document.getElementById('pollClose').addEventListener('click',closePoll);
 document.getElementById('pollSubmit').addEventListener('click',castPollVote);
+pollModeSelect.addEventListener('change',renderPollParties);
 pollStateSelect.addEventListener('change',renderPollParties);
 document.getElementById('pollResultsToggle').addEventListener('click',event=>{
   const panel=document.getElementById('pollResults');panel.hidden=!panel.hidden;event.currentTarget.textContent=panel.hidden?'View results':'Hide results';if(!panel.hidden)loadPollCounts().catch(error=>{pollStatusEl.textContent='Could not load poll results right now.';console.error(error);});

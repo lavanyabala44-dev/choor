@@ -353,5 +353,93 @@ service cloud.firestore {
         && linkedNewPollVote(resource.data.stateCode, resource.data.partyId);
       allow delete: if false;
     }
+
+    // India-wide poll collections are separate from state tallies so each
+    // anonymous browser profile may submit one national party response and
+    // one PM preference without changing existing state-poll votes.
+    function validCentralParty(party) {
+      return party in ['aap','bsp','bjp','cpi-m','inc','npp','other','undecided','tdp','jdu','aitc','sp','dmk'];
+    }
+    function validCentralPm(candidate) {
+      return candidate in ['modi','rahul-gandhi','kejriwal','mamata-banerjee','nitish-kumar','akhilesh-yadav','chandrababu-naidu','other-leader','no-preference'];
+    }
+    function validCentralTally(data, choiceId, choiceField, nameField, partyChoice) {
+      return data.keys().hasAll([choiceField,nameField,'count'])
+        && data.keys().hasOnly([choiceField,nameField,'count'])
+        && data[choiceField] == choiceId
+        && (partyChoice ? validCentralParty(choiceId) : validCentralPm(choiceId))
+        && data[nameField] is string
+        && data[nameField].size() > 0
+        && data[nameField].size() <= 120
+        && data.count is int
+        && data.count >= 1;
+    }
+    function validCentralVote(data, voteId, choiceId, choiceField, nameField, pollId, partyChoice) {
+      let tallyCollection = partyChoice ? 'centralPartyCounts' : 'centralPmCounts';
+      let tallyPath = /databases/$(database)/documents/$(tallyCollection)/$(choiceId);
+      return request.auth != null
+        && voteId == request.auth.uid
+        && data.keys().hasAll(['uid',choiceField,nameField,'pollId','createdAt'])
+        && data.keys().hasOnly(['uid',choiceField,nameField,'pollId','createdAt'])
+        && data.uid == request.auth.uid
+        && data[choiceField] == choiceId
+        && (partyChoice ? validCentralParty(choiceId) : validCentralPm(choiceId))
+        && data[nameField] is string
+        && data[nameField].size() > 0
+        && data[nameField].size() <= 120
+        && data.pollId == pollId
+        && data.createdAt is timestamp
+        && existsAfter(tallyPath)
+        && getAfter(tallyPath).data[choiceField] == choiceId
+        && ((exists(tallyPath) && getAfter(tallyPath).data.count == get(tallyPath).data.count + 1)
+          || (!exists(tallyPath) && getAfter(tallyPath).data.count == 1));
+    }
+    function linkedCentralVote(voteCollection, choiceId, choiceField) {
+      let votePath = /databases/$(database)/documents/$(voteCollection)/$(request.auth.uid);
+      return request.auth != null
+        && !exists(votePath)
+        && existsAfter(votePath)
+        && getAfter(votePath).data.uid == request.auth.uid
+        && getAfter(votePath).data[choiceField] == choiceId;
+    }
+
+    match /centralPartyVotes/{voteId} {
+      allow get: if request.auth != null && voteId == request.auth.uid;
+      allow list: if false;
+      allow create: if !exists(/databases/$(database)/documents/centralPartyVotes/$(voteId))
+        && validCentralVote(request.resource.data, voteId, request.resource.data.partyId, 'partyId', 'partyName', 'central-party-v1', true);
+      allow update, delete: if false;
+    }
+    match /centralPartyCounts/{partyId} {
+      allow read: if true;
+      allow create: if validCentralTally(request.resource.data, partyId, 'partyId', 'partyName', true)
+        && request.resource.data.count == 1
+        && linkedCentralVote('centralPartyVotes', partyId, 'partyId');
+      allow update: if validCentralTally(resource.data, partyId, 'partyId', 'partyName', true)
+        && validCentralTally(request.resource.data, partyId, 'partyId', 'partyName', true)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count'])
+        && request.resource.data.count == resource.data.count + 1
+        && linkedCentralVote('centralPartyVotes', partyId, 'partyId');
+      allow delete: if false;
+    }
+    match /centralPmVotes/{voteId} {
+      allow get: if request.auth != null && voteId == request.auth.uid;
+      allow list: if false;
+      allow create: if !exists(/databases/$(database)/documents/centralPmVotes/$(voteId))
+        && validCentralVote(request.resource.data, voteId, request.resource.data.candidateId, 'candidateId', 'candidateName', 'central-pm-v1', false);
+      allow update, delete: if false;
+    }
+    match /centralPmCounts/{candidateId} {
+      allow read: if true;
+      allow create: if validCentralTally(request.resource.data, candidateId, 'candidateId', 'candidateName', false)
+        && request.resource.data.count == 1
+        && linkedCentralVote('centralPmVotes', candidateId, 'candidateId');
+      allow update: if validCentralTally(resource.data, candidateId, 'candidateId', 'candidateName', false)
+        && validCentralTally(request.resource.data, candidateId, 'candidateId', 'candidateName', false)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count'])
+        && request.resource.data.count == resource.data.count + 1
+        && linkedCentralVote('centralPmVotes', candidateId, 'candidateId');
+      allow delete: if false;
+    }
   }
 }
