@@ -79,6 +79,18 @@
   .poll-state-card{padding:12px;border:1px solid #765100;border-radius:10px;background:#171111}
   .poll-state-card h4{margin:0 0 8px;color:#ffd23f;font:700 16px Arial,sans-serif}
   .poll-state-total{margin:0 0 8px;color:#ffe9a8;font:13px Arial,sans-serif}
+  .poll-3d-result-row{display:grid;gap:4px;margin:12px 0 16px;color:#ffe9a8;font:13px Arial,sans-serif}
+  .poll-3d-result-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .poll-3d-result-name{min-width:0;overflow-wrap:anywhere}
+  .poll-3d-result-value{flex:none;color:#fff;font-weight:bold;text-align:right}
+  .poll-3d-result-track{height:12px;margin:8px 7px 4px 0;background:#341212;position:relative;overflow:visible}
+  .poll-3d-result-fill{display:block;height:12px;min-width:4px;position:relative;
+    background:linear-gradient(180deg,#ffe780 0%,#ffd23f 34%,#e7771d 72%,#c1121f 100%);
+    box-shadow:0 4px 5px #0009}
+  .poll-3d-result-fill::before{content:"";position:absolute;left:2px;right:-3px;top:-5px;height:5px;
+    background:linear-gradient(90deg,#fff0a4,#ffd23f 70%,#df8c20);transform:skewX(-35deg);transform-origin:bottom}
+  .poll-3d-result-fill::after{content:"";position:absolute;right:-5px;top:-3px;width:5px;height:calc(100% + 3px);
+    background:linear-gradient(180deg,#d78a20,#8e121a);transform:skewY(-35deg);transform-origin:left}
   .poll-header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
   .poll-header h2{margin:0;color:#ffd23f;font-size:clamp(26px,4vw,38px);text-shadow:2px 2px #000}
   .poll-actions{display:flex;gap:8px;flex-wrap:wrap}
@@ -1448,19 +1460,23 @@ async function loadPollCounts(){
 }
 function renderPollResults(){
   const status=document.getElementById('pollResultsStatus');
+  const createPollBarRow=(label,count,total)=>{
+    const share=total?count/total*100:0;
+    const row=document.createElement('div');row.className='poll-3d-result-row';
+    const head=document.createElement('div');head.className='poll-3d-result-head';
+    const name=document.createElement('span');name.className='poll-3d-result-name';name.textContent=label;
+    const value=document.createElement('span');value.className='poll-3d-result-value';value.textContent=`${count.toLocaleString()} · ${share.toFixed(1)}%`;
+    head.append(name,value);
+    const track=document.createElement('div');track.className='poll-3d-result-track';track.setAttribute('role','progressbar');track.setAttribute('aria-label',`${label}: ${count.toLocaleString()} responses`);track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax','100');track.setAttribute('aria-valuenow',share.toFixed(1));
+    const fill=document.createElement('span');fill.className='poll-3d-result-fill';fill.style.width=`${share}%`;track.append(fill);row.append(head,track);return row;
+  };
   const renderTally=(container,choices,dataMap)=>{
     container.replaceChildren();
     const entries=choices.map(choice=>({choice,count:dataMap.get(choice.id)?.count||0})).filter(row=>row.count>0).sort((a,b)=>b.count-a.count||a.choice.name.localeCompare(b.choice.name));
     const total=entries.reduce((sum,row)=>sum+row.count,0);
     const summary=document.createElement('p');summary.className='poll-results-status';summary.textContent=`${total.toLocaleString()} recorded response${total===1?'':'s'}.`;container.append(summary);
     if(!entries.length){const empty=document.createElement('p');empty.className='poll-results-status';empty.textContent='No responses recorded yet.';container.append(empty);return total;}
-    entries.forEach(({choice,count})=>{
-      const row=document.createElement('div');row.className='poll-result-row';
-      const name=document.createElement('span');name.className='poll-result-name';name.textContent=`${choice.symbol} ${choice.name}`;
-      const track=document.createElement('span');track.className='poll-result-track';const fill=document.createElement('span');fill.className='poll-result-fill';fill.style.display='block';fill.style.width=`${(count/total*100).toFixed(2)}%`;track.append(fill);
-      const value=document.createElement('span');value.className='poll-result-value';value.textContent=`${count.toLocaleString()} · ${(count/total*100).toFixed(1)}%`;
-      row.append(name,track,value);container.append(row);
-    });
+    entries.forEach(({choice,count})=>container.append(createPollBarRow(`${choice.symbol} ${choice.name}`,count,total)));
     return total;
   };
   const nationalPartyTotal=renderTally(document.getElementById('centralPartyResults'),centralPollParties,centralPartyResultData);
@@ -1480,9 +1496,7 @@ function renderPollResults(){
     const total=document.createElement('p');total.className='poll-state-total';total.textContent=`${entry.votes.toLocaleString()} recorded response${entry.votes===1?'':'s'}`;card.append(total);
     if(!entry.choices.length){const empty=document.createElement('p');empty.className='poll-results-status';empty.textContent='No responses yet.';card.append(empty);}
     else{
-      entry.choices.sort((a,b)=>b.count-a.count||a.choice.name.localeCompare(b.choice.name)).forEach(({choice,count})=>{
-        const line=document.createElement('p');line.className='poll-state-total';line.textContent=`${choice.symbol} ${choice.name}: ${count.toLocaleString()} (${(count/entry.votes*100).toFixed(1)}%)`;card.append(line);
-      });
+      entry.choices.sort((a,b)=>b.count-a.count||a.choice.name.localeCompare(b.choice.name)).forEach(({choice,count})=>card.append(createPollBarRow(`${choice.symbol} ${choice.name}`,count,entry.votes)));
     }
     stateResults.append(card);
   });
