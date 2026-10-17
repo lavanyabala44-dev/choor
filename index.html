@@ -81,7 +81,9 @@
   .poll-state-total{margin:0 0 8px;color:#ffe9a8;font:13px Arial,sans-serif}
   .poll-3d-result-row{display:grid;gap:4px;margin:12px 0 16px;color:#ffe9a8;font:13px Arial,sans-serif}
   .poll-3d-result-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-  .poll-3d-result-name{min-width:0;overflow-wrap:anywhere}
+  .poll-3d-result-name{display:flex;align-items:center;gap:8px;min-width:0;overflow-wrap:anywhere}
+  .poll-result-mark{display:grid;place-items:center;flex:none;width:42px;height:28px;overflow:hidden;border:1px solid #765100;border-radius:4px;background:#fff;color:#111;font:18px Arial,sans-serif}
+  .poll-result-mark img{display:block;width:100%;height:100%;padding:2px;box-sizing:border-box;object-fit:contain}
   .poll-3d-result-value{flex:none;color:#fff;font-weight:bold;text-align:right}
   .poll-3d-result-track{height:12px;margin:8px 7px 4px 0;background:#341212;position:relative;overflow:visible}
   .poll-3d-result-fill{display:block;height:12px;min-width:4px;position:relative;
@@ -545,13 +547,13 @@ const centralPollParties=[
   {id:'dmk',name:'Dravida Munnetra Kazhagam',leader:'M. K. Stalin',page:'M._K._Stalin',partyImagePage:'Dravida Munnetra Kazhagam',symbol:'☀️'}
 ];
 const centralPmChoices=[
-  {id:'modi',name:'Narendra Modi',leader:'BJP',page:'Narendra_Modi',symbol:'🪷'},
-  {id:'rahul-gandhi',name:'Rahul Gandhi',leader:'Indian National Congress',page:'Rahul_Gandhi',symbol:'✋'},
-  {id:'kejriwal',name:'Arvind Kejriwal',leader:'Aam Aadmi Party',page:'Arvind_Kejriwal',symbol:'🧹'},
-  {id:'mamata-banerjee',name:'Mamata Banerjee',leader:'All India Trinamool Congress',page:'Mamata_Banerjee',symbol:'🌼'},
-  {id:'nitish-kumar',name:'Nitish Kumar',leader:'Janata Dal (United)',page:'Nitish_Kumar',symbol:'🏹'},
-  {id:'akhilesh-yadav',name:'Akhilesh Yadav',leader:'Samajwadi Party',page:'Akhilesh_Yadav',symbol:'🚲'},
-  {id:'chandrababu-naidu',name:'N. Chandrababu Naidu',leader:'Telugu Desam Party',page:'N._Chandrababu_Naidu',symbol:'🚲'},
+  {id:'modi',name:'Narendra Modi',leader:'BJP',page:'Narendra_Modi',partyImagePage:'Bharatiya Janata Party',symbol:'🪷'},
+  {id:'rahul-gandhi',name:'Rahul Gandhi',leader:'Indian National Congress',page:'Rahul_Gandhi',partyImagePage:'Indian National Congress',symbol:'✋'},
+  {id:'kejriwal',name:'Arvind Kejriwal',leader:'Aam Aadmi Party',page:'Arvind_Kejriwal',partyImagePage:'Aam Aadmi Party',symbol:'🧹'},
+  {id:'mamata-banerjee',name:'Mamata Banerjee',leader:'All India Trinamool Congress',page:'Mamata_Banerjee',partyImagePage:'All India Trinamool Congress',symbol:'🌼'},
+  {id:'nitish-kumar',name:'Nitish Kumar',leader:'Janata Dal (United)',page:'Nitish_Kumar',partyImagePage:'Janata Dal (United)',symbol:'🏹'},
+  {id:'akhilesh-yadav',name:'Akhilesh Yadav',leader:'Samajwadi Party',page:'Akhilesh_Yadav',partyImagePage:'Samajwadi Party',symbol:'🚲'},
+  {id:'chandrababu-naidu',name:'N. Chandrababu Naidu',leader:'Telugu Desam Party',page:'N._Chandrababu_Naidu',partyImagePage:'Telugu Desam Party',symbol:'🚲'},
   {id:'other-leader',name:'Another leader',leader:'No leader shown',symbol:'➕'},
   {id:'no-preference',name:'No preference / undecided',leader:'No leader shown',symbol:'⚪'}
 ];
@@ -590,6 +592,8 @@ for(const state of pollStates){
 const pollPartyById=new Map(pollStates.flatMap(s=>s.parties.map(p=>[`${s.code}__${p.id}`,p])));
 const centralPartyById=new Map(centralPollParties.map(p=>[p.id,p]));
 const centralPmById=new Map(centralPmChoices.map(p=>[p.id,p]));
+const pollWikipediaImageCache=new Map();
+function normalizePollImageTitle(title){return title.toLowerCase().replaceAll('_',' ').trim();}
 
 const WEAPONS={
   chappal:{emoji:'🩴', label:'Chappal'},
@@ -1440,15 +1444,34 @@ async function loadPollWikipediaImages(definition){
       const from=redirect.from.toLowerCase().replaceAll('_',' '),to=redirect.to.toLowerCase().replaceAll('_',' ');
       if(photos.has(to))photos.set(from,photos.get(to));
     }
+    photos.forEach((source,title)=>pollWikipediaImageCache.set(normalizePollImageTitle(title),source));
     const current=currentPollDefinition();if(!current||`${current.mode}:${current.stateCode||''}`!==requestKey)return;
     pollPartiesEl.querySelectorAll('.poll-party').forEach(card=>{
       const party=definition.choices.find(p=>p.id===card.dataset.partyId);if(!party)return;
-      const partySource=party.partyImagePage&&photos.get(party.partyImagePage.toLowerCase().replaceAll('_',' '));
+      const partySource=party.partyImagePage&&photos.get(normalizePollImageTitle(party.partyImagePage));
       if(partySource){const image=document.createElement('img');image.src=partySource;image.alt='';image.setAttribute('aria-hidden','true');image.loading='lazy';image.onerror=()=>image.remove();card.querySelector('.poll-symbol').replaceChildren(image);}
-      const leaderSource=party.page&&photos.get(party.page.toLowerCase().replaceAll('_',' '));if(!leaderSource)return;
+      const leaderSource=party.page&&photos.get(normalizePollImageTitle(party.page));if(!leaderSource)return;
       const portrait=card.querySelector('.poll-leader');const img=document.createElement('img');img.src=leaderSource;img.alt=`${party.leader} portrait`;img.loading='lazy';img.onerror=()=>img.remove();portrait.replaceChildren(img);
     });
   }catch(error){console.warn('Party and leader image lookup unavailable:',error);}
+}
+async function loadPollResultImages(){
+  const choices=[...centralPollParties,...centralPmChoices,...pollStates.flatMap(state=>state.parties)];
+  const titles=[...new Set(choices.map(choice=>choice.partyImagePage).filter(Boolean).map(title=>title.trim()))];
+  const missing=titles.filter(title=>!pollWikipediaImageCache.has(normalizePollImageTitle(title)));
+  try{
+    for(let i=0;i<missing.length;i+=40){
+      const batch=missing.slice(i,i+40),url=`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&piprop=thumbnail&pithumbsize=120&redirects=1&origin=*&titles=${encodeURIComponent(batch.join('|'))}`;
+      const response=await fetch(url);if(!response.ok)continue;
+      const data=await response.json(),photos=new Map(Object.values(data.query?.pages||{}).filter(page=>page.thumbnail?.source).map(page=>[normalizePollImageTitle(page.title),page.thumbnail.source]));
+      for(const redirect of [...(data.query?.normalized||[]),...(data.query?.redirects||[])]){
+        const from=normalizePollImageTitle(redirect.from),to=normalizePollImageTitle(redirect.to);
+        if(photos.has(to))photos.set(from,photos.get(to));
+      }
+      photos.forEach((source,title)=>pollWikipediaImageCache.set(title,source));
+    }
+    if(!pollResultsScreen.hidden)renderPollResults();
+  }catch(error){console.warn('Poll result party images unavailable:',error);}
 }
 async function loadPollCounts(){
   const [snapshot,centralPartySnapshot,centralPmSnapshot]=await Promise.all([db.collection('pollCounts').get(),db.collection('centralPartyCounts').get(),db.collection('centralPmCounts').get()]);pollResultData.clear();centralPartyResultData.clear();centralPmResultData.clear();
@@ -1460,11 +1483,19 @@ async function loadPollCounts(){
 }
 function renderPollResults(){
   const status=document.getElementById('pollResultsStatus');
-  const createPollBarRow=(label,count,total)=>{
+  const createPollBarRow=(label,count,total,choice)=>{
     const share=total?count/total*100:0;
     const row=document.createElement('div');row.className='poll-3d-result-row';
     const head=document.createElement('div');head.className='poll-3d-result-head';
-    const name=document.createElement('span');name.className='poll-3d-result-name';name.textContent=label;
+    const name=document.createElement('span');name.className='poll-3d-result-name';
+    if(choice){
+      const mark=document.createElement('span');mark.className='poll-result-mark';mark.setAttribute('aria-hidden','true');mark.textContent=choice.symbol||'';
+      const imageSource=choice.partyImagePage&&pollWikipediaImageCache.get(normalizePollImageTitle(choice.partyImagePage));
+      if(imageSource){
+        const image=document.createElement('img');image.src=imageSource;image.alt='';image.loading='lazy';image.onerror=()=>{mark.replaceChildren(document.createTextNode(choice.symbol||''));};mark.replaceChildren(image);
+      }
+      name.append(mark,document.createTextNode(label));
+    }else name.textContent=label;
     const value=document.createElement('span');value.className='poll-3d-result-value';value.textContent=`${count.toLocaleString()} · ${share.toFixed(1)}%`;
     head.append(name,value);
     const track=document.createElement('div');track.className='poll-3d-result-track';track.setAttribute('role','progressbar');track.setAttribute('aria-label',`${label}: ${count.toLocaleString()} responses`);track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax','100');track.setAttribute('aria-valuenow',share.toFixed(1));
@@ -1476,7 +1507,7 @@ function renderPollResults(){
     const total=entries.reduce((sum,row)=>sum+row.count,0);
     const summary=document.createElement('p');summary.className='poll-results-status';summary.textContent=`${total.toLocaleString()} recorded response${total===1?'':'s'}.`;container.append(summary);
     if(!entries.length){const empty=document.createElement('p');empty.className='poll-results-status';empty.textContent='No responses recorded yet.';container.append(empty);return total;}
-    entries.forEach(({choice,count})=>container.append(createPollBarRow(`${choice.symbol} ${choice.name}`,count,total)));
+    entries.forEach(({choice,count})=>container.append(createPollBarRow(choice.name,count,total,choice)));
     return total;
   };
   const nationalPartyTotal=renderTally(document.getElementById('centralPartyResults'),centralPollParties,centralPartyResultData);
@@ -1496,7 +1527,7 @@ function renderPollResults(){
     const total=document.createElement('p');total.className='poll-state-total';total.textContent=`${entry.votes.toLocaleString()} recorded response${entry.votes===1?'':'s'}`;card.append(total);
     if(!entry.choices.length){const empty=document.createElement('p');empty.className='poll-results-status';empty.textContent='No responses yet.';card.append(empty);}
     else{
-      entry.choices.sort((a,b)=>b.count-a.count||a.choice.name.localeCompare(b.choice.name)).forEach(({choice,count})=>card.append(createPollBarRow(`${choice.symbol} ${choice.name}`,count,entry.votes)));
+      entry.choices.sort((a,b)=>b.count-a.count||a.choice.name.localeCompare(b.choice.name)).forEach(({choice,count})=>card.append(createPollBarRow(choice.name,count,entry.votes,choice)));
     }
     stateResults.append(card);
   });
@@ -1645,7 +1676,7 @@ function closePoll(){pollScreen.hidden=true;pollResultsScreen.hidden=true;docume
 async function openAllPollResults(){
   pollScreen.hidden=true;pollResultsScreen.hidden=false;document.body.classList.remove('poll-open');document.body.classList.add('poll-results-open');window.scrollTo(0,0);
   const status=document.getElementById('pollResultsStatus');status.textContent='Loading all poll results…';
-  try{await loadPollCounts();}
+  try{await Promise.all([loadPollCounts(),loadPollResultImages()]);}
   catch(error){status.textContent='Could not load poll results right now. Please refresh the results screen.';console.error('All poll results load failed:',error);}
 }
 document.getElementById('pollOpen').addEventListener('click',()=>{
