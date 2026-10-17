@@ -62,7 +62,23 @@
   body.poll-open{margin:0;padding:0;min-height:100vh}
   body.poll-open > :not(#pollScreen){display:none!important}
   #pollScreen{position:fixed;inset:0;z-index:1100;overflow:auto;padding:20px;background:#260707;color:#fff;box-sizing:border-box}
+  body.poll-results-open{margin:0;padding:0;min-height:100vh}
+  body.poll-results-open > :not(#pollResultsScreen){display:none!important}
+  #pollResultsScreen[hidden]{display:none}
+  #pollResultsScreen{position:fixed;inset:0;z-index:1110;overflow:auto;padding:20px;background:#260707;color:#fff;box-sizing:border-box}
   .poll-wrap{width:min(100%,1150px);margin:0 auto}
+  .poll-results-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .poll-results-header h2{margin:0;color:#ffd23f;font-size:clamp(26px,4vw,38px);text-shadow:2px 2px #000}
+  .poll-results-header button{font:700 14px Georgia,serif;padding:9px 13px;border:2px solid #ffd23f;border-radius:12px;background:#111;color:#ffd23f;cursor:pointer}
+  .poll-results-section{margin:14px 0;padding:16px;border:2px solid #765100;border-radius:14px;background:#111}
+  .poll-results-section h3{margin:0 0 8px;color:#ffd23f}
+  .poll-results-status{margin:0 0 12px;color:#ffe9a8;font:14px/1.5 Arial,sans-serif}
+  .poll-results-overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}
+  .poll-results-overview .poll-results-section{margin:0}
+  .poll-state-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+  .poll-state-card{padding:12px;border:1px solid #765100;border-radius:10px;background:#171111}
+  .poll-state-card h4{margin:0 0 8px;color:#ffd23f;font:700 16px Arial,sans-serif}
+  .poll-state-total{margin:0 0 8px;color:#ffe9a8;font:13px Arial,sans-serif}
   .poll-header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
   .poll-header h2{margin:0;color:#ffd23f;font-size:clamp(26px,4vw,38px);text-shadow:2px 2px #000}
   .poll-actions{display:flex;gap:8px;flex-wrap:wrap}
@@ -195,7 +211,7 @@
     .analysis-grid{grid-template-columns:1fr}
     #analysisScreen{padding:12px}
     #cmInfoScreen{padding:12px}
-    #pollScreen{padding:12px}
+    #pollScreen,#pollResultsScreen{padding:12px}
     .cm-info-profile{grid-template-columns:100px 1fr;padding:10px;gap:12px}
     .cm-info-profile img{height:150px}
     .cm-career-entry{grid-template-columns:1fr;gap:4px}
@@ -393,14 +409,26 @@
 
   <section id="pollScreen" hidden role="dialog" aria-modal="true" aria-labelledby="pollTitle">
     <div class="poll-wrap">
-      <div class="poll-header"><h2 id="pollTitle">&#128202; Polling Booth</h2><div class="poll-actions"><button id="pollResultsToggle" type="button">View results</button><button id="pollClose" type="button">&#8592; Back to Cabinet</button></div></div>
+      <div class="poll-header"><h2 id="pollTitle">&#128202; Polling Booth</h2><div class="poll-actions"><button id="pollResultsToggle" type="button">View all results</button><button id="pollClose" type="button">&#8592; Back to Cabinet</button></div></div>
       <p class="poll-note">Informal, self-selected online poll; it is not an Election Commission poll and does not represent verified voters. A browser profile may submit one state/UT party vote total, one national party vote, and one PM preference vote. Clearing browser data, using private browsing or another device may allow another response. No IP or device MAC address is used as an identity. Party lists are selected, not exhaustive. Check the current <a href="https://www.eci.gov.in/list-of-political-parties" target="_blank" rel="noopener">Election Commission of India party register</a>. Party names, leaders and recognition can change.</p>
       <div class="poll-tools"><label for="pollMode">Choose a poll:</label><select id="pollMode"><option value="">Select a poll</option><option value="state">State / union territory party preference</option><option value="central-party">India-wide: party to form Union government</option><option value="central-pm">India-wide: preferred Prime Minister</option></select><label id="pollStateLabel" for="pollState" hidden>Choose a state or union territory:</label><select id="pollState" hidden><option value="">Select a state</option></select></div>
       <p id="pollQuestion" class="poll-note" hidden></p>
       <div id="pollStatus" role="status" aria-live="polite">Choose a poll to see its choices.</div>
       <div id="pollParties" class="poll-party-grid" role="group" aria-label="Political parties"></div>
       <button id="pollSubmit" class="poll-submit" type="button" disabled>Vote</button>
-      <section id="pollResults" class="poll-results" hidden aria-live="polite"><h3 id="pollResultsTitle">Poll results</h3><div id="pollResultsTotal" class="poll-note"></div><div id="pollResultsRows"></div></section>
+    </div>
+  </section>
+
+  <section id="pollResultsScreen" hidden role="dialog" aria-modal="true" aria-labelledby="pollResultsPageTitle">
+    <div class="poll-wrap">
+      <div class="poll-results-header"><h2 id="pollResultsPageTitle">&#128202; All Poll Results</h2><div class="poll-actions"><button id="pollResultsRefresh" type="button">Refresh results</button><button id="pollResultsBack" type="button">&#8592; Back to Polling Booth</button></div></div>
+      <p class="poll-results-status">Informal, self-selected online poll results. Participation is not verified elector voting. Results update when this screen is opened or refreshed.</p>
+      <div id="pollResultsStatus" class="poll-results-status" role="status" aria-live="polite">Loading all poll results…</div>
+      <div class="poll-results-overview">
+        <section class="poll-results-section"><h3>India-wide party preference</h3><div id="centralPartyResults"></div></section>
+        <section class="poll-results-section"><h3>India-wide PM preference</h3><div id="centralPmResults"></div></section>
+      </div>
+      <section class="poll-results-section"><h3>State and union territory party preference</h3><p class="poll-results-status">Every state/UT is listed. Recorded party choices are ranked by response count.</p><div id="statePollResults" class="poll-state-results"></div></section>
     </div>
   </section>
 
@@ -1337,6 +1365,7 @@ function refreshAll(){
 }
 
 const pollScreen=document.getElementById('pollScreen');
+const pollResultsScreen=document.getElementById('pollResultsScreen');
 const pollModeSelect=document.getElementById('pollMode');
 const pollStateSelect=document.getElementById('pollState');
 const pollPartiesEl=document.getElementById('pollParties');
@@ -1418,23 +1447,47 @@ async function loadPollCounts(){
   return snapshot.size+centralPartySnapshot.size+centralPmSnapshot.size;
 }
 function renderPollResults(){
-  const definition=currentPollDefinition();if(!definition)return;
-  let source=pollResultData;
-  if(definition.mode==='central-party')source=centralPartyResultData;
-  if(definition.mode==='central-pm')source=centralPmResultData;
-  const entries=definition.choices.map(party=>({party,count:(definition.mode==='state'?source.get(`${definition.stateCode}__${party.id}`):source.get(party.id))?.count||0})).filter(row=>row.count>0).sort((a,b)=>b.count-a.count);
-  const total=entries.reduce((sum,row)=>sum+row.count,0);
-  document.getElementById('pollResultsTitle').textContent=`${definition.title} — informal poll results`;
-  document.getElementById('pollResultsTotal').textContent=`${total.toLocaleString()} recorded response${total===1?'':'s'}. Percentages use this total.`;
-  const rows=document.getElementById('pollResultsRows');rows.replaceChildren();
-  if(!entries.length){const empty=document.createElement('p');empty.className='analysis-empty';empty.textContent='No responses recorded for this state yet.';rows.append(empty);return;}
-  entries.forEach(({party,count})=>{
-    const row=document.createElement('div');row.className='poll-result-row';
-    const name=document.createElement('span');name.className='poll-result-name';name.textContent=`${party.symbol} ${party.name}`;
-    const track=document.createElement('span');track.className='poll-result-track';const fill=document.createElement('span');fill.className='poll-result-fill';fill.style.display='block';fill.style.width=`${(count/total*100).toFixed(2)}%`;track.append(fill);
-    const value=document.createElement('span');value.className='poll-result-value';value.textContent=`${count.toLocaleString()} · ${(count/total*100).toFixed(1)}%`;
-    row.append(name,track,value);rows.append(row);
+  const status=document.getElementById('pollResultsStatus');
+  const renderTally=(container,choices,dataMap)=>{
+    container.replaceChildren();
+    const entries=choices.map(choice=>({choice,count:dataMap.get(choice.id)?.count||0})).filter(row=>row.count>0).sort((a,b)=>b.count-a.count||a.choice.name.localeCompare(b.choice.name));
+    const total=entries.reduce((sum,row)=>sum+row.count,0);
+    const summary=document.createElement('p');summary.className='poll-results-status';summary.textContent=`${total.toLocaleString()} recorded response${total===1?'':'s'}.`;container.append(summary);
+    if(!entries.length){const empty=document.createElement('p');empty.className='poll-results-status';empty.textContent='No responses recorded yet.';container.append(empty);return total;}
+    entries.forEach(({choice,count})=>{
+      const row=document.createElement('div');row.className='poll-result-row';
+      const name=document.createElement('span');name.className='poll-result-name';name.textContent=`${choice.symbol} ${choice.name}`;
+      const track=document.createElement('span');track.className='poll-result-track';const fill=document.createElement('span');fill.className='poll-result-fill';fill.style.display='block';fill.style.width=`${(count/total*100).toFixed(2)}%`;track.append(fill);
+      const value=document.createElement('span');value.className='poll-result-value';value.textContent=`${count.toLocaleString()} · ${(count/total*100).toFixed(1)}%`;
+      row.append(name,track,value);container.append(row);
+    });
+    return total;
+  };
+  const nationalPartyTotal=renderTally(document.getElementById('centralPartyResults'),centralPollParties,centralPartyResultData);
+  const pmTotal=renderTally(document.getElementById('centralPmResults'),centralPmChoices,centralPmResultData);
+  const byState=new Map();
+  pollResultData.forEach((record,key)=>{
+    const party=pollPartyById.get(key);if(!party)return;
+    const state=pollStates.find(item=>item.code===record.stateCode);if(!state)return;
+    const entry=byState.get(state.code)||{state,votes:0,choices:[]};
+    entry.votes+=record.count;entry.choices.push({choice:party,count:record.count});byState.set(state.code,entry);
   });
+  const stateResults=document.getElementById('statePollResults');stateResults.replaceChildren();
+  pollStates.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(state=>{
+    const entry=byState.get(state.code)||{state,votes:0,choices:[]};
+    const card=document.createElement('article');card.className='poll-state-card';
+    const heading=document.createElement('h4');heading.textContent=state.name;card.append(heading);
+    const total=document.createElement('p');total.className='poll-state-total';total.textContent=`${entry.votes.toLocaleString()} recorded response${entry.votes===1?'':'s'}`;card.append(total);
+    if(!entry.choices.length){const empty=document.createElement('p');empty.className='poll-results-status';empty.textContent='No responses yet.';card.append(empty);}
+    else{
+      entry.choices.sort((a,b)=>b.count-a.count||a.choice.name.localeCompare(b.choice.name)).forEach(({choice,count})=>{
+        const line=document.createElement('p');line.className='poll-state-total';line.textContent=`${choice.symbol} ${choice.name}: ${count.toLocaleString()} (${(count/entry.votes*100).toFixed(1)}%)`;card.append(line);
+      });
+    }
+    stateResults.append(card);
+  });
+  const stateVoteTotal=Array.from(byState.values()).reduce((sum,entry)=>sum+entry.votes,0);
+  status.textContent=`Loaded all results: ${stateVoteTotal.toLocaleString()} state/UT, ${nationalPartyTotal.toLocaleString()} national party, and ${pmTotal.toLocaleString()} PM preference responses.`;
 }
 async function castPollVote(){
   const definition=currentPollDefinition(),party=selectedPollParty;if(!definition||!party)return;
@@ -1574,17 +1627,25 @@ document.getElementById('analysisRefresh').addEventListener('click',loadAnalysis
 document.getElementById('pollAnalysisRefresh').addEventListener('click',loadPollAnalysis);
 document.getElementById('analysisMessageFilter').addEventListener('change',()=>renderAnalysis());
 document.getElementById('personLocationSearch').addEventListener('input',()=>{personLocationPage=0;renderPersonLocationReport(analysisData.personLocations);});
-function closePoll(){pollScreen.hidden=true;document.body.classList.remove('poll-open');window.scrollTo(0,pollScrollY);}
+function closePoll(){pollScreen.hidden=true;pollResultsScreen.hidden=true;document.body.classList.remove('poll-open','poll-results-open');window.scrollTo(0,pollScrollY);}
+async function openAllPollResults(){
+  pollScreen.hidden=true;pollResultsScreen.hidden=false;document.body.classList.remove('poll-open');document.body.classList.add('poll-results-open');window.scrollTo(0,0);
+  const status=document.getElementById('pollResultsStatus');status.textContent='Loading all poll results…';
+  try{await loadPollCounts();}
+  catch(error){status.textContent='Could not load poll results right now. Please refresh the results screen.';console.error('All poll results load failed:',error);}
+}
 document.getElementById('pollOpen').addEventListener('click',()=>{
-  pollScrollY=window.scrollY;document.body.classList.add('poll-open');pollScreen.hidden=false;window.scrollTo(0,0);loadPollCounts().catch(error=>{pollStatusEl.textContent='Could not load poll results. Voting is still available if the database connection recovers.';console.error('Poll counts load failed:',error);});
+  pollScrollY=window.scrollY;pollResultsScreen.hidden=true;document.body.classList.remove('poll-results-open');document.body.classList.add('poll-open');pollScreen.hidden=false;window.scrollTo(0,0);loadPollCounts().catch(error=>{pollStatusEl.textContent='Could not load poll results. Voting is still available if the database connection recovers.';console.error('Poll counts load failed:',error);});
 });
 document.getElementById('pollClose').addEventListener('click',closePoll);
+document.getElementById('pollResultsBack').addEventListener('click',()=>{
+  pollResultsScreen.hidden=true;pollScreen.hidden=false;document.body.classList.remove('poll-results-open');document.body.classList.add('poll-open');window.scrollTo(0,0);
+});
+document.getElementById('pollResultsRefresh').addEventListener('click',openAllPollResults);
 document.getElementById('pollSubmit').addEventListener('click',castPollVote);
 pollModeSelect.addEventListener('change',renderPollParties);
 pollStateSelect.addEventListener('change',renderPollParties);
-document.getElementById('pollResultsToggle').addEventListener('click',event=>{
-  const panel=document.getElementById('pollResults');panel.hidden=!panel.hidden;event.currentTarget.textContent=panel.hidden?'View results':'Hide results';if(!panel.hidden)loadPollCounts().catch(error=>{pollStatusEl.textContent='Could not load poll results right now.';console.error(error);});
-});
+document.getElementById('pollResultsToggle').addEventListener('click',openAllPollResults);
 document.getElementById('cmInfoClose').addEventListener('click',()=>closeCmInfo());
 document.getElementById('cmInfoShare').addEventListener('click',async()=>{
   const url=window.location.href;
@@ -1598,7 +1659,7 @@ document.getElementById('cmInfoShare').addEventListener('click',async()=>{
 });
 window.addEventListener('hashchange',routeCmInfoFromHash);
 window.addEventListener('popstate',routeCmInfoFromHash);
-document.addEventListener('keydown',event=>{if(event.key==='Escape'){if(!cmInfoScreen.hidden)closeCmInfo();else if(!pollScreen.hidden)closePoll();else if(!analysisScreen.hidden)closeAnalysis();}});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){if(!cmInfoScreen.hidden)closeCmInfo();else if(!pollResultsScreen.hidden)closePoll();else if(!pollScreen.hidden)closePoll();else if(!analysisScreen.hidden)closeAnalysis();}});
 routeCmInfoFromHash();
 muteBtn.addEventListener('click',e=>{
   e.stopPropagation(); soundOn=!soundOn;
