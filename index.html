@@ -50,6 +50,7 @@
   #cloudpill.err{background:#7a0000;color:#ffd0d0;border-color:#ff9a9a}
   #messageControl{display:flex;align-items:center;gap:6px;flex:1 1 320px;min-width:0;padding:5px 8px;border:1px solid #ffd23f;
     border-radius:12px;background:#111;color:#ffe9a8;font:12px Arial,sans-serif;box-sizing:border-box}
+  #messageControl .hit-message-label{flex:0 1 220px;font-weight:bold;line-height:1.25;max-width:250px;white-space:normal}
   #messageControl input[type="text"]{width:180px;max-width:100%;min-width:0;flex:1 1 150px;padding:6px 8px;border:1px solid #ffd23f;
     border-radius:7px;background:#fff;color:#111;font:13px Arial,sans-serif}
   #messageControl label{display:flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer}
@@ -442,7 +443,8 @@
       <label id="languagePicker" for="appLanguage"><span>Language</span><select id="appLanguage" aria-label="Choose language"></select></label>
       <span id="cloudpill" title="Shared counter database status" aria-live="polite">&#9729; Connecting...</span>
       <div id="messageControl">
-        <input id="hitMessage" type="text" maxlength="90" placeholder="Optional message, e.g. Demonetization ke liye!" aria-label="Optional message to show on each click">
+        <label class="hit-message-label" for="hitMessage">Type your gaali (abusive word), select “Show each hit,” then click a person for pitai:</label>
+        <input id="hitMessage" type="text" maxlength="90" placeholder="Your gaali (abuse word)" aria-label="Type your gaali (abusive word) to show on each hit">
         <label><input id="useHitMessage" type="checkbox"> Show each hit</label>
       </div>
     </div>
