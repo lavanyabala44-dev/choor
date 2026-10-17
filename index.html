@@ -26,8 +26,10 @@
     box-shadow:inset 0 0 0 10px rgba(255,210,63,.25);
     min-height:100vh;
   }
-  #topbar{position:relative;z-index:30;display:grid;grid-template-columns:auto minmax(260px,1fr) repeat(4,max-content);
-    gap:8px;align-items:center;width:100%;max-width:1250px;margin:0 auto 16px;box-sizing:border-box}
+  #topbar{position:relative;z-index:30;display:flex;flex-direction:column;gap:10px;align-items:stretch;
+    width:100%;max-width:1250px;margin:0 auto 22px;box-sizing:border-box}
+  .topbar-status-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;min-width:0}
+  .topbar-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%;min-width:0}
   #topbar button{cursor:pointer;font-family:Georgia,serif;font-size:14px;font-weight:bold;
     color:#ffd23f;background:#c1121f;border:2px solid #ffd23f;border-radius:20px;padding:6px 14px;letter-spacing:.5px}
   #topbar button:hover{background:#8f0d17}
@@ -44,11 +46,12 @@
   #cloudpill.ok{background:#0a6b2f;color:#c9ffd8;border-color:#c9ffd8}
   #cloudpill.busy{background:#7a5a00;color:#ffe9a8}
   #cloudpill.err{background:#7a0000;color:#ffd0d0;border-color:#ff9a9a}
-  #messageControl{grid-column:2;display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid #ffd23f;
-    border-radius:12px;background:#111;color:#ffe9a8;font:12px Arial,sans-serif}
-  #messageControl input[type="text"]{width:180px;max-width:32vw;padding:6px 8px;border:1px solid #ffd23f;
+  #messageControl{display:flex;align-items:center;gap:6px;flex:1 1 320px;min-width:0;padding:5px 8px;border:1px solid #ffd23f;
+    border-radius:12px;background:#111;color:#ffe9a8;font:12px Arial,sans-serif;box-sizing:border-box}
+  #messageControl input[type="text"]{width:180px;max-width:100%;min-width:0;flex:1 1 150px;padding:6px 8px;border:1px solid #ffd23f;
     border-radius:7px;background:#fff;color:#111;font:13px Arial,sans-serif}
   #messageControl label{display:flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer}
+  .topbar-actions button{width:100%;min-width:0;min-height:40px;white-space:normal;overflow-wrap:anywhere}
   .burst.custom-message{font:700 16px/1.25 Georgia,serif;letter-spacing:0;white-space:normal;
     width:max-content;max-width:min(90%,320px);padding:7px 10px}
   #analysisScreen[hidden]{display:none}
@@ -208,13 +211,14 @@
              box-shadow:0 10px 26px rgba(0,0,0,.6);width:340px;border:6px solid #ffd23f}
   .hero-card img{width:100%;height:360px;object-fit:cover;object-position:top}
   @media(max-width:760px){
-    #topbar{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;margin-bottom:16px}
-    #cloudpill{justify-self:start}
-    #messageControl{grid-column:1/-1}
-    #topbar button{width:100%;min-width:0;padding:8px 6px;font-size:13px}
+    #topbar{width:100%;margin-bottom:22px;gap:10px}
+    .topbar-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+    #topbar button{padding:8px 6px;font-size:13px}
     #hint{max-width:100%;box-sizing:border-box}
-    #messageControl{flex-wrap:wrap;max-width:100%;box-sizing:border-box}
-    #messageControl input[type="text"]{width:min(100%,280px);max-width:100%;box-sizing:border-box}
+    .topbar-status-row{align-items:stretch}
+    #cloudpill{align-self:flex-start}
+    #messageControl{flex:1 1 100%;flex-wrap:wrap;max-width:100%}
+    #messageControl input[type="text"]{width:auto;flex:1 1 140px;max-width:100%;box-sizing:border-box}
     h1{margin-top:16px;font-size:clamp(28px,8vw,44px);overflow-wrap:anywhere}
     .hero{flex-direction:column;gap:16px}
     #totalbox{box-sizing:border-box;min-width:0;width:min(100%,440px);font-size:clamp(22px,6vw,32px);padding:16px 12px}
@@ -338,15 +342,19 @@
 <body>
   <div id="hint">&#128070; Photo par hover &rarr; hathiyar chuno &rarr; click! Shared count sabko live dikhega.</div>
   <div id="topbar">
-    <span id="cloudpill" title="Shared counter database status" aria-live="polite">&#9729; Connecting...</span>
-    <div id="messageControl">
-      <input id="hitMessage" type="text" maxlength="90" placeholder="Optional message, e.g. Demonetization ke liye!" aria-label="Optional message to show on each click">
-      <label><input id="useHitMessage" type="checkbox"> Show each hit</label>
+    <div class="topbar-status-row">
+      <span id="cloudpill" title="Shared counter database status" aria-live="polite">&#9729; Connecting...</span>
+      <div id="messageControl">
+        <input id="hitMessage" type="text" maxlength="90" placeholder="Optional message, e.g. Demonetization ke liye!" aria-label="Optional message to show on each click">
+        <label><input id="useHitMessage" type="checkbox"> Show each hit</label>
+      </div>
     </div>
-    <button id="sharePage" type="button" aria-label="Share this page">&#128228; Share</button>
-    <button id="analysisOpen" type="button">&#128202; Analysis</button>
-    <button id="pollOpen" type="button">&#128202; Polling Booth</button>
-    <button id="mute">&#128266; Sound On</button>
+    <div class="topbar-actions">
+      <button id="sharePage" type="button" aria-label="Share this page">&#128228; Share</button>
+      <button id="analysisOpen" type="button">&#128202; Analysis</button>
+      <button id="pollOpen" type="button">&#128202; Polling Booth</button>
+      <button id="mute">&#128266; Sound On</button>
+    </div>
   </div>
 
   <section id="analysisScreen" hidden aria-labelledby="analysisTitle">
