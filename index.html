@@ -177,6 +177,10 @@
   .analysis-metric{font-size:26px;font-weight:bold;color:#fff;overflow-wrap:anywhere}
   .analysis-metric-label{color:#ffe9a8;font-size:12px;letter-spacing:.08em;margin-top:4px}
   .chart-rows{display:flex;flex-direction:column;gap:9px}
+  #memberChart{max-height:420px;overflow:auto;padding-right:4px}
+  .member-chart-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;font:13px Arial,sans-serif;color:#ffe9a8}
+  .member-chart-tools input{min-width:min(100%,240px);padding:8px 10px;border:1px solid #765100;border-radius:8px;background:#171111;color:#fff;font:inherit}
+  #memberChartStatus{color:#ffe9a8}
   .chart-row{display:grid;grid-template-columns:minmax(78px,150px) 1fr 54px;gap:8px;align-items:center;font:13px Arial,sans-serif}
   .chart-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ffe9a8}
   .chart-track{height:16px;border-radius:10px;background:#341212;overflow:hidden}
@@ -466,7 +470,7 @@
     <div class="analysis-grid">
       <div class="analysis-card"><h3>&#129698; Weapon totals</h3><div id="weaponChart" class="chart-rows"></div></div>
       <div class="analysis-card"><h3>&#128200; Daily hits — last 30 days</h3><svg id="trendChart" viewBox="0 0 900 270" role="img" aria-label="Line graph of hits by day"></svg></div>
-      <div class="analysis-card"><h3>&#127942; Pitai me top 10 people</h3><div id="memberChart" class="chart-rows"></div></div>
+      <div class="analysis-card"><h3>&#127942; Hits by person</h3><div class="member-chart-tools"><label for="memberChartSearch">Search person:</label><input id="memberChartSearch" type="search" placeholder="Type a person's name" autocomplete="off"><span id="memberChartStatus" aria-live="polite"></span></div><div id="memberChart" class="chart-rows"></div></div>
       <div class="analysis-card"><h3>&#128172; Top 10 messages</h3><div id="messageChart" class="chart-rows"></div></div>
       <div class="analysis-card" style="grid-column:1/-1"><h3>&#127758; Country/city hits by weapon</h3><div id="locationReport"></div></div>
       <div class="analysis-card" style="grid-column:1/-1"><h3>&#128101; Person hits by country/city and weapon</h3><div class="person-report-tools"><label for="personLocationSearch">Search by person:</label><input id="personLocationSearch" type="search" list="personLocationNames" placeholder="Type a person's name" autocomplete="off"><datalist id="personLocationNames"></datalist><span id="personLocationMeta" class="person-report-meta"></span></div><div id="personLocationTotals" class="person-report-totals" aria-live="polite"></div><div id="personLocationReport"></div><div id="personLocationPages" class="person-report-pages"></div></div>
@@ -1273,6 +1277,7 @@ function renderSummary(){
 }
 let analysisData={stats:[],members:[],locations:[],personLocations:[]};
 let personLocationPage=0;
+let rankedMemberRows=[];
 function makeChartBars(container,rows){
   container.replaceChildren();
   const max=Math.max(1,...rows.map(row=>row.value));
@@ -1331,7 +1336,8 @@ function renderAnalysis(){
   document.getElementById('analysisTopMember').textContent=rankedMembers[0]?.label||'—';
   document.getElementById('analysisTopMessage').textContent=rankedMessages[0]?`${rankedMessages[0].label} (${rankedMessages[0].value.toLocaleString()})`:'No messages yet';
   makeChartBars(document.getElementById('weaponChart'),ORDER.map(w=>({label:`${WEAPONS[w].emoji} ${WEAPONS[w].label}`,value:weapons[w]})));
-  makeChartBars(document.getElementById('memberChart'),rankedMembers.slice(0,10));
+  rankedMemberRows=rankedMembers;
+  renderMemberChart();
   makeChartBars(document.getElementById('messageChart'),rankedMessages.slice(0,10));
   const table=document.createElement('table');
   const thead=table.createTHead(),hr=thead.insertRow();
@@ -1361,6 +1367,12 @@ function renderAnalysis(){
   renderTrend(analysisData.stats);
   renderLocationReport(analysisData.locations);
   renderPersonLocationReport(analysisData.personLocations);
+}
+function renderMemberChart(){
+  const query=document.getElementById('memberChartSearch').value.trim().toLocaleLowerCase();
+  const rows=query?rankedMemberRows.filter(row=>row.label.toLocaleLowerCase().includes(query)):rankedMemberRows;
+  document.getElementById('memberChartStatus').textContent=`Showing ${rows.length.toLocaleString()} of ${rankedMemberRows.length.toLocaleString()} people · total hits`;
+  makeChartBars(document.getElementById('memberChart'),rows);
 }
 function renderLocationReport(locations){
   const container=document.getElementById('locationReport');container.replaceChildren();
@@ -1751,6 +1763,7 @@ document.getElementById('analysisClose').addEventListener('click',closeAnalysis)
 document.getElementById('analysisRefresh').addEventListener('click',loadAnalysis);
 document.getElementById('pollAnalysisRefresh').addEventListener('click',loadPollAnalysis);
 document.getElementById('analysisMessageFilter').addEventListener('change',()=>renderAnalysis());
+document.getElementById('memberChartSearch').addEventListener('input',renderMemberChart);
 document.getElementById('personLocationSearch').addEventListener('input',()=>{personLocationPage=0;renderPersonLocationReport(analysisData.personLocations);});
 function closePoll(){pollScreen.hidden=true;pollResultsScreen.hidden=true;document.body.classList.remove('poll-open','poll-results-open');window.scrollTo(0,pollScrollY);}
 async function openAllPollResults(){
