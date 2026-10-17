@@ -1433,7 +1433,9 @@ function pollInitials(name){return name.split(/\s+/).filter(Boolean).slice(0,2).
 function updatePollVoteControls(){
   pollPartiesEl.querySelectorAll('.poll-party-card').forEach(card=>{
     const selected=selectedPollParty?.id===card.dataset.partyId;
-    card.querySelector('.poll-party-vote').disabled=pollVoteInProgress||!selected;
+    const voteButton=card.querySelector('.poll-party-vote');
+    voteButton.hidden=!selected;
+    voteButton.disabled=pollVoteInProgress;
     card.querySelector('.poll-party').disabled=pollVoteInProgress;
   });
   pollModeButtonsEl.querySelectorAll('[data-poll-mode]').forEach(button=>button.disabled=pollVoteInProgress);
@@ -1456,7 +1458,7 @@ function renderPollParties(){
     const name=document.createElement('span');name.className='poll-party-name';name.textContent=party.name;
     const leader=document.createElement('span');leader.className='poll-party-leader';leader.textContent=party.page?`${mode==='central-pm'?'Party':'Party leader shown'}: ${party.leader}`:party.leader;
     copy.append(symbol,name,leader);button.append(portrait,copy);
-    const voteButton=document.createElement('button');voteButton.type='button';voteButton.className='poll-party-vote';voteButton.textContent='Vote';voteButton.disabled=true;voteButton.setAttribute('aria-label',`Vote for ${party.name}`);
+    const voteButton=document.createElement('button');voteButton.type='button';voteButton.className='poll-party-vote';voteButton.textContent='Vote';voteButton.hidden=true;voteButton.disabled=true;voteButton.setAttribute('aria-label',`Vote for ${party.name}`);
     button.addEventListener('click',()=>{
       selectedPollParty=party;pollPartiesEl.querySelectorAll('.poll-party').forEach(option=>option.setAttribute('aria-pressed',String(option===button)));
       updatePollVoteControls();pollStatusEl.textContent=`Selected ${party.name}. Tap Vote on this card to record one response for this browser profile.`;
