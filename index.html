@@ -191,6 +191,15 @@
   .star{outline:4px solid #ffd23f;outline-offset:-4px}
   .star .choor{background:#111}
 
+  @media(max-width:1024px){
+    .grid{grid-template-columns:minmax(0,1fr);width:calc(100% - 24px);max-width:520px;gap:16px}
+    .card img,.card .blank{height:clamp(290px,68vw,420px)}
+    .card .name{font-size:21px;padding:10px 8px 5px}
+    .card .choor{font-size:19px;padding:9px 8px;letter-spacing:.6px}
+    .card .brk{font-size:15px;padding:7px 8px}
+    .card .tools{opacity:1;transform:none;pointer-events:auto}
+  }
+
   .divider{margin:40px auto 18px;max-width:1200px;text-align:center}
   .divider h2{font-size:34px;color:#ffd23f;text-shadow:3px 3px 0 #000;margin:0}
   .divider p{color:#ffe9a8;font-size:16px;margin:6px 0 0}
