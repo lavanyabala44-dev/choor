@@ -548,6 +548,7 @@
     <div id="summaryEmpty">Abhi tak kisi ko maara nahi — kisi bhi photo par click karo!</div>
   </div>
 
+<script src="poll-party-images.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyDAqvCl1giznzRuCmtAQTWQRaYcYwYV1D4",
@@ -621,7 +622,7 @@ for(const state of pollStates){
 }
 const pollPartyById=new Map(pollStates.flatMap(s=>s.parties.map(p=>[`${s.code}__${p.id}`,p])));
 const centralPmById=new Map(centralPmChoices.map(p=>[p.id,p]));
-const pollWikipediaImageCache=new Map();
+const pollPartyImageFiles=window.POLL_PARTY_IMAGE_FILES||{};
 function normalizePollImageTitle(title){return title.toLowerCase().replaceAll('_',' ').trim();}
 
 const WEAPONS={
@@ -1455,6 +1456,8 @@ function renderPollParties(){
     const portrait=document.createElement('span');portrait.className='poll-leader';portrait.textContent=pollInitials(party.leader);
     const copy=document.createElement('span');copy.className='poll-party-copy';
     const symbol=document.createElement('span');symbol.className='poll-symbol';symbol.setAttribute('role','img');symbol.setAttribute('aria-label',`${party.name} image; Wikipedia party logo or flag when available`);symbol.textContent=party.symbol;
+    const localPartyImage=party.partyImagePage&&pollPartyImageFiles[normalizePollImageTitle(party.partyImagePage)];
+    if(localPartyImage){const image=document.createElement('img');image.src=localPartyImage;image.alt='';image.setAttribute('aria-hidden','true');image.loading='lazy';image.onerror=()=>symbol.replaceChildren(document.createTextNode(party.symbol));symbol.replaceChildren(image);}
     const name=document.createElement('span');name.className='poll-party-name';name.textContent=party.name;
     const leader=document.createElement('span');leader.className='poll-party-leader';leader.textContent=party.page?`${mode==='central-pm'?'Party':'Party leader shown'}: ${party.leader}`:party.leader;
     copy.append(symbol,name,leader);button.append(portrait,copy);
@@ -1472,10 +1475,7 @@ function renderPollParties(){
 }
 async function loadPollWikipediaImages(definition){
   const requestKey=`${definition.mode}:${definition.stateCode||''}`;
-  const items=definition.choices.flatMap(party=>[
-    ...(party.partyImagePage?[{party,kind:'party',title:party.partyImagePage}]:[]),
-    ...(party.page?[{party,kind:'leader',title:party.page}]:[])
-  ]);
+  const items=definition.choices.filter(party=>party.page).map(party=>({party,kind:'leader',title:party.page}));
   if(!items.length)return;
   const titles=[...new Set(items.map(item=>item.title))].join('|');
   const url=`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&piprop=thumbnail&pithumbsize=180&redirects=1&origin=*&titles=${encodeURIComponent(titles)}`;
@@ -1486,34 +1486,16 @@ async function loadPollWikipediaImages(definition){
       const from=redirect.from.toLowerCase().replaceAll('_',' '),to=redirect.to.toLowerCase().replaceAll('_',' ');
       if(photos.has(to))photos.set(from,photos.get(to));
     }
-    photos.forEach((source,title)=>pollWikipediaImageCache.set(normalizePollImageTitle(title),source));
     const current=currentPollDefinition();if(!current||`${current.mode}:${current.stateCode||''}`!==requestKey)return;
     pollPartiesEl.querySelectorAll('.poll-party').forEach(card=>{
       const party=definition.choices.find(p=>p.id===card.dataset.partyId);if(!party)return;
-      const partySource=party.partyImagePage&&photos.get(normalizePollImageTitle(party.partyImagePage));
-      if(partySource){const image=document.createElement('img');image.src=partySource;image.alt='';image.setAttribute('aria-hidden','true');image.loading='lazy';image.onerror=()=>image.remove();card.querySelector('.poll-symbol').replaceChildren(image);}
       const leaderSource=party.page&&photos.get(normalizePollImageTitle(party.page));if(!leaderSource)return;
       const portrait=card.querySelector('.poll-leader');const img=document.createElement('img');img.src=leaderSource;img.alt=`${party.leader} portrait`;img.loading='lazy';img.onerror=()=>img.remove();portrait.replaceChildren(img);
     });
-  }catch(error){console.warn('Party and leader image lookup unavailable:',error);}
+  }catch(error){console.warn('Leader portrait lookup unavailable:',error);}
 }
 async function loadPollResultImages(){
-  const choices=[...centralPmChoices,...pollStates.flatMap(state=>state.parties)];
-  const titles=[...new Set(choices.map(choice=>choice.partyImagePage).filter(Boolean).map(title=>title.trim()))];
-  const missing=titles.filter(title=>!pollWikipediaImageCache.has(normalizePollImageTitle(title)));
-  try{
-    for(let i=0;i<missing.length;i+=40){
-      const batch=missing.slice(i,i+40),url=`https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&piprop=thumbnail&pithumbsize=120&redirects=1&origin=*&titles=${encodeURIComponent(batch.join('|'))}`;
-      const response=await fetch(url);if(!response.ok)continue;
-      const data=await response.json(),photos=new Map(Object.values(data.query?.pages||{}).filter(page=>page.thumbnail?.source).map(page=>[normalizePollImageTitle(page.title),page.thumbnail.source]));
-      for(const redirect of [...(data.query?.normalized||[]),...(data.query?.redirects||[])]){
-        const from=normalizePollImageTitle(redirect.from),to=normalizePollImageTitle(redirect.to);
-        if(photos.has(to))photos.set(from,photos.get(to));
-      }
-      photos.forEach((source,title)=>pollWikipediaImageCache.set(title,source));
-    }
-    if(!pollResultsScreen.hidden)renderPollResults();
-  }catch(error){console.warn('Poll result party images unavailable:',error);}
+  if(!pollResultsScreen.hidden)renderPollResults();
 }
 async function loadPollCounts(){
   const [snapshot,centralPmSnapshot]=await Promise.all([db.collection('pollCounts').get(),db.collection('centralPmCounts').get()]);pollResultData.clear();centralPmResultData.clear();
@@ -1531,7 +1513,7 @@ function renderPollResults(){
     const name=document.createElement('span');name.className='poll-3d-result-name';
     if(choice){
       const mark=document.createElement('span');mark.className='poll-result-mark';mark.setAttribute('aria-hidden','true');mark.textContent=choice.symbol||'';
-      const imageSource=choice.partyImagePage&&pollWikipediaImageCache.get(normalizePollImageTitle(choice.partyImagePage));
+      const imageSource=choice.partyImagePage&&pollPartyImageFiles[normalizePollImageTitle(choice.partyImagePage)];
       if(imageSource){
         const image=document.createElement('img');image.src=imageSource;image.alt='';image.loading='lazy';image.onerror=()=>{mark.replaceChildren(document.createTextNode(choice.symbol||''));};mark.replaceChildren(image);
       }

@@ -1,0 +1,416 @@
+{
+  "retrieved": "2026-10-17",
+  "note": "Party logos, flags, or election symbols cached from Wikipedia page images; image-specific rights and attribution vary. Consult each linked source/license before reuse.",
+  "images": [
+    {
+      "partyTitle": "Aam Aadmi Party",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Aam_Aadmi_Party_logo_(English).svg",
+      "mediaFile": "File:Aam_Aadmi_Party_logo_(English).svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/65/Aam_Aadmi_Party_logo_%28English%29.svg/250px-Aam_Aadmi_Party_logo_%28English%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/023ec33eb695.png",
+      "license": "Public domain",
+      "artist": "<a href=\"https://en.wikipedia.org/wiki/Aam_Aadmi_Party\" class=\"extiw\" title=\"w:Aam Aadmi Party\">Aam Aadmi Party</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "All India Anna Dravida Munnetra Kazhagam",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Two_Leaves.svg",
+      "mediaFile": "File:Indian_Election_Symbol_Two_Leaves.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Indian_Election_Symbol_Two_Leaves.svg/250px-Indian_Election_Symbol_Two_Leaves.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/8f2ba4b9fb50.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:Gnoeee\" title=\"User:Gnoeee\">Gnoeee</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "All India Forward Bloc",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Lion.svg",
+      "mediaFile": "File:Indian_Election_Symbol_Lion.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c0/Indian_Election_Symbol_Lion.svg/250px-Indian_Election_Symbol_Lion.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/9a35b389d62c.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<ul><li><a href=\"//commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Lion.png\" title=\"File:Indian Election Symbol Lion.png\">Indian_Election_Symbol_Lion.png</a>: <a href=\"//commons.wikimedia.org/wiki/User:Abilngeorge\" title=\"User:Abilngeorge\">Abilngeorge</a></li>\n<li>this file: <span class=\"int-own-work\" lang=\"en\">Own work</span></li></ul>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "All India Majlis-e-Ittehadul Muslimeen",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:All_India_Majlis-e-Ittehadul_Muslimeen_logo.svg",
+      "mediaFile": "File:All_India_Majlis-e-Ittehadul_Muslimeen_logo.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/All_India_Majlis-e-Ittehadul_Muslimeen_logo.svg/250px-All_India_Majlis-e-Ittehadul_Muslimeen_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/8d122ab51abc.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:VNC200&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:VNC200 (page does not exist)\">VNC200</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "All India N.R. Congress",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Jug.svg",
+      "mediaFile": "File:Indian_Election_Symbol_Jug.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Indian_Election_Symbol_Jug.svg/250px-Indian_Election_Symbol_Jug.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/c53281d144ff.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:Abilngeorge\" title=\"User:Abilngeorge\">Abilngeorge</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "All India Trinamool Congress",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:All_India_Trinamool_Congress_logo_(3).svg",
+      "mediaFile": "File:All_India_Trinamool_Congress_logo_(3).svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/All_India_Trinamool_Congress_logo_%283%29.svg/250px-All_India_Trinamool_Congress_logo_%283%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/62d5bda0588b.png",
+      "license": "Public domain",
+      "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:VNC200&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:VNC200 (page does not exist)\">VNC200</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "All India United Democratic Front",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:AIUDF_logo.webp",
+      "mediaFile": "File:AIUDF_logo.webp",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/AIUDF_logo.webp/250px-AIUDF_logo.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/5833878548a9.webp",
+      "license": "Public domain",
+      "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=AIUDF,_Guwahati&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"AIUDF, Guwahati (page does not exist)\">AIUDF, Guwahati</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "All Jharkhand Students Union",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:ANSU_Party_flag.jpg",
+      "mediaFile": "File:ANSU_Party_flag.jpg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/ANSU_Party_flag.jpg/250px-ANSU_Party_flag.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/24065cf85524.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Arghaya_das_dev&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Arghaya das dev (page does not exist)\">Unrecognized</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Bahujan Samaj Party",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Elephant_Bahujan_Samaj_Party.svg",
+      "mediaFile": "File:Elephant_Bahujan_Samaj_Party.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Elephant_Bahujan_Samaj_Party.svg/250px-Elephant_Bahujan_Samaj_Party.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/4e2332e270d8.png",
+      "license": "CC BY-SA 3.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:Furfur\" title=\"User:Furfur\">Furfur</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Bharat Rashtra Samithi",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Car.png",
+      "mediaFile": "File:Indian_Election_Symbol_Car.png",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Indian_Election_Symbol_Car.png/250px-Indian_Election_Symbol_Car.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/3a472555ff0a.png",
+      "license": "CC0",
+      "artist": "Cheif Electoral Office",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Bharatiya Janata Party",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Logo_of_the_Bharatiya_Janata_Party.svg",
+      "mediaFile": "File:Logo_of_the_Bharatiya_Janata_Party.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Logo_of_the_Bharatiya_Janata_Party.svg/250px-Logo_of_the_Bharatiya_Janata_Party.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/63c51ea15333.png",
+      "license": "Public domain",
+      "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:SantoUY&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:SantoUY (page does not exist)\">SantoUY</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Biju Janata Dal",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Biju_Janata_Dal_logo.svg",
+      "mediaFile": "File:Biju_Janata_Dal_logo.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Biju_Janata_Dal_logo.svg/250px-Biju_Janata_Dal_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/ba88880e9bdb.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:VNC200&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:VNC200 (page does not exist)\">VNC200</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Communist Party of India",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:CPI-insignia.png",
+      "mediaFile": "File:CPI-insignia.png",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/CPI-insignia.png/250px-CPI-insignia.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/25427181d065.png",
+      "license": "Public domain",
+      "artist": "Unknown author<span style=\"display: none;\">Unknown author</span>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Communist Party of India (Marxist)",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:CPI(M)_Official_Logo.png",
+      "mediaFile": "File:CPI(M)_Official_Logo.png",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/CPI%28M%29_Official_Logo.png/250px-CPI%28M%29_Official_Logo.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/f64906c3e887.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:Soumava2002\" title=\"User:Soumava2002\">Soumava2002</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Dravida Munnetra Kazhagam",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_election_symbol_rising_sun.svg",
+      "mediaFile": "File:Indian_election_symbol_rising_sun.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1b/Indian_election_symbol_rising_sun.svg/250px-Indian_election_symbol_rising_sun.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/1c976fb46567.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:Furfur\" title=\"User:Furfur\">Furfur</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Hindustani Awam Morcha (Secular)",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Pan.jpg",
+      "mediaFile": "File:Indian_Election_Symbol_Pan.jpg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Indian_Election_Symbol_Pan.jpg/250px-Indian_Election_Symbol_Pan.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/d152e7948eb4.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Election Commission of India",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Indian National Congress",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_National_Congress_hand_logo.svg",
+      "mediaFile": "File:Indian_National_Congress_hand_logo.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6c/Indian_National_Congress_hand_logo.svg/250px-Indian_National_Congress_hand_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/83d190822c75.png",
+      "license": "Public domain",
+      "artist": "Original design of flag &amp; emblem by Indian National Congress.<br>Vectorized version by <a href=\"//commons.wikimedia.org/wiki/User:Swapnil1101\" title=\"User:Swapnil1101\">Swapnil1101</a>.",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Indian Union Muslim League",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Flag_of_the_Indian_Union_Muslim_League.svg",
+      "mediaFile": "File:Flag_of_the_Indian_Union_Muslim_League.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/Flag_of_the_Indian_Union_Muslim_League.svg/250px-Flag_of_the_Indian_Union_Muslim_League.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/46f5f8175a73.png",
+      "license": "Public domain",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:Zscout370\" title=\"User:Zscout370\">Zscout370</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Jammu & Kashmir National Conference",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Flag_of_Jammu_and_Kashmir_(1936-1953).svg",
+      "mediaFile": "File:Flag_of_Jammu_and_Kashmir_(1936-1953).svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Flag_of_Jammu_and_Kashmir_%281936-1953%29.svg/250px-Flag_of_Jammu_and_Kashmir_%281936-1953%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/31dfc18753d3.png",
+      "license": "Public domain",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:Germenfer\" title=\"User:Germenfer\">Germenfer</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Jammu and Kashmir Peoples Democratic Party",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Ink_Pot_and_Pen.png",
+      "mediaFile": "File:Indian_Election_Symbol_Ink_Pot_and_Pen.png",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Indian_Election_Symbol_Ink_Pot_and_Pen.png/250px-Indian_Election_Symbol_Ink_Pot_and_Pen.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/a2decd79671f.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:Abilngeorge\" title=\"User:Abilngeorge\">Abilngeorge</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Jana Sena Party",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_election_symbol_glass_tumbler.svg",
+      "mediaFile": "File:Indian_election_symbol_glass_tumbler.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Indian_election_symbol_glass_tumbler.svg/250px-Indian_election_symbol_glass_tumbler.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/6260e017188d.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Eelelectric25&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Eelelectric25 (page does not exist)\">Eelelectric25</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Janata Dal (Secular)",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_election_symbol_female_farmer.svg",
+      "mediaFile": "File:Indian_election_symbol_female_farmer.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fc/Indian_election_symbol_female_farmer.svg/250px-Indian_election_symbol_female_farmer.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/f3446dbb5c20.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Janata Dal (United)",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Janata_Dal_(United)_Flag.svg",
+      "mediaFile": "File:Janata_Dal_(United)_Flag.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Janata_Dal_%28United%29_Flag.svg/250px-Janata_Dal_%28United%29_Flag.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/72251d2d339d.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:AKBYS\" class=\"mw-redirect\" title=\"User:AKBYS\">ĀĶBYŚ</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Jannayak Janta Party",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Jananayak_Janata_Party_logo.jpg",
+      "mediaFile": "File:Jananayak_Janata_Party_logo.jpg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Jananayak_Janata_Party_logo.jpg/250px-Jananayak_Janata_Party_logo.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/d8a16effe238.jpg",
+      "license": "CC BY 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:LakhnawiNawab\" title=\"User:LakhnawiNawab\">LakhnawiNawab</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Jharkhand Mukti Morcha",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Jharkhand_Mukti_Morcha_logo.svg",
+      "mediaFile": "File:Jharkhand_Mukti_Morcha_logo.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Jharkhand_Mukti_Morcha_logo.svg/250px-Jharkhand_Mukti_Morcha_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/85753beb233a.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a rel=\"mw:WikiLink\" href=\"https://commons.wikimedia.org/wiki/User:VNC200?action=edit&amp;redlink=1\" title=\"User:VNC200 (page does not exist)\" class=\"new\" typeof=\"mw:LocalizedAttrs\" data-mw-i18n='{\"title\":{\"lang\":\"x-page\",\"key\":\"red-link-title\",\"params\":[\"User:VNC200\"]}}'>VNC200</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Kerala Congress (M)",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Kerala-Congress-flag.svg",
+      "mediaFile": "File:Kerala-Congress-flag.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Kerala-Congress-flag.svg/250px-Kerala-Congress-flag.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/c179f21655c9.png",
+      "license": "Public domain",
+      "artist": "No machine-readable author provided. <a href=\"//commons.wikimedia.org/wiki/User:Nichalp\" title=\"User:Nichalp\">Nichalp</a> assumed (based on copyright claims).",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Lok Janshakti Party (Ram Vilas)",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Helicopter(1).jpg",
+      "mediaFile": "File:Indian_Election_Symbol_Helicopter(1).jpg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d5/Indian_Election_Symbol_Helicopter%281%29.jpg/250px-Indian_Election_Symbol_Helicopter%281%29.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/f9a4e12ef3b3.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Election Commission of India",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Maharashtrawadi Gomantak Party",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Lion.svg",
+      "mediaFile": "File:Indian_Election_Symbol_Lion.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c0/Indian_Election_Symbol_Lion.svg/250px-Indian_Election_Symbol_Lion.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/9a35b389d62c.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<ul><li><a href=\"//commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Lion.png\" title=\"File:Indian Election Symbol Lion.png\">Indian_Election_Symbol_Lion.png</a>: <a href=\"//commons.wikimedia.org/wiki/User:Abilngeorge\" title=\"User:Abilngeorge\">Abilngeorge</a></li>\n<li>this file: <span class=\"int-own-work\" lang=\"en\">Own work</span></li></ul>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Naam Tamilar Katchi",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:NTK-EC-Symbol.jpg",
+      "mediaFile": "File:NTK-EC-Symbol.jpg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/NTK-EC-Symbol.jpg/250px-NTK-EC-Symbol.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/9cb79ac1bd3f.jpg",
+      "license": "CC0",
+      "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Mohantry-3009&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Mohantry-3009 (page does not exist)\">Mohantry-3009</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Nationalist Congress Party",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Ncp-logo.png",
+      "mediaFile": "File:Ncp-logo.png",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Ncp-logo.png/250px-Ncp-logo.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/1b7b85bae4c4.png",
+      "license": "CC0",
+      "artist": "<a rel=\"mw:WikiLink\" href=\"https://commons.wikimedia.org/wiki/User:Sg9655?action=edit&amp;redlink=1\" title=\"User:Sg9655 (page does not exist)\" class=\"new\" typeof=\"mw:LocalizedAttrs\" data-mw-i18n='{\"title\":{\"lang\":\"x-page\",\"key\":\"red-link-title\",\"params\":[\"User:Sg9655\"]}}'>Sg9655</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Nationalist Congress Party – Sharadchandra Pawar",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Man_Blowing_Turha.png",
+      "mediaFile": "File:Indian_Election_Symbol_Man_Blowing_Turha.png",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Indian_Election_Symbol_Man_Blowing_Turha.png/250px-Indian_Election_Symbol_Man_Blowing_Turha.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/f9e94105284d.png",
+      "license": "Public domain",
+      "artist": "ECI",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Rashtriya Janata Dal",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:RJD_Flag.svg",
+      "mediaFile": "File:RJD_Flag.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/RJD_Flag.svg/250px-RJD_Flag.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/5b4ba12af02d.png",
+      "license": "CC BY-SA 3.0",
+      "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Gppande&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Gppande (page does not exist)\">Gppande</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Samajwadi Party",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Samajwadi_Party.png",
+      "mediaFile": "File:Samajwadi_Party.png",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Samajwadi_Party.png/250px-Samajwadi_Party.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/7e6a63815f4a.png",
+      "license": "CC0",
+      "artist": "<a rel=\"nofollow\" class=\"external autonumber\" href=\"https://allpngfree.com/pngfree\">[1]</a> (website states that their images are free)",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Shiromani Akali Dal",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:SAD_flag.svg",
+      "mediaFile": "File:SAD_flag.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/SAD_flag.svg/250px-SAD_flag.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/a26552895335.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:SangrurUser\" title=\"User:SangrurUser\">SangrurUser</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Shiv Sena",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Bow_And_Arrow2.svg",
+      "mediaFile": "File:Indian_Election_Symbol_Bow_And_Arrow2.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Indian_Election_Symbol_Bow_And_Arrow2.svg/250px-Indian_Election_Symbol_Bow_And_Arrow2.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/99749ce92640.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "File:Indian Election Symbol Bow And Arrow.png",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Shiv Sena (Uddhav Balasaheb Thackeray)",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:SS(UBT)_flag.png",
+      "mediaFile": "File:SS(UBT)_flag.png",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/SS%28UBT%29_flag.png/250px-SS%28UBT%29_flag.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/94ddacc53940.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:456legend\" title=\"User:456legend\">456legend</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Sikkim Democratic Front",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Sikkim-Democratic-Front-flag.svg",
+      "mediaFile": "File:Sikkim-Democratic-Front-flag.svg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Sikkim-Democratic-Front-flag.svg/250px-Sikkim-Democratic-Front-flag.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/b2d037488224.png",
+      "license": "Public domain",
+      "artist": "",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Sikkim Krantikari Morcha",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Symbol_SKM.png",
+      "mediaFile": "File:Symbol_SKM.png",
+      "sourceImageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/da/Symbol_SKM.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "localPath": "assets/party-flags/817f74c55949.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Reetban&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Reetban (page does not exist)\">Reetban</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Telugu Desam Party",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Indian_Election_Symbol_Cycle_(cropped).png",
+      "mediaFile": "File:Indian_Election_Symbol_Cycle_(cropped).png",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/Indian_Election_Symbol_Cycle_%28cropped%29.png/250px-Indian_Election_Symbol_Cycle_%28cropped%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/cb8b03e2c718.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a rel=\"mw:WikiLink\" href=\"https://commons.wikimedia.org/wiki/User:Abilngeorge\" title=\"User:Abilngeorge\">Abilngeorge</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "Tipra Motha Party",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:Tipra_Logo.jpg",
+      "mediaFile": "File:Tipra_Logo.jpg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/Tipra_Logo.jpg/250px-Tipra_Logo.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/315631a5afef.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:Bdebbarma\" title=\"User:Bdebbarma\">Bdebbarma</a>",
+      "attribution": ""
+    },
+    {
+      "partyTitle": "YSR Congress Party",
+      "wikipediaPage": "https://commons.wikimedia.org/wiki/File:YSRCPLOGO.jpg",
+      "mediaFile": "File:YSRCPLOGO.jpg",
+      "sourceImageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/YSRCPLOGO.jpg/250px-YSRCPLOGO.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "localPath": "assets/party-flags/b8b3de480bf8.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a rel=\"mw:WikiLink\" href=\"https://commons.wikimedia.org/wiki/User:Veekthedragon\" title=\"User:Veekthedragon\">Veekthedragon</a>",
+      "attribution": ""
+    }
+  ]
+}
