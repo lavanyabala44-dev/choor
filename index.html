@@ -127,6 +127,7 @@
   .poll-mode-button[aria-pressed="true"]{background:#ffd23f;color:#111;box-shadow:0 3px 0 #9c6c00}
   #pollStatus{min-height:22px;color:#ffe9a8;font:14px/1.5 Arial,sans-serif;margin:8px 0}
   .poll-party-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px}
+  .poll-party-card{display:grid;gap:8px;min-width:0}
   .poll-party{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;align-items:center;text-align:left;min-width:0;padding:12px;border:2px solid #765100;border-radius:14px;background:#111;color:#fff;cursor:pointer}
   .poll-party:hover,.poll-party:focus-visible{border-color:#ffd23f;outline:2px solid #ffd23f;outline-offset:1px}
   .poll-party[aria-pressed="true"]{border-color:#ffd23f;background:#2b1a0c;box-shadow:0 0 0 2px #ffd23f55}
@@ -138,8 +139,9 @@
   .poll-symbol img{display:block;max-width:100%;max-height:100%;object-fit:contain}
   .poll-party-name{font:bold 16px/1.3 Arial,sans-serif;overflow-wrap:anywhere}
   .poll-party-leader{font:13px/1.4 Arial,sans-serif;color:#ffe9a8}
-  .poll-submit{margin:14px 0 20px;background:#c1121f;font-size:16px;padding:12px 20px}
-  .poll-submit:disabled{opacity:.5;cursor:not-allowed}
+  .poll-party-vote{width:100%;min-height:44px;padding:10px;border:2px solid #ffd23f;border-radius:10px;background:#c1121f;color:#fff;font:700 15px Arial,sans-serif;cursor:pointer}
+  .poll-party-vote:disabled{opacity:.45;cursor:not-allowed}
+  .poll-party-vote:not(:disabled):hover,.poll-party-vote:not(:disabled):focus-visible{background:#e01b2a;outline:2px solid #fff;outline-offset:2px}
   .poll-results{margin:12px 0 24px;padding:16px;border:2px solid #765100;border-radius:14px;background:#111}
   .poll-results h3{margin:0 0 12px;color:#ffd23f}
   .poll-result-row{display:grid;grid-template-columns:minmax(110px,230px) minmax(70px,1fr) 130px;gap:10px;align-items:center;margin:9px 0;font:13px Arial,sans-serif;color:#ffe9a8}
@@ -454,7 +456,6 @@
       <p id="pollQuestion" class="poll-note" hidden></p>
       <div id="pollStatus" role="status" aria-live="polite">Choose a poll to see its choices.</div>
       <div id="pollParties" class="poll-party-grid" role="group" aria-label="Political parties"></div>
-      <button id="pollSubmit" class="poll-submit" type="button" disabled>Vote</button>
     </div>
   </section>
 
@@ -1414,11 +1415,11 @@ const pollModeButtonsEl=document.getElementById('pollModeButtons');
 const pollStateSelect=document.getElementById('pollState');
 const pollPartiesEl=document.getElementById('pollParties');
 const pollStatusEl=document.getElementById('pollStatus');
-const pollSubmitBtn=document.getElementById('pollSubmit');
 const pollResultData=new Map();
 const centralPmResultData=new Map();
 let selectedPollParty=null;
 let selectedPollMode='';
+let pollVoteInProgress=false;
 let pollScrollY=0;
 pollStates.forEach(state=>{const option=document.createElement('option');option.value=state.code;option.textContent=state.name;pollStateSelect.append(option);});
 function currentPollState(){return pollStates.find(state=>state.code===pollStateSelect.value)||null;}
@@ -1429,26 +1430,39 @@ function currentPollDefinition(){
   return null;
 }
 function pollInitials(name){return name.split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase();}
+function updatePollVoteControls(){
+  pollPartiesEl.querySelectorAll('.poll-party-card').forEach(card=>{
+    const selected=selectedPollParty?.id===card.dataset.partyId;
+    card.querySelector('.poll-party-vote').disabled=pollVoteInProgress||!selected;
+    card.querySelector('.poll-party').disabled=pollVoteInProgress;
+  });
+  pollModeButtonsEl.querySelectorAll('[data-poll-mode]').forEach(button=>button.disabled=pollVoteInProgress);
+  pollStateSelect.disabled=pollVoteInProgress;
+}
 function renderPollParties(){
-  const mode=selectedPollMode,definition=currentPollDefinition();selectedPollParty=null;pollPartiesEl.replaceChildren();pollSubmitBtn.disabled=true;
+  const mode=selectedPollMode,definition=currentPollDefinition();selectedPollParty=null;pollPartiesEl.replaceChildren();
+  updatePollVoteControls();
   const stateLabel=document.getElementById('pollStateLabel'),question=document.getElementById('pollQuestion');
   stateLabel.hidden=mode!=='state';pollStateSelect.hidden=mode!=='state';question.hidden=!definition;
   if(!definition){pollStatusEl.textContent=mode==='state'?'Choose a state to see the parties listed for it.':'Choose a poll to see its choices.';return;}
   if(mode==='state')question.textContent=`If an election were held in ${definition.title} today, which party would you support? Party images come from Wikipedia and may show a party logo or flag; they are not official ECI election symbols.`;
   else question.textContent='Who would you prefer as Prime Minister? This is an informal preference poll, not an official party nomination or a direct election.';
   definition.choices.forEach(party=>{
-    const button=document.createElement('button');button.type='button';button.className='poll-party';button.dataset.partyId=party.id;button.setAttribute('aria-pressed','false');
+    const card=document.createElement('article');card.className='poll-party-card';card.dataset.partyId=party.id;
+    const button=document.createElement('button');button.type='button';button.className='poll-party';button.setAttribute('aria-pressed','false');
     const portrait=document.createElement('span');portrait.className='poll-leader';portrait.textContent=pollInitials(party.leader);
     const copy=document.createElement('span');copy.className='poll-party-copy';
     const symbol=document.createElement('span');symbol.className='poll-symbol';symbol.setAttribute('role','img');symbol.setAttribute('aria-label',`${party.name} image; Wikipedia party logo or flag when available`);symbol.textContent=party.symbol;
     const name=document.createElement('span');name.className='poll-party-name';name.textContent=party.name;
     const leader=document.createElement('span');leader.className='poll-party-leader';leader.textContent=party.page?`${mode==='central-pm'?'Party':'Party leader shown'}: ${party.leader}`:party.leader;
     copy.append(symbol,name,leader);button.append(portrait,copy);
+    const voteButton=document.createElement('button');voteButton.type='button';voteButton.className='poll-party-vote';voteButton.textContent='Vote';voteButton.disabled=true;voteButton.setAttribute('aria-label',`Vote for ${party.name}`);
     button.addEventListener('click',()=>{
-      selectedPollParty=party;pollPartiesEl.querySelectorAll('.poll-party').forEach(card=>card.setAttribute('aria-pressed',String(card===button)));
-      pollSubmitBtn.disabled=false;pollStatusEl.textContent=`Selected ${party.name}. Select Vote to record one response for this browser profile.`;
+      selectedPollParty=party;pollPartiesEl.querySelectorAll('.poll-party').forEach(option=>option.setAttribute('aria-pressed',String(option===button)));
+      updatePollVoteControls();pollStatusEl.textContent=`Selected ${party.name}. Tap Vote on this card to record one response for this browser profile.`;
     });
-    pollPartiesEl.append(button);
+    voteButton.addEventListener('click',()=>castPollVote(party));
+    card.append(button,voteButton);pollPartiesEl.append(card);
   });
   pollStatusEl.textContent=mode==='state'?`${definition.choices.length} national and selected state-recognised parties are listed. Check the ECI register for current recognition and election symbols.`:`${definition.choices.length} selected choices are listed. This informal poll is not exhaustive.`;
   loadPollWikipediaImages(definition);
@@ -1558,9 +1572,9 @@ function renderPollResults(){
   const stateVoteTotal=Array.from(byState.values()).reduce((sum,entry)=>sum+entry.votes,0);
   status.textContent=`Loaded all results: ${stateVoteTotal.toLocaleString()} state/UT and ${pmTotal.toLocaleString()} PM preference responses.`;
 }
-async function castPollVote(){
-  const definition=currentPollDefinition(),party=selectedPollParty;if(!definition||!party)return;
-  pollSubmitBtn.disabled=true;pollStatusEl.textContent='Connecting securely to record your response…';
+async function castPollVote(party){
+  const definition=currentPollDefinition();if(!definition||!party||selectedPollParty?.id!==party.id||pollVoteInProgress)return;
+  pollVoteInProgress=true;updatePollVoteControls();pollStatusEl.textContent='Connecting securely to record your response…';
   try{
     if(!pollAuth)throw new Error('AUTH_SDK_UNAVAILABLE');
     let user=pollAuth.currentUser;if(!user){const credential=await pollAuth.signInAnonymously();user=credential.user;}
@@ -1595,7 +1609,7 @@ async function castPollVote(){
     else if(error.message==='AUTH_SDK_UNAVAILABLE')pollStatusEl.textContent='The polling sign-in service could not load. The cabinet and existing counters are still available.';
     else if(error.code==='auth/operation-not-allowed')pollStatusEl.textContent='Anonymous voting is not enabled for this Firebase project yet. The rest of the site is still available.';
     else{pollStatusEl.textContent='The response could not be recorded. Check the database connection and try again.';console.error('Poll vote failed:',error);}
-  }finally{pollSubmitBtn.disabled=!selectedPollParty;}
+  }finally{pollVoteInProgress=false;updatePollVoteControls();}
 }
 async function loadPollAnalysis(){
   const status=document.getElementById('pollAnalysisStatus'),container=document.getElementById('pollAnalysisResults');
@@ -1717,7 +1731,6 @@ document.getElementById('pollResultsBack').addEventListener('click',()=>{
   pollResultsScreen.hidden=true;pollScreen.hidden=false;document.body.classList.remove('poll-results-open');document.body.classList.add('poll-open');window.scrollTo(0,0);
 });
 document.getElementById('pollResultsRefresh').addEventListener('click',openAllPollResults);
-document.getElementById('pollSubmit').addEventListener('click',castPollVote);
 pollModeButtonsEl.addEventListener('click',event=>{
   const button=event.target.closest('[data-poll-mode]');if(!button)return;
   selectedPollMode=button.dataset.pollMode;
