@@ -909,10 +909,15 @@ function saveCounts(){}
 function recTotal(r){ return ORDER.reduce((a,k)=>a+r[k],0); }
 function grandTotal(){ return Object.keys(counts).reduce((a,n)=>a+recTotal(rec(n)),0); }
 
+function combinedProfileTotals(){
+  const rows=[...COMBINED_PROFILE_NAMES].map(n=>({n,r:rec(n)}));
+  const weapons=blankRec();
+  rows.forEach(({r})=>ORDER.forEach(k=>weapons[k]+=r[k]));
+  return {rows,weapons,total:ORDER.reduce((sum,k)=>sum+weapons[k],0)};
+}
+
 function refreshTotal(){
-  const combinedWeapons=blankRec();
-  Object.keys(counts).forEach(n=>{const r=rec(n);if(COMBINED_PROFILE_NAMES.has(n))ORDER.forEach(k=>combinedWeapons[k]+=r[k]);});
-  const combinedTotal=ORDER.reduce((sum,key)=>sum+combinedWeapons[key],0);
+  const {weapons:combinedWeapons,total:combinedTotal}=combinedProfileTotals();
   document.getElementById('totalbox').innerHTML =
     `<div class="grand">BJP PARTY KA KUL PITAI: ${combinedTotal.toLocaleString()}</div><div class="list-title">HATHIYAR KE HISAB SE</div><div class="weapons"><div class="weapon-row"><span class="weapon-icon">🩴</span><span>Chappal ki maar</span><span class="weapon-count">${combinedWeapons.chappal.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">👞</span><span>Jooton ki maar</span><span class="weapon-count">${combinedWeapons.juta.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">🦯</span><span>Dandon ki maar</span><span class="weapon-count">${combinedWeapons.danda.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">🦵</span><span>Laaton ki maar</span><span class="weapon-count">${combinedWeapons.laat.toLocaleString()}</span></div></div>`;
 }
@@ -1271,7 +1276,8 @@ function getVisitorLocation(){
 }
 function renderSummary(){
   const body=document.getElementById('sumBody'), foot=document.getElementById('sumFoot');
-  const rows=Object.keys(counts).map(n=>({n,r:rec(n)})).filter(o=>recTotal(o.r)>0).sort((a,b)=>recTotal(b.r)-recTotal(a.r));
+  const {rows:allProfileRows}=combinedProfileTotals();
+  const rows=allProfileRows.filter(o=>recTotal(o.r)>0).sort((a,b)=>recTotal(b.r)-recTotal(a.r));
   if(!rows.length){ body.innerHTML=''; foot.innerHTML=''; document.getElementById('summaryEmpty').style.display='block'; return; }
   document.getElementById('summaryEmpty').style.display='none';
   const gt=blankRec();
