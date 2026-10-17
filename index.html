@@ -38,8 +38,6 @@
   #totalbox{font-size:clamp(25px,3vw,36px);font-weight:bold;color:#ffd23f;background:#111;border:6px solid #ffd23f;
     border-radius:48px;padding:20px 28px;line-height:1.45;min-width:390px;text-align:center;box-shadow:0 8px 22px rgba(0,0,0,.55)}
   #totalbox .grand{font-size:.9em;line-height:1.2;white-space:normal;overflow-wrap:anywhere}
-  #totalbox .total-subnote{max-width:360px;margin:6px auto;color:#ffe9a8;font:600 12px/1.35 Arial,sans-serif}
-  #totalbox .total-all-profiles{margin-top:12px;padding-top:9px;border-top:1px solid #765100}
   #totalbox .list-title{font-size:.56em;color:#ffe9a8;letter-spacing:.08em;margin:8px 0 6px}
   #totalbox .weapons{display:flex;flex-direction:column;gap:5px;text-align:left;max-width:340px;margin:0 auto}
   #totalbox .weapon-row{display:flex;align-items:center;gap:10px;font-size:.68em;white-space:nowrap}
@@ -891,8 +889,8 @@ const chanda=[
  ["CHANDA CHOOR","Ram Shankar Mishra",""],
  ["CHANDA CHOOR","Gopal Rao",""]
 ];
-// Combined homepage tally requested for BJP/NDA government profiles and the
-// Chanda profiles; the page does not record party affiliation for Chanda people.
+// The homepage combined tally includes the BJP/NDA government profiles and
+// Chanda profiles, as requested for this site-wide grouping.
 const COMBINED_PROFILE_NAMES=new Set(['NARENDRA MODI',...choors.map(item=>item[1]).filter(name=>name!=='Gyanesh Kumar (CEC)'),...chanda.map(item=>item[1])]);
 
 const HITS=["DHISHOOM!","THWACK!","CHAPAL!","DHAP!","OUCH!","THAPPAD!"];
@@ -915,7 +913,7 @@ function refreshTotal(){
   Object.keys(counts).forEach(n=>{const r=rec(n);if(COMBINED_PROFILE_NAMES.has(n))ORDER.forEach(k=>combinedWeapons[k]+=r[k]);});
   const combinedTotal=ORDER.reduce((sum,key)=>sum+combinedWeapons[key],0);
   document.getElementById('totalbox').innerHTML =
-    `<div class="grand">BJP-led NDA + Chanda profiles · KUL PITAI: ${combinedTotal.toLocaleString()}</div><div class="total-subnote">Combined site grouping: BJP/NDA government profiles plus Chanda profiles.</div><div class="list-title">COMBINED PROFILES · HATHIYAR KE HISAB SE</div><div class="weapons"><div class="weapon-row"><span class="weapon-icon">🩴</span><span>Chappal ki maar</span><span class="weapon-count">${combinedWeapons.chappal.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">👞</span><span>Jooton ki maar</span><span class="weapon-count">${combinedWeapons.juta.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">🦯</span><span>Dandon ki maar</span><span class="weapon-count">${combinedWeapons.danda.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">🦵</span><span>Laaton ki maar</span><span class="weapon-count">${combinedWeapons.laat.toLocaleString()}</span></div></div><div class="total-subnote total-all-profiles">All page profiles combined: ${grandTotal().toLocaleString()} hits.</div>`;
+    `<div class="grand">BJP PARTY KA KUL PITAI: ${combinedTotal.toLocaleString()}</div><div class="list-title">HATHIYAR KE HISAB SE</div><div class="weapons"><div class="weapon-row"><span class="weapon-icon">🩴</span><span>Chappal ki maar</span><span class="weapon-count">${combinedWeapons.chappal.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">👞</span><span>Jooton ki maar</span><span class="weapon-count">${combinedWeapons.juta.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">🦯</span><span>Dandon ki maar</span><span class="weapon-count">${combinedWeapons.danda.toLocaleString()}</span></div><div class="weapon-row"><span class="weapon-icon">🦵</span><span>Laaton ki maar</span><span class="weapon-count">${combinedWeapons.laat.toLocaleString()}</span></div></div>`;
 }
 
 /* ===== FIREBASE SHARED COUNTS ===== */
