@@ -181,6 +181,12 @@
   .member-chart-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;font:13px Arial,sans-serif;color:#ffe9a8}
   .member-chart-tools input{min-width:min(100%,240px);padding:8px 10px;border:1px solid #765100;border-radius:8px;background:#171111;color:#fff;font:inherit}
   #memberChartStatus{color:#ffe9a8}
+  #gaaliChart{max-height:420px;overflow:auto;padding-right:4px}
+  .gaali-row{display:grid;grid-template-columns:minmax(90px,170px) 1fr minmax(110px,auto);gap:8px;align-items:center;font:13px Arial,sans-serif}
+  .gaali-row-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ffe9a8}
+  .gaali-row-stats{text-align:right;color:#fff;font-weight:bold;white-space:nowrap}
+  .gaali-summary{margin:0 0 12px;color:#ffe9a8;font:14px/1.5 Arial,sans-serif}
+  @media(max-width:520px){.gaali-row{grid-template-columns:minmax(72px,105px) 1fr minmax(84px,auto);gap:6px;font-size:12px}.gaali-row-stats{white-space:normal}}
   .chart-row{display:grid;grid-template-columns:minmax(78px,150px) 1fr 54px;gap:8px;align-items:center;font:13px Arial,sans-serif}
   .chart-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ffe9a8}
   .chart-track{height:16px;border-radius:10px;background:#341212;overflow:hidden}
@@ -472,6 +478,7 @@
       <div class="analysis-card"><h3>&#128200; Daily hits — last 30 days</h3><svg id="trendChart" viewBox="0 0 900 270" role="img" aria-label="Line graph of hits by day"></svg></div>
       <div class="analysis-card"><h3>&#127942; Hits by person</h3><div class="member-chart-tools"><label for="memberChartSearch">Search person:</label><input id="memberChartSearch" type="search" placeholder="Type a person's name" autocomplete="off"><span id="memberChartStatus" aria-live="polite"></span></div><div id="memberChart" class="chart-rows"></div></div>
       <div class="analysis-card"><h3>&#128172; Top 10 messages</h3><div id="messageChart" class="chart-rows"></div></div>
+      <div class="analysis-card" style="grid-column:1/-1"><h3>&#128172; Custom galiya by person</h3><p class="analysis-note">Each hit using your typed message with “Show each hit” counts as one galiya. Every 100 galiya = 1 kg.</p><div class="member-chart-tools"><label for="gaaliChartSearch">Search person:</label><input id="gaaliChartSearch" type="search" placeholder="Type a person's name" autocomplete="off"><span id="gaaliChartStatus" aria-live="polite"></span></div><div id="gaaliSummary" class="gaali-summary" aria-live="polite"></div><div id="gaaliChart" class="chart-rows"></div></div>
       <div class="analysis-card" style="grid-column:1/-1"><h3>&#127758; Country/city hits by weapon</h3><div id="locationReport"></div></div>
       <div class="analysis-card" style="grid-column:1/-1"><h3>&#128101; Person hits by country/city and weapon</h3><div class="person-report-tools"><label for="personLocationSearch">Search by person:</label><input id="personLocationSearch" type="search" list="personLocationNames" placeholder="Type a person's name" autocomplete="off"><datalist id="personLocationNames"></datalist><span id="personLocationMeta" class="person-report-meta"></span></div><div id="personLocationTotals" class="person-report-totals" aria-live="polite"></div><div id="personLocationReport"></div><div id="personLocationPages" class="person-report-pages"></div></div>
       <div class="analysis-card" style="grid-column:1/-1"><h3>Message-by-message report</h3><div id="messageReport"></div></div>
@@ -1278,6 +1285,7 @@ function renderSummary(){
 let analysisData={stats:[],members:[],locations:[],personLocations:[]};
 let personLocationPage=0;
 let rankedMemberRows=[];
+let rankedGaaliRows=[];
 function makeChartBars(container,rows){
   container.replaceChildren();
   const max=Math.max(1,...rows.map(row=>row.value));
@@ -1331,6 +1339,12 @@ function renderAnalysis(){
   });
   const rankedMembers=Array.from(memberTotals,([id,value])=>({label:MEMBER_NAME_BY_ID[id]||id,value})).sort((a,b)=>b.value-a.value);
   const rankedMessages=Array.from(messageTotals,([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);
+  const gaaliTotals=new Map();
+  analysisData.stats.forEach(s=>{
+    if(!WEAPONS[s.weapon]||!MEMBER_NAME_BY_ID[s.memberId]||typeof s.message!=='string'||!s.message||HITS.includes(s.message)||!Number.isInteger(s.count)||s.count<1)return;
+    gaaliTotals.set(s.memberId,(gaaliTotals.get(s.memberId)||0)+s.count);
+  });
+  rankedGaaliRows=Array.from(gaaliTotals,([id,value])=>({id,label:MEMBER_NAME_BY_ID[id],value})).sort((a,b)=>b.value-a.value);
   const sum=Array.from(memberTotals.values()).reduce((a,b)=>a+b,0);
   document.getElementById('analysisTotal').textContent=sum.toLocaleString();
   document.getElementById('analysisTopMember').textContent=rankedMembers[0]?.label||'—';
@@ -1338,6 +1352,7 @@ function renderAnalysis(){
   makeChartBars(document.getElementById('weaponChart'),ORDER.map(w=>({label:`${WEAPONS[w].emoji} ${WEAPONS[w].label}`,value:weapons[w]})));
   rankedMemberRows=rankedMembers;
   renderMemberChart();
+  renderGaaliChart();
   makeChartBars(document.getElementById('messageChart'),rankedMessages.slice(0,10));
   const table=document.createElement('table');
   const thead=table.createTHead(),hr=thead.insertRow();
@@ -1373,6 +1388,24 @@ function renderMemberChart(){
   const rows=query?rankedMemberRows.filter(row=>row.label.toLocaleLowerCase().includes(query)):rankedMemberRows;
   document.getElementById('memberChartStatus').textContent=`Showing ${rows.length.toLocaleString()} of ${rankedMemberRows.length.toLocaleString()} people · total hits`;
   makeChartBars(document.getElementById('memberChart'),rows);
+}
+function renderGaaliChart(){
+  const query=document.getElementById('gaaliChartSearch').value.trim().toLocaleLowerCase();
+  const rows=query?rankedGaaliRows.filter(row=>row.label.toLocaleLowerCase().includes(query)):rankedGaaliRows;
+  const total=rankedGaaliRows.reduce((sum,row)=>sum+row.value,0);
+  document.getElementById('gaaliChartStatus').textContent=`Showing ${rows.length.toLocaleString()} of ${rankedGaaliRows.length.toLocaleString()} people`;
+  document.getElementById('gaaliSummary').textContent=`${total.toLocaleString()} custom-message galiya total · ${(total/100).toFixed(2)} kg at 100 galiya per kg`;
+  const container=document.getElementById('gaaliChart');container.replaceChildren();
+  const max=Math.max(1,...rows.map(row=>row.value));
+  rows.forEach(row=>{
+    const line=document.createElement('div');line.className='gaali-row';
+    const name=document.createElement('span');name.className='gaali-row-name';name.textContent=row.label;name.title=row.label;
+    const track=document.createElement('div');track.className='chart-track';
+    const fill=document.createElement('div');fill.className='chart-fill';fill.style.width=`${row.value/max*100}%`;track.append(fill);
+    const stats=document.createElement('span');stats.className='gaali-row-stats';stats.textContent=`${row.value.toLocaleString()} · ${(row.value/100).toFixed(2)} kg`;
+    line.append(name,track,stats);container.append(line);
+  });
+  if(!rows.length){const empty=document.createElement('div');empty.className='analysis-empty';empty.textContent=query?'No person matches that name.':'No custom-message galiya recorded yet.';container.append(empty);}
 }
 function renderLocationReport(locations){
   const container=document.getElementById('locationReport');container.replaceChildren();
@@ -1764,6 +1797,7 @@ document.getElementById('analysisRefresh').addEventListener('click',loadAnalysis
 document.getElementById('pollAnalysisRefresh').addEventListener('click',loadPollAnalysis);
 document.getElementById('analysisMessageFilter').addEventListener('change',()=>renderAnalysis());
 document.getElementById('memberChartSearch').addEventListener('input',renderMemberChart);
+document.getElementById('gaaliChartSearch').addEventListener('input',renderGaaliChart);
 document.getElementById('personLocationSearch').addEventListener('input',()=>{personLocationPage=0;renderPersonLocationReport(analysisData.personLocations);});
 function closePoll(){pollScreen.hidden=true;pollResultsScreen.hidden=true;document.body.classList.remove('poll-open','poll-results-open');window.scrollTo(0,pollScrollY);}
 async function openAllPollResults(){
