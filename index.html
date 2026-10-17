@@ -420,7 +420,7 @@
   <div id="hint">&#128070; Photo par hover &rarr; hathiyar chuno &rarr; click! Shared count sabko live dikhega.</div>
   <section class="home-pm-leader" aria-labelledby="homePmLeaderTitle" aria-live="polite">
     <h2 id="homePmLeaderTitle">&#127470;&#127475; India-wide PM preference poll</h2>
-    <p><strong>Current leader:</strong> <span id="homePmLeaderText">Loading live poll totals&hellip;</span></p>
+    <p><strong>Current leader:</strong> <span id="homePmLeaderText">Loading the live poll leader&hellip;</span></p>
     <span class="home-pm-leader-note">Informal online poll; not an official election result.</span>
   </section>
   <div id="topbar">
@@ -654,10 +654,10 @@ function renderHomePmLeader(snapshot){
   if(!counts.length){leaderText.textContent='No PM preference votes recorded yet.';return;}
   const highest=Math.max(...counts.map(item=>item.count));
   const leaders=counts.filter(item=>item.count===highest).sort((a,b)=>a.choice.name.localeCompare(b.choice.name));
-  leaderText.textContent=leaders.map(item=>`${item.choice.name} — ${item.choice.partyName} (${item.count.toLocaleString()} ${item.count===1?'vote':'votes'})`).join(' · ');
+  leaderText.textContent=leaders.map(item=>`${item.choice.name} — ${item.choice.partyName}`).join(' · ');
 }
 db.collection('centralPmCounts').onSnapshot(renderHomePmLeader,error=>{
-  document.getElementById('homePmLeaderText').textContent='Poll totals are temporarily unavailable.';
+  document.getElementById('homePmLeaderText').textContent='The live poll leader is temporarily unavailable.';
   console.error('Home PM poll leader update failed:',error);
 });
 
