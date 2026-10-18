@@ -327,6 +327,11 @@
   .card[data-name="Gyanesh Kumar (CEC)"] .count{position:static;top:auto;left:auto;z-index:auto;display:none;width:max-content;height:auto;margin:8px auto;padding:3px 9px;font-size:14px;line-height:18px}
   .card[data-name="Gyanesh Kumar (CEC)"] .count.show{display:block}
   .card[data-name="Gyanesh Kumar (CEC)"] .count::before{content:"Kul pitai: "}
+  .hero-card[data-name="NARENDRA MODI"] .bigtotal{display:none}
+  .hero-card[data-name="NARENDRA MODI"] img[data-reaction-portrait]{height:auto;aspect-ratio:1/1;max-height:500px;object-fit:contain;object-position:center;background:#fff8e8}
+  .hero-card[data-name="NARENDRA MODI"] .count{position:static;top:auto;left:auto;z-index:auto;display:none;width:max-content;height:auto;margin:8px auto;padding:3px 9px;font-size:14px;line-height:18px}
+  .hero-card[data-name="NARENDRA MODI"] .count.show{display:block}
+  .hero-card[data-name="NARENDRA MODI"] .count::before{content:"Kul pitai: "}
   .blank{width:100%;height:170px;background:#fff}
   .name{font-size:13px;font-weight:bold;color:#111;padding:6px 4px 2px}
   .choor{background:#c1121f;color:#ffd23f;font-size:13px;font-weight:bold;padding:5px;letter-spacing:.5px}
@@ -552,7 +557,8 @@
 
   <div class="hero">
     <div class="hero-card">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/The_official_portrait_of_Shri_Narendra_Modi%2C_the_Prime_Minister_of_the_Republic_of_India.jpg"
+      <img data-reaction-portrait src="https://upload.wikimedia.org/wikipedia/commons/5/5f/The_official_portrait_of_Shri_Narendra_Modi%2C_the_Prime_Minister_of_the_Republic_of_India.jpg"
+           alt="Narendra Modi"
            onerror="this.src='https://via.placeholder.com/340x360?text=Modi'">
       <div class="hero-name">NARENDRA MODI</div>
       <div class="hero-choor">MAHA CHOOR</div>
@@ -938,6 +944,12 @@ const GYANESH_REACTION_PORTRAITS={
   3:{src:'assets/gyanesh-dead.jpg',alt:'Satirical cartoon of Gyanesh Kumar shown as dead'}
 };
 let gyaneshReactionBaseline=null;
+const MODI_REACTION_PORTRAITS={
+  1:{src:'assets/modi-red-eye.jpg',alt:'Narendra Modi cartoon with red eyes'},
+  2:{src:'assets/modi-crying.jpg',alt:'Narendra Modi cartoon crying'},
+  3:{src:'assets/modi-dead.jpg',alt:'Satirical cartoon of Narendra Modi shown as dead'}
+};
+let modiReactionBaseline=null;
 
 /* ===== SHARED FIRESTORE COUNTS ===== */
 let counts={};
@@ -996,6 +1008,7 @@ async function connectFirebase(){
         ORDER.forEach(key=>next[name][key]=Number.isInteger(data[key])&&data[key]>=0?data[key]:0);
       });
       if(gyaneshReactionBaseline===null)gyaneshReactionBaseline=recTotal(next['Gyanesh Kumar (CEC)']||blankRec());
+      if(modiReactionBaseline===null)modiReactionBaseline=recTotal(next['NARENDRA MODI']||blankRec());
       counts=next;
       cloudConnected=true;
       refreshAll();
@@ -1056,13 +1069,16 @@ function playHit(type){
 /* ===== CARD BADGE / BIG TOTAL ===== */
 function badge(card){
   const r=rec(card.dataset.name), tot=recTotal(r);
-  if(card.dataset.name==='Gyanesh Kumar (CEC)'){
+  if(card.dataset.name==='Gyanesh Kumar (CEC)'||card.dataset.name==='NARENDRA MODI'){
     const portrait=card.querySelector('img[data-reaction-portrait]');
     if(portrait){
-      const stage=gyaneshReactionBaseline===null?0:(tot-gyaneshReactionBaseline)%4;
-      const reaction=GYANESH_REACTION_PORTRAITS[stage];
+      const isModi=card.dataset.name==='NARENDRA MODI';
+      const baseline=isModi?modiReactionBaseline:gyaneshReactionBaseline;
+      const portraits=isModi?MODI_REACTION_PORTRAITS:GYANESH_REACTION_PORTRAITS;
+      const stage=baseline===null?0:(tot-baseline)%4;
+      const reaction=portraits[stage];
       portrait.src=reaction?reaction.src:portrait.dataset.originalSrc;
-      portrait.alt=reaction?reaction.alt:'Gyanesh Kumar (CEC)';
+      portrait.alt=reaction?reaction.alt:(isModi?'Narendra Modi':'Gyanesh Kumar (CEC)');
     }
   }
   const el=card.querySelector('.count');
@@ -1791,9 +1807,12 @@ render('ndaAllies',allianceChiefMinisters);
 render('rm',chanda); refreshTotal();
 const hero=document.querySelector('.hero-card');
 hero.dataset.name='NARENDRA MODI';
+const heroPortrait=hero.querySelector('img[data-reaction-portrait]');
+heroPortrait.dataset.originalSrc=heroPortrait.getAttribute('src');
 hero.insertAdjacentHTML('beforeend',
   `<div class="bigtotal"><span class="n">0</span><span class="lbl">KUL PITAI</span><span class="mini"></span></div>
-   <span class="count"></span>${toolsHTML()}<span class="chappal">${WEAPONS.chappal.emoji}</span><span class="burst">DHISHOOM!</span><div class="brk"></div>`);
+   ${toolsHTML()}<span class="chappal">${WEAPONS.chappal.emoji}</span><span class="burst">DHISHOOM!</span><div class="brk"></div>`);
+hero.querySelector('.hero-choor').insertAdjacentHTML('afterend','<span class="count"></span>');
 badge(hero); hero.addEventListener('click',()=>whack(hero)); wireTools(hero);
 syncTools(); renderSummary();
 
