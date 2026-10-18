@@ -323,7 +323,8 @@
   .card img{width:100%;height:170px;object-fit:cover;object-position:top}
   .card img[data-reaction-portrait]{object-fit:contain;object-position:center;background:#fff8e8}
   .card[data-name="Gyanesh Kumar (CEC)"] .bigtotal{display:none}
-  .card[data-name="Gyanesh Kumar (CEC)"] .count{position:relative;top:auto;left:auto;z-index:auto;display:none;width:max-content;height:auto;margin:8px auto 0;padding:3px 9px;font-size:14px;line-height:18px}
+  .card[data-name="Gyanesh Kumar (CEC)"] img[data-reaction-portrait]{height:auto;aspect-ratio:1/1;max-height:420px}
+  .card[data-name="Gyanesh Kumar (CEC)"] .count{position:static;top:auto;left:auto;z-index:auto;display:none;width:max-content;height:auto;margin:8px auto;padding:3px 9px;font-size:14px;line-height:18px}
   .card[data-name="Gyanesh Kumar (CEC)"] .count.show{display:block}
   .card[data-name="Gyanesh Kumar (CEC)"] .count::before{content:"Kul pitai: "}
   .blank{width:100%;height:170px;background:#fff}
@@ -1197,16 +1198,18 @@ function render(el,data){
   wrap.innerHTML=data.map(c=>{
     const tags=Array.isArray(c[0])?c[0]:[c[0]];
     const hasImg=c[2]&&c[2].trim()!=='';
-    const reactionPortrait=c[1]==='Gyanesh Kumar (CEC)'?' data-reaction-portrait alt="Gyanesh Kumar (CEC)"':'';
+    const isGyanesh=c[1]==='Gyanesh Kumar (CEC)';
+    const reactionPortrait=isGyanesh?' data-reaction-portrait alt="Gyanesh Kumar (CEC)"':'';
     const media=hasImg?`<img src="${c[2]}"${reactionPortrait} onerror="this.outerHTML='<div class=\\'blank\\'></div>'">`:`<div class="blank"></div>`;
     const isCm=allChiefMinisters.some(cm=>cm[1]===c[1]);
+    const cardCount='<span class="count"></span>';
     return `<div class="card${c[3]?' star':''}${isCm?' has-cm-info':''}" data-name="${c[1]}">${isCm?`<button class="cm-info-button" type="button" aria-label="Information about ${c[1]}" title="Public case information">&#8505;</button>`:''}${media}
       <div class="bigtotal"><span class="n">0</span><span class="lbl">KUL PITAI</span><span class="mini"></span></div>
-      <span class="count"></span>${toolsHTML()}
+      ${isGyanesh?'':cardCount}${toolsHTML()}
       <span class="chappal">${WEAPONS.chappal.emoji}</span>
       <span class="burst">${HITS[0]}</span>
       <div class="name">${c[1]}</div><div class="brk"></div>
-      ${tags.map(t=>`<div class="choor">${t}</div>`).join('')}</div>`;
+      ${tags.map(t=>`<div class="choor">${t}</div>`).join('')}${isGyanesh?cardCount:''}</div>`;
   }).join('');
   const reactionPortrait=wrap.querySelector('img[data-reaction-portrait]');
   if(reactionPortrait)reactionPortrait.dataset.originalSrc=reactionPortrait.getAttribute('src');
