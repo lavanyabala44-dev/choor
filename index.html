@@ -321,6 +321,7 @@
   .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;max-width:1200px;margin:auto}
   .card{background:#fff;border-radius:10px;overflow:hidden;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,.4)}
   .card img{width:100%;height:170px;object-fit:cover;object-position:top}
+  .card img[data-reaction-portrait]{object-fit:contain;object-position:center;background:#fff8e8}
   .blank{width:100%;height:170px;background:#fff}
   .name{font-size:13px;font-weight:bold;color:#111;padding:6px 4px 2px}
   .choor{background:#c1121f;color:#ffd23f;font-size:13px;font-weight:bold;padding:5px;letter-spacing:.5px}
@@ -927,8 +928,8 @@ const COMBINED_PROFILE_NAMES=new Set(['NARENDRA MODI',...choors.map(item=>item[1
 
 const HITS=["DHISHOOM!","THWACK!","CHAPAL!","DHAP!","OUCH!","THAPPAD!"];
 const GYANESH_REACTION_PORTRAITS={
-  1:{src:'assets/gyanesh-crying.svg',alt:'Gyanesh Kumar cartoon looking sad with tears'},
-  2:{src:'assets/gyanesh-sorry.svg',alt:'Gyanesh Kumar cartoon apologizing with folded hands'},
+  1:{src:'assets/gyanesh-red-eye.jpg',alt:'Gyanesh Kumar cartoon with red eyes'},
+  2:{src:'assets/gyanesh-crying.jpg',alt:'Gyanesh Kumar cartoon crying'},
   3:{src:'assets/gyanesh-dizzy.svg',alt:'Gyanesh Kumar cartoon looking embarrassed and dizzy'}
 };
 let gyaneshReactionBaseline=null;
