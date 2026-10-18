@@ -48,6 +48,7 @@
   #cloudpill.ok{background:#0a6b2f;color:#c9ffd8;border-color:#c9ffd8}
   #cloudpill.busy{background:#7a5a00;color:#ffe9a8}
   #cloudpill.err{background:#7a0000;color:#ffd0d0;border-color:#ff9a9a}
+  #cloudpill.warn{background:#7a5a00;color:#ffe9a8;border-color:#ffd23f}
   #messageControl{display:flex;align-items:center;gap:6px;flex:1 1 320px;min-width:0;padding:5px 8px;border:1px solid #ffd23f;
     border-radius:12px;background:#111;color:#ffe9a8;font:12px Arial,sans-serif;box-sizing:border-box}
   #messageControl .hit-message-label{flex:0 1 220px;font-weight:bold;line-height:1.25;max-width:250px;white-space:normal}
@@ -1256,40 +1257,9 @@ async function whack(card){
   burst.classList.toggle('custom-message',Boolean(showCustom));
   card.classList.remove('hit'); void card.offsetWidth; card.classList.add('hit');
   try{
-    const location=await getVisitorLocation();
-    const statId=await hashMessageStat(`${id}|${weapon}|${shownMessage}|${hitDay}`);
     const memberRef=db.collection('members').doc(id);
-    const statRef=db.collection('messageStats').doc(statId);
-    const locationId=`${location.countryCode}|${location.city}|${weapon}`;
-    const locationRef=db.collection('locationStats').doc(locationId);
-    const personLocationId=`${id}|${location.countryCode}|${location.city}|${weapon}`;
-    const personLocationRef=db.collection('personLocationStats').doc(personLocationId);
     await db.runTransaction(async transaction=>{
-      const [memberSnap,statSnap,locationSnap,personLocationSnap]=await Promise.all([transaction.get(memberRef),transaction.get(statRef),transaction.get(locationRef),transaction.get(personLocationRef)]);
-      if(statSnap.exists){
-        const old=statSnap.data();
-        if(old.memberId!==id||old.weapon!==weapon||old.message!==shownMessage||old.date!==hitDay)
-          throw new Error('Message report key conflict.');
-        transaction.update(statRef,{count:firebase.firestore.FieldValue.increment(1)});
-      }else{
-        transaction.set(statRef,{memberId:id,weapon,message:shownMessage,date:hitDay,count:1});
-      }
-      if(locationSnap.exists){
-        const old=locationSnap.data();
-        if(old.countryCode!==location.countryCode||old.country!==location.country||old.city!==location.city||old.weapon!==weapon)
-          throw new Error('Location report key conflict.');
-        transaction.update(locationRef,{count:firebase.firestore.FieldValue.increment(1)});
-      }else{
-        transaction.set(locationRef,{countryCode:location.countryCode,country:location.country,city:location.city,weapon,count:1});
-      }
-      if(personLocationSnap.exists){
-        const old=personLocationSnap.data();
-        if(old.memberId!==id||old.countryCode!==location.countryCode||old.country!==location.country||old.city!==location.city||old.weapon!==weapon)
-          throw new Error('Person location report key conflict.');
-        transaction.update(personLocationRef,{count:firebase.firestore.FieldValue.increment(1)});
-      }else{
-        transaction.set(personLocationRef,{memberId:id,countryCode:location.countryCode,country:location.country,city:location.city,weapon,count:1});
-      }
+      const memberSnap=await transaction.get(memberRef);
       if(memberSnap.exists){
         transaction.update(memberRef,{[weapon]:firebase.firestore.FieldValue.increment(1)});
       }else{
@@ -1309,6 +1279,51 @@ async function whack(card){
   }catch(error){
     setPill('err','&#9729; Save failed');
     console.error('Firestore count update failed:',error);
+    return;
+  }
+
+  // Reporting is best-effort and independent: analytics, network, or
+  // geolocation failures must never cancel a successfully saved profile hit.
+  try{
+    const location=await getVisitorLocation();
+    const statId=await hashMessageStat(`${id}|${weapon}|${shownMessage}|${hitDay}`);
+    const statRef=db.collection('messageStats').doc(statId);
+    const locationId=`${location.countryCode}|${location.city}|${weapon}`;
+    const locationRef=db.collection('locationStats').doc(locationId);
+    const personLocationId=`${id}|${location.countryCode}|${location.city}|${weapon}`;
+    const personLocationRef=db.collection('personLocationStats').doc(personLocationId);
+    await db.runTransaction(async transaction=>{
+      const [statSnap,locationSnap,personLocationSnap]=await Promise.all([
+        transaction.get(statRef),transaction.get(locationRef),transaction.get(personLocationRef)
+      ]);
+      if(statSnap.exists){
+        const old=statSnap.data();
+        if(old.memberId!==id||old.weapon!==weapon||old.message!==shownMessage||old.date!==hitDay)
+          throw new Error('Message report key conflict.');
+        transaction.update(statRef,{count:firebase.firestore.FieldValue.increment(1)});
+      }else{
+        transaction.set(statRef,{memberId:id,weapon,message:shownMessage,date:hitDay,count:1});
+      }
+      if(locationSnap.exists){
+        const old=locationSnap.data();
+        if(old.countryCode!==location.countryCode||old.country!==location.country||old.city!==location.city||old.weapon!==weapon)
+          throw new Error('Location report key conflict.');
+        transaction.update(locationRef,{count:firebase.firestore.FieldValue.increment(1)});
+      }else{
+        transaction.set(locationRef,{countryCode:location.countryCode,country:location.country,city:location.city,weapon,count:1});
+      }
+      if(personLocationSnap.exists){
+        const old=personLocationSnap.data();
+        if(old.memberId!==id||old.countryCode!==location.countryCode||old.country!==location.country||old.city!==location.city||old.weapon!==weapon)
+          throw new Error('Person location key conflict.');
+        transaction.update(personLocationRef,{count:firebase.firestore.FieldValue.increment(1)});
+      }else{
+        transaction.set(personLocationRef,{memberId:id,countryCode:location.countryCode,country:location.country,city:location.city,weapon,count:1});
+      }
+    });
+  }catch(error){
+    setPill('warn','&#9729; Hit saved · report not updated');
+    console.warn('Hit saved, but its analytics reports were not updated:',error);
   }
 }
 async function hashMessageStat(value){
