@@ -926,6 +926,12 @@ const chanda=[
 const COMBINED_PROFILE_NAMES=new Set(['NARENDRA MODI',...choors.map(item=>item[1]),...chanda.map(item=>item[1])]);
 
 const HITS=["DHISHOOM!","THWACK!","CHAPAL!","DHAP!","OUCH!","THAPPAD!"];
+const GYANESH_REACTION_PORTRAITS={
+  1:{src:'assets/gyanesh-crying.svg',alt:'Gyanesh Kumar cartoon looking sad with tears'},
+  2:{src:'assets/gyanesh-sorry.svg',alt:'Gyanesh Kumar cartoon apologizing with folded hands'},
+  3:{src:'assets/gyanesh-dizzy.svg',alt:'Gyanesh Kumar cartoon looking embarrassed and dizzy'}
+};
+let gyaneshReactionBaseline=null;
 
 /* ===== SHARED FIRESTORE COUNTS ===== */
 let counts={};
@@ -983,6 +989,7 @@ async function connectFirebase(){
         const data=doc.data();
         ORDER.forEach(key=>next[name][key]=Number.isInteger(data[key])&&data[key]>=0?data[key]:0);
       });
+      if(gyaneshReactionBaseline===null)gyaneshReactionBaseline=recTotal(next['Gyanesh Kumar (CEC)']||blankRec());
       counts=next;
       cloudConnected=true;
       refreshAll();
@@ -1043,6 +1050,15 @@ function playHit(type){
 /* ===== CARD BADGE / BIG TOTAL ===== */
 function badge(card){
   const r=rec(card.dataset.name), tot=recTotal(r);
+  if(card.dataset.name==='Gyanesh Kumar (CEC)'){
+    const portrait=card.querySelector('img[data-reaction-portrait]');
+    if(portrait){
+      const stage=gyaneshReactionBaseline===null?0:(tot-gyaneshReactionBaseline)%4;
+      const reaction=GYANESH_REACTION_PORTRAITS[stage];
+      portrait.src=reaction?reaction.src:portrait.dataset.originalSrc;
+      portrait.alt=reaction?reaction.alt:'Gyanesh Kumar (CEC)';
+    }
+  }
   const el=card.querySelector('.count');
   if(tot>0){ el.textContent='x'+tot; el.classList.add('show'); } else el.classList.remove('show');
   const bt=card.querySelector('.bigtotal .n'); if(bt) bt.textContent=tot;
@@ -1176,7 +1192,8 @@ function render(el,data){
   wrap.innerHTML=data.map(c=>{
     const tags=Array.isArray(c[0])?c[0]:[c[0]];
     const hasImg=c[2]&&c[2].trim()!=='';
-    const media=hasImg?`<img src="${c[2]}" onerror="this.outerHTML='<div class=\\'blank\\'></div>'">`:`<div class="blank"></div>`;
+    const reactionPortrait=c[1]==='Gyanesh Kumar (CEC)'?' data-reaction-portrait alt="Gyanesh Kumar (CEC)"':'';
+    const media=hasImg?`<img src="${c[2]}"${reactionPortrait} onerror="this.outerHTML='<div class=\\'blank\\'></div>'">`:`<div class="blank"></div>`;
     const isCm=allChiefMinisters.some(cm=>cm[1]===c[1]);
     return `<div class="card${c[3]?' star':''}${isCm?' has-cm-info':''}" data-name="${c[1]}">${isCm?`<button class="cm-info-button" type="button" aria-label="Information about ${c[1]}" title="Public case information">&#8505;</button>`:''}${media}
       <div class="bigtotal"><span class="n">0</span><span class="lbl">KUL PITAI</span><span class="mini"></span></div>
@@ -1186,6 +1203,8 @@ function render(el,data){
       <div class="name">${c[1]}</div><div class="brk"></div>
       ${tags.map(t=>`<div class="choor">${t}</div>`).join('')}</div>`;
   }).join('');
+  const reactionPortrait=wrap.querySelector('img[data-reaction-portrait]');
+  if(reactionPortrait)reactionPortrait.dataset.originalSrc=reactionPortrait.getAttribute('src');
   wrap.querySelectorAll('.card').forEach(card=>{ badge(card); card.addEventListener('click',()=>whack(card)); });
   wrap.querySelectorAll('.cm-info-button').forEach(button=>button.addEventListener('click',event=>{
     event.preventDefault();event.stopPropagation();openCmInfo(button.closest('.card').dataset.name);

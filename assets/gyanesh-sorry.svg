@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 650" role="img" aria-labelledby="title desc">
+  <title id="title">Apologetic cartoon portrait</title><desc id="desc">A respectful, nonviolent cartoon portrait of an older Indian man with glasses, folded hands and a sorry sign.</desc>
+  <rect width="500" height="650" fill="#fff8e8"/>
+  <path d="M45 650c13-133 91-182 205-182s192 49 205 182" fill="#263b59"/>
+  <path d="M194 487 250 558l56-71 28 163H166z" fill="#fff"/><path d="m225 528 25 30 25-30 19 122h-88z" fill="#b72235"/>
+  <path d="M163 181c-20-55 13-118 88-125 85-8 117 49 93 123l-19 54H180z" fill="#d7d9dc"/>
+  <path d="M166 215c-10-38 4-112 27-139-9 59 5 63 17 77-1-31 18-65 39-80-6 48 14 73 32 88 4-32 17-51 40-65 20 46 17 91 7 122l-24-13H187z" fill="#c4c8ce"/>
+  <ellipse cx="153" cy="282" rx="27" ry="39" fill="#d99470"/><ellipse cx="347" cy="282" rx="27" ry="39" fill="#d99470"/>
+  <path d="M165 225q85-55 170 0l-5 132q-8 97-80 108-72-11-80-108z" fill="#e7ad89"/>
+  <path d="M190 278q28 10 56 0m8 0q28 10 56 0" fill="none" stroke="#73513f" stroke-width="8" stroke-linecap="round"/>
+  <rect x="172" y="306" width="92" height="60" rx="20" fill="none" stroke="#273d55" stroke-width="8"/><rect x="268" y="306" width="92" height="60" rx="20" fill="none" stroke="#273d55" stroke-width="8"/><path d="M264 322h8" stroke="#273d55" stroke-width="8"/>
+  <ellipse cx="216" cy="337" rx="7" ry="10" fill="#263b59"/><ellipse cx="284" cy="337" rx="7" ry="10" fill="#263b59"/>
+  <path d="M250 343l-10 47 18 5" fill="none" stroke="#bc7b5d" stroke-width="7" stroke-linecap="round"/>
+  <path d="M216 414q34 24 68 0" fill="none" stroke="#854b47" stroke-width="9" stroke-linecap="round"/>
+  <path d="M96 548q-38 15-45 61m353-61q38 15 45 61" fill="none" stroke="#e7ad89" stroke-width="24" stroke-linecap="round"/>
+  <path d="M195 562q26-34 55 0 29-34 55 0l-55 66z" fill="#e7ad89" stroke="#bc7b5d" stroke-width="5"/>
+  <rect x="130" y="596" width="240" height="45" rx="18" fill="#ffd23f" stroke="#b72235" stroke-width="5"/><text x="250" y="627" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" font-weight="700" fill="#7a1420">SORRY</text>
+</svg>

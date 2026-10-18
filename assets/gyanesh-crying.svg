@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 650" role="img" aria-labelledby="title desc">
+  <title id="title">Sad cartoon portrait</title><desc id="desc">A respectful, nonviolent cartoon portrait of an older Indian man with glasses and tears.</desc>
+  <rect width="500" height="650" fill="#fff8e8"/>
+  <path d="M53 650c8-113 81-166 197-166s189 53 197 166" fill="#263b59"/>
+  <path d="m197 493 53 71 53-71 33 157H164z" fill="#fff"/><path d="m225 535 25 29 25-29 17 115h-84z" fill="#b72235"/>
+  <path d="M163 180c-20-55 13-118 88-125 85-8 117 49 93 123l-19 54H180z" fill="#d7d9dc"/>
+  <path d="M166 214c-10-38 4-112 27-139-9 59 5 63 17 77-1-31 18-65 39-80-6 48 14 73 32 88 4-32 17-51 40-65 20 46 17 91 7 122l-24-13H187z" fill="#c4c8ce"/>
+  <ellipse cx="153" cy="281" rx="27" ry="39" fill="#d99470"/><ellipse cx="347" cy="281" rx="27" ry="39" fill="#d99470"/>
+  <path d="M165 224q85-55 170 0l-5 133q-8 97-80 108-72-11-80-108z" fill="#e7ad89"/>
+  <path d="M188 278q28 15 56 0M256 278q28 15 56 0" fill="none" stroke="#73513f" stroke-width="8" stroke-linecap="round"/>
+  <path d="M190 306h56a18 18 0 0 1 18 18v25a18 18 0 0 1-18 18h-56a18 18 0 0 1-18-18v-25a18 18 0 0 1 18-18zm64 12h-8m8 0h8m8 0h8m8-12h56a18 18 0 0 1 18 18v25a18 18 0 0 1-18 18h-56a18 18 0 0 1-18-18v-25a18 18 0 0 1 18-18z" fill="none" stroke="#273d55" stroke-width="8"/>
+  <ellipse cx="216" cy="337" rx="7" ry="10" fill="#263b59"/><ellipse cx="286" cy="337" rx="7" ry="10" fill="#263b59"/>
+  <path d="M250 343l-10 47 18 5" fill="none" stroke="#bc7b5d" stroke-width="7" stroke-linecap="round"/>
+  <path d="M210 427q40-39 80 0" fill="none" stroke="#854b47" stroke-width="9" stroke-linecap="round"/>
+  <path d="M194 365c-16 26-19 46-6 57 13-9 19-29 6-57zm112 0c-16 26-19 46-6 57 13-9 19-29 6-57z" fill="#56bde3" stroke="#3199c2" stroke-width="4"/>
+  <path d="M78 614h344" stroke="#f0c84b" stroke-width="12"/>
+</svg>
