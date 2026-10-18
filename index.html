@@ -1252,6 +1252,9 @@ async function whack(card){
   const hitDay=new Date().toISOString().slice(0,10);
   const countBeforeSave=rec(card.dataset.name)[weapon];
   playHit(weapon);
+  burst.textContent=shownMessage;
+  burst.classList.toggle('custom-message',Boolean(showCustom));
+  card.classList.remove('hit'); void card.offsetWidth; card.classList.add('hit');
   try{
     const location=await getVisitorLocation();
     const statId=await hashMessageStat(`${id}|${weapon}|${shownMessage}|${hitDay}`);
@@ -1303,9 +1306,6 @@ async function whack(card){
     el.classList.add('show');
     el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
     badge(card);
-    burst.textContent=shownMessage;
-    burst.classList.toggle('custom-message',Boolean(showCustom));
-    card.classList.remove('hit'); void card.offsetWidth; card.classList.add('hit');
   }catch(error){
     setPill('err','&#9729; Save failed');
     console.error('Firestore count update failed:',error);
